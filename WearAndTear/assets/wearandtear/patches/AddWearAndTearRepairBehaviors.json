@@ -1,0 +1,15 @@
+[
+  {
+    "file": "game:itemtypes/resource/sewingkit.json",
+    "op": "addmerge",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "WearAndTearRepairTool",
+        "properties": {
+          "repairType": "cloth"
+        }
+      }
+    ]
+  }
+]

@@ -1,0 +1,13 @@
+{
+    "type": "code",
+    "modid": "wearandtear",
+    "name": "WearAndTear",
+    "authors": [
+        "Unknown"
+    ],
+    "description": "To be added",
+    "version": "0.5.0",
+    "dependencies": {
+        "game": ""
+    }
+}

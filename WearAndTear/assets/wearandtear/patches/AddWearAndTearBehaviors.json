@@ -1,0 +1,17 @@
+[
+  {
+    "file": "game:blocktypes/mechanics/windmillrotor.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearSail",
+        "properties": {
+          "avgLifeSpanInYears": 1,
+          "wearAndTearType": 1,
+          "repairType": "cloth"
+        }
+      }
+    ]
+  }
+]

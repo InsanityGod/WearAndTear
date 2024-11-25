@@ -1,0 +1,18 @@
+[
+  {
+    "file": "vanvar:blocktypes/wood/mechanics/windmillrotor.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearSail",
+        "properties": {
+          "avgLifeSpanInYears": 1,
+          "wearAndTearType": 1,
+          "repairType": "cloth"
+        }
+      }
+    ],
+    "dependsOn": [ { "modid": "vanvar" } ]
+  }
+]

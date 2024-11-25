@@ -1,0 +1,5 @@
+{
+  "Durability: {0}%": "Durability: {0}%",
+  "repairfailed-notbroken": "Not broken enough to repair",
+  "repairfailed-moving": "Can't repair while object is active"
+}
