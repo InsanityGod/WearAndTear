@@ -1,5 +1,22 @@
 {
   "Durability: {0}%": "Durability: {0}%",
   "repairfailed-notbroken": "Not broken enough to repair",
-  "repairfailed-moving": "Can't repair while object is active"
+  "repairfailed-moving": "Can't repair while object is active",
+
+  //Handbook entries
+
+  //"game:tabname-wearandtear": "Wear And Teare",
+  //"game:handbook-category-wearandtear": "Wear And Tear",
+
+
+  "wearandtearguide-title": "Wear And Tear: Maintenance",
+  "wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>
+The following devices break down over time and require occasional maintence / replacement:
+	- Windmill
+	- Helve hammer
+	- Helve axe (if 'Helve Axe addon for In dappled Groves' is installed)
+
+<font weight='bold' align='center'>Windmill Maintenance</font>
+Windmill sails will slowly tear over time, by default they last about a year in average wind speeds though the efficiency will have gone down significantly by then.
+To repair the sails you will first need to stop the windmill from moving after which you can use a sewing kit to fix the sails. (1 sewing kit is enough to fully repair 2 sails worth of durability)"
 }

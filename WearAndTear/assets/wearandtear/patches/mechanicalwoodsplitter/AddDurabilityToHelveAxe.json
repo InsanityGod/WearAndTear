@@ -1,0 +1,16 @@
+[
+  {
+    "file": "mechanicalwoodsplitter:itemtypes/helveaxe.json",
+    "op": "addmerge",
+    "path": "/durabilitybytype",
+    "value": {
+      "*-tinbronze": 600,
+      "*-bismuthbronze": 750,
+      "*-blackbronze": 900,
+      "*-iron": 1350,
+      "*-meteoriciron": 1800,
+      "*-steel": 2700
+    },
+    "dependsOn": [ { "modid": "mechanicalwoodsplitter" } ]
+  }
+]

@@ -11,13 +11,14 @@ using WearAndTear.Behaviours;
 namespace WearAndTear.HarmonyPatches
 {
     [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "TorqueFactor", MethodType.Getter)]
-    public static class IncludeWearAndTearInTorqueFactor
+    [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "TargetSpeed", MethodType.Getter)]
+    public static class IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed
     {
-        public static void Postfix(BEBehaviorWindmillRotor __instance, ref float __result)
+        public static void Postfix(BEBehaviorMPRotor __instance, ref float __result)
         {
             var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearBlockEntityBehavior>();
             if (wearAndTearBehaviour == null) return;
-            __result *= wearAndTearBehaviour.TorqueFactorModifier;
+            __result *= wearAndTearBehaviour.Efficiency;
         }
     }
 }

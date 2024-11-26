@@ -14,5 +14,16 @@
       }
     ],
     "dependsOn": [ { "modid": "vanvar" } ]
+  },
+  {
+    "file": "vanvar:blocktypes/wood/mechanics/helvehammerbase.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearHelveBase"
+      }
+    ],
+    "dependsOn": [ { "modid": "vanvar" } ]
   }
 ]

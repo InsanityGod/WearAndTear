@@ -9,6 +9,7 @@ using WearAndTear.Behaviours;
 
 namespace WearAndTear.HarmonyPatches
 {
+    //TODO register on millwright stuff once the shapes have been made
     [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "updateShape")]
     public static class DisableOnNoSailsAndAddTornShapes
     {

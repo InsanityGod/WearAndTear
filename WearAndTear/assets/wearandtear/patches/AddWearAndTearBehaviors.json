@@ -13,5 +13,15 @@
         }
       }
     ]
+  },
+  {
+    "file": "game:blocktypes/mechanics/helvehammerbase.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearHelveBase"
+      }
+    ]
   }
 ]

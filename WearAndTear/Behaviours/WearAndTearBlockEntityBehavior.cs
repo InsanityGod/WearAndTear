@@ -21,6 +21,8 @@ namespace WearAndTear.Behaviours
         {
         }
 
+        protected virtual bool RunUpdateMethod => true;
+
         /// <summary>
         /// Average life spanAsuming an avgWindspeed of 0.5 and avgRainfall of 0.5
         /// </summary>
@@ -34,6 +36,8 @@ namespace WearAndTear.Behaviours
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
             Durability = tree.GetFloat("WearAndTear_Durability", Durability);
+
+            if (!RunUpdateMethod) return;
             LastUpdatedAt = tree.TryGetDouble("WearAndTear_LastUpdatedAt");
         }
 
@@ -41,6 +45,8 @@ namespace WearAndTear.Behaviours
         {
             base.ToTreeAttributes(tree);
             tree.SetFloat("WearAndTear_Durability", Durability);
+
+            if (!RunUpdateMethod) return;
             tree.SetDouble("WearAndTear_LastUpdatedAt", Api.World.Calendar.TotalDays);
         }
 
@@ -53,17 +59,18 @@ namespace WearAndTear.Behaviours
 
             if (Api.Side == EnumAppSide.Client) return;
 
+            if (!RunUpdateMethod) return;
             LastUpdatedAt ??= Api.World.Calendar.TotalDays;
             Blockentity.RegisterGameTickListener(UpdateWearAndTear, WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs);
         }
 
         /// <summary>
         /// Can be changed to false if the block can't currently be affected by WearAndTear
-        /// (For instance when a windmillrotor has no sails)=
+        /// (For instance when a windmillrotor has no sails)
         /// </summary>
         public bool Enabled { get; set; } = true;
 
-        public float Durability { get; set; } = 1;
+        public virtual float Durability { get; set; } = 1;
 
         public double? LastUpdatedAt { get; set; }
 
@@ -89,7 +96,7 @@ namespace WearAndTear.Behaviours
                 //HACK: haven't been able to figure out how to get the average windspeed over the passed period
                 //(this is to prevent massive damage when returning from a long trip while it's very windy)
 
-                avgWindSpeed = Api.World.BlockAccessor.GetWindSpeedAt(Pos).Length(); //TODO test;
+                avgWindSpeed = Api.World.BlockAccessor.GetWindSpeedAt(Pos).Length();
 
                 var climate = Api.World.BlockAccessor.GetClimateAt(Pos, EnumGetClimateMode.NowValues);
                 avgWetness = climate.Rainfall;
@@ -124,7 +131,7 @@ namespace WearAndTear.Behaviours
             dsc.AppendLine(Lang.Get("Durability: {0}%", (int)(Durability * 100)));
         }
 
-        public virtual float TorqueFactorModifier => Durability;
+        public virtual float Efficiency => Durability;
 
         public virtual void UpdateShape(BEBehaviorMPBase beh, string typeVariant)
         {
@@ -173,7 +180,7 @@ namespace WearAndTear.Behaviours
             }
 
             var powerDevice = Blockentity.GetBehavior<IMechanicalPowerDevice>();
-            if(powerDevice != null && powerDevice.Network.Speed > 0.001)
+            if (powerDevice != null && powerDevice.Network.Speed > 0.001)
             {
                 if (Api.Side == EnumAppSide.Client) (Api as ICoreClientAPI)?.TriggerIngameError(this, "wearandtear:repairfailed-moving", Lang.Get("wearandtear:repairfailed-moving"));
                 return false;

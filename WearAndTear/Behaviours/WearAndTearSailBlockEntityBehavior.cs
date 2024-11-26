@@ -119,7 +119,6 @@ namespace WearAndTear.Behaviours
             }
         }
 
-        //TODO: calibrate
         public override bool TryRepair(float repairStrength) => base.TryRepair(repairStrength * (4f / (SailLength * BladeCount)));
     }
 }

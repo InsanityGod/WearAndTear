@@ -27,7 +27,7 @@ namespace WearAndTear.Behaviours
             RepairType = properties["repairType"].AsString();
             RepairStrength = properties["repairStrength"].AsFloat(RepairStrength);
             ConsumeItem = properties["consumeItem"].AsBool(ConsumeItem);
-            //TODO consume durability
+            //TODO maybe a consumeDurability mode
         }
 
         public virtual bool TryRepair(WearAndTearBlockEntityBehavior wearAndTearBehavior, ItemSlot slot)

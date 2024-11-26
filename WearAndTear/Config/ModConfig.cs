@@ -19,6 +19,14 @@ namespace WearAndTear.Config
         /// </summary>
         public float DurabilityLeeway { get; set; } = .98f;
 
+        /// <summary>
+        /// How often the durability update method runs
+        /// </summary>
         public int DurabilityUpdateFrequencyInMs { get; set; } = 2500;
+
+        /// <summary>
+        /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
+        /// </summary>
+        public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set;} = true;
     }
 }
