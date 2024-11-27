@@ -53,13 +53,6 @@
   <Content Include="assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>
-  <None Remove="assets\wearandtear\config\handbook\wearandtearguide.json" />
-  <None Remove="assets\wearandtear\patches\AddDurabilityToHelveHammer.json" />
-  <None Remove="assets\wearandtear\patches\AddWearAndTearRepairBehaviors.json" />
-  <None Remove="assets\wearandtear\patches\mechanicalwoodsplitter\AddDurabilityToHelveAxe.json" />
-  <None Remove="assets\wearandtear\patches\millwright\AddMillwrightWearAndTearBehaviors.json" />
-  <None Remove="assets\wearandtear\patches\vanvar\AddDurabilityToVanvarHelveHammer.json" />
-  <None Remove="assets\wearandtear\patches\vanvar\AddVanvarWearAndTearBehaviors.json" />
   <Content Include="modinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
   </Content>

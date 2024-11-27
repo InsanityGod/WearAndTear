@@ -1,0 +1,29 @@
+[
+  {
+    "file": "wildcrafttree:blocktypes/wood/mechanics/windmillrotor.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearSail",
+        "properties": {
+          "avgLifeSpanInYears": 1,
+          "wearAndTearType": 1,
+          "repairType": "cloth"
+        }
+      }
+    ],
+    "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]
+  },
+  {
+    "file": "wildcrafttree:blocktypes/wood/mechanics/helvehammerbase.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTearHelveBase"
+      }
+    ],
+    "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]
+  }
+]
