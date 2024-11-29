@@ -5,9 +5,9 @@
     "path": "/behaviors",
     "value": [
       {
-        "name": "WearAndTearRepairTool",
+        "name": "WearAndTearRepairItem",
         "properties": {
-          "repairType": "cloth"
+          "RepairType": "cloth"
         }
       }
     ]

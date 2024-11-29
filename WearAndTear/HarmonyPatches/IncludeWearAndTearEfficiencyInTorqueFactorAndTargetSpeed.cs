@@ -1,24 +1,29 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours;
+using WearAndTear.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {
-    [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "TorqueFactor", MethodType.Getter)]
-    [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "TargetSpeed", MethodType.Getter)]
+    [HarmonyPatch(typeof(BEBehaviorWindmillRotor))]
     public static class IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed
     {
-        public static void Postfix(BEBehaviorMPRotor __instance, ref float __result)
+
+        [HarmonyPostfix]
+        [HarmonyPatch("TorqueFactor", MethodType.Getter)]
+        public static void TorqueFactorPostfix(BEBehaviorMPRotor __instance, ref float __result)
         {
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearBlockEntityBehavior>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
             if (wearAndTearBehaviour == null) return;
-            __result *= wearAndTearBehaviour.Efficiency;
+            __result *= wearAndTearBehaviour.AvgEfficiencyModifier;
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch("TargetSpeed", MethodType.Getter)]
+        public static void TargetSpeedPostfix(BEBehaviorMPRotor __instance, ref float __result)
+        {
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
+            if (wearAndTearBehaviour == null) return;
+            __result *= wearAndTearBehaviour.AvgEfficiencyModifier;
         }
     }
 }

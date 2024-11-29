@@ -1,12 +1,6 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours;
+using WearAndTear.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {
@@ -15,9 +9,9 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance, ref double __result)
         {
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearBlockEntityBehavior>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
             if (wearAndTearBehaviour == null) return;
-            __result *= wearAndTearBehaviour.Efficiency;
+            __result *= wearAndTearBehaviour.AvgEfficiencyModifier;
         }
     }
 }

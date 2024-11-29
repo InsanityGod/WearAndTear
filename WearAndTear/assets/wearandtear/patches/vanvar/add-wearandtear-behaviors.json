@@ -5,11 +5,18 @@
     "path": "/entityBehaviors",
     "value": [
       {
+        "name": "WearAndTear"
+      },
+      {
         "name": "WearAndTearSail",
         "properties": {
-          "avgLifeSpanInYears": 1,
-          "wearAndTearType": 1,
-          "repairType": "cloth"
+          "Name": "Sail",
+          "RepairType": "cloth",
+          "Decay": [
+            {
+              "Type": "wind"
+            }
+          ]
         }
       }
     ],
@@ -21,7 +28,10 @@
     "path": "/entityBehaviors",
     "value": [
       {
-        "name": "WearAndTearHelveBase"
+        "name": "WearAndTear"
+      },
+      {
+        "name": "WearAndTearHelveItem"
       }
     ],
     "dependsOn": [ { "modid": "vanvar" } ]

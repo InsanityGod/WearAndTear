@@ -1,13 +1,9 @@
 {
-  "Durability: {0}%": "Durability: {0}%",
-  "repairfailed-notbroken": "Not broken enough to repair",
+  "durability": "durability",
+  "repairfailed-notbroken": "No parts are broken enough to repair",
   "repairfailed-moving": "Can't repair while object is active",
 
   //Handbook entries
-
-  //"game:tabname-wearandtear": "Wear And Teare",
-  //"game:handbook-category-wearandtear": "Wear And Tear",
-
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",
   "wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>

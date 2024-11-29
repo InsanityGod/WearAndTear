@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours;
+using WearAndTear.Behaviours.parts;
 
 namespace WearAndTear.HarmonyPatches
 {
@@ -15,9 +10,8 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance)
         {
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBlockEntityBehavior>();
-            if (wearAndTearBehaviour == null) return;
-            if (wearAndTearBehaviour.SailLength == 0) wearAndTearBehaviour.Enabled = false;
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+            if (wearAndTearBehaviour == null || wearAndTearBehaviour.SailLength == 0) return;
             wearAndTearBehaviour.UpdateShape(__instance, "torn");
         }
     }

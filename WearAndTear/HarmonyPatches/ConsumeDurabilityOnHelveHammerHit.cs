@@ -1,16 +1,10 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours;
+using WearAndTear.Behaviours.parts;
 
 namespace WearAndTear.HarmonyPatches
 {
@@ -37,8 +31,8 @@ namespace WearAndTear.HarmonyPatches
 
         public static void ConsumeDurability(BEHelveHammer instance)
         {
-            var wearAndTearBehaviour = instance.GetBehavior<WearAndTearHelveHammerBlockEntityBehavior>();
-            if (wearAndTearBehaviour == null || !wearAndTearBehaviour.Enabled || !wearAndTearBehaviour.ItemCanBeDamaged) return;
+            var wearAndTearBehaviour = instance.GetBehavior<WearAndTearHelveItemBehavior>();
+            if (wearAndTearBehaviour == null || !wearAndTearBehaviour.ItemCanBeDamaged) return;
 
             var anvil = Traverse.Create(instance).Field("targetAnvil").GetValue<BlockEntityAnvil>();
             if (anvil.GetType().Name == "FakeBlockEntityAnvil")
@@ -55,8 +49,7 @@ namespace WearAndTear.HarmonyPatches
 
             if (durability <= 1)
             {
-                AssetLocation location = new AssetLocation("sounds/effect/toolbreak");
-                instance.Api.World.PlaySoundAt(location, instance.Pos.X, instance.Pos.Y, instance.Pos.Z, null, true, 32f, 1f);
+                instance.Api.World.PlaySoundAt(new("sounds/effect/toolbreak"), instance.Pos.X, instance.Pos.Y, instance.Pos.Z, null, true, 32f, 1f);
                 instance.HammerStack = null;
             }
             else instance.HammerStack.Attributes.SetInt("durability", durability - 1);

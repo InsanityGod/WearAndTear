@@ -1,11 +1,15 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Behaviours;
+using WearAndTear.Behaviours.parts;
 using WearAndTear.Config;
+using WearAndTear.DecayEngines;
 using WearAndTear.HarmonyPatches;
+using WearAndTear.Interfaces;
 
 namespace WearAndTear
 {
@@ -16,6 +20,12 @@ namespace WearAndTear
         private Harmony harmony;
 
         public static ModConfig Config { get; private set; }
+
+        public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
+        {
+            { "wind", new WindDecayEngine()},
+            { "rain", new RainDecayEngine()}
+        };
 
         public override void Start(ICoreAPI api)
         {
@@ -33,11 +43,11 @@ namespace WearAndTear
                         var beh = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BEBehaviorWindmillRotorEnhanced");
                         if (beh != null)
                         {
+                            //TODO maybe see if I can make this work
                             harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
                             harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
-                            harmony.Patch(AccessTools.Method(beh, "ToTreeAttributes", new Type[] { typeof(ITreeAttribute) }), postfix: new HarmonyMethod(typeof(SetWearAndTearEnabledForWindmillRotor).GetMethod(nameof(SetWearAndTearEnabledForWindmillRotor.Postfix))));
-                            harmony.Patch(AccessTools.PropertyGetter(beh, "TorqueFactor"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.Postfix))));
-                            harmony.Patch(AccessTools.PropertyGetter(beh, "TargetSpeed"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.Postfix))));
+                            harmony.Patch(AccessTools.PropertyGetter(beh, "TorqueFactor"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.TorqueFactorPostfix))));
+                            harmony.Patch(AccessTools.PropertyGetter(beh, "TargetSpeed"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.TargetSpeedPostfix))));
                             harmony.Patch(AccessTools.PropertyGetter(beh, "AccelerationFactor"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInAccelerationFactor).GetMethod(nameof(IncludeWearAndTearEfficiencyInAccelerationFactor.Postfix))));
                         }
                     }
@@ -55,10 +65,12 @@ namespace WearAndTear
 
         private static void RegisterBehaviours(ICoreAPI api)
         {
-            api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBlockEntityBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBlockEntityBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearHelveBase", typeof(WearAndTearHelveHammerBlockEntityBehavior));
-            api.RegisterCollectibleBehaviorClass("WearAndTearRepairTool", typeof(WearAndTearRepairToolCollectibleBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearPart", typeof(WearAndTearPartBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
+
+            api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
         }
 
         private static void LoadConfig(ICoreAPI api)

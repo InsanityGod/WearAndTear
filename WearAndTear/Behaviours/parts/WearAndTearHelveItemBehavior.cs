@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
 
-namespace WearAndTear.Behaviours
+namespace WearAndTear.Behaviours.parts
 {
-    public class WearAndTearHelveHammerBlockEntityBehavior : WearAndTearBlockEntityBehavior
+    //TODO create a base class for Item parts
+    public class WearAndTearHelveItemBehavior : WearAndTearPartBehavior
     {
-        protected override bool RunUpdateMethod => false;
+        public readonly BEHelveHammer HelveHammerBase;
 
-        public override void ToTreeAttributes(ITreeAttribute tree)
+        public WearAndTearHelveItemBehavior(BlockEntity blockentity) : base(blockentity)
         {
-            //Empty on purpose
+            HelveHammerBase = (BEHelveHammer)blockentity;
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -23,11 +22,14 @@ namespace WearAndTear.Behaviours
             //Empty on purpose
         }
 
-        public readonly BEHelveHammer HelveHammerBase;
-
-        public WearAndTearHelveHammerBlockEntityBehavior(BlockEntity blockentity) : base(blockentity)
+        public override void ToTreeAttributes(ITreeAttribute tree)
         {
-            HelveHammerBase = (BEHelveHammer)blockentity;
+            //Empty on purpose
+        }
+
+        public override void UpdateDecay(double daysPassed)
+        {
+            //Empty on purpose
         }
 
         public override float Durability
@@ -50,10 +52,14 @@ namespace WearAndTear.Behaviours
 
         public bool ItemCanBeDamaged => (HelveHammerBase.HammerStack?.Collectible?.GetMaxDurability(HelveHammerBase.HammerStack) ?? 0) > 0;
 
-        public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
+        public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
             if (!ItemCanBeDamaged) return;
-            base.GetBlockInfo(forPlayer, dsc);
+
+            dsc.AppendLine($"{HelveHammerBase.HammerStack.GetName()} {Lang.Get("Durability: {0} / {1}",
+                HelveHammerBase.HammerStack.Collectible.GetRemainingDurability(HelveHammerBase.HammerStack),
+                HelveHammerBase.HammerStack.Collectible.GetMaxDurability(HelveHammerBase.HammerStack)
+            )}");
         }
     }
 }
