@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours.parts;
+using WearAndTear.Behaviours.Parts;
 
 namespace WearAndTear.HarmonyPatches
 {

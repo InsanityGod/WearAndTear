@@ -6,7 +6,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Interfaces;
 
-namespace WearAndTear.Behaviours.parts
+namespace WearAndTear.Behaviours.Parts
 {
     public class WearAndTearSailBehavior : WearAndTearPartBehavior, IWearAndTearPart
     {
@@ -137,7 +137,7 @@ namespace WearAndTear.Behaviours.parts
             Blockentity.MarkDirty(true);
         }
 
-        public float RepairFor(float repairStrength)
+        public float DoMaintenanceFor(float repairStrength)
         {
             var realRepairStrength = repairStrength * (4f / (SailLength * BladeCount));
             Durability += realRepairStrength;

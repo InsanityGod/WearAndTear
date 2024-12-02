@@ -11,5 +11,19 @@
         }
       }
     ]
+  },
+  {
+    "file": "game:itemtypes/resource/beeswax.json",
+    "op": "addmerge",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "WearAndTearRepairItem",
+        "properties": {
+          "RepairType": "wax",
+          "Strength": 1
+        }
+      }
+    ]
   }
 ]

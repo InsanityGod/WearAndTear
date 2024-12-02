@@ -14,6 +14,9 @@ namespace WearAndTear.Config.Props
         /// </summary>
         public string RepairType { get; set; }
 
+        /// <summary>
+        /// How long the object should last on average
+        /// </summary>
         public float AvgLifeSpanInYears { get; set; } = 1;
 
         /// <summary>
@@ -25,6 +28,12 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// The decay affecting this part (this are used to select the DecayEngines)
         /// </summary>
-        public WearAndTearDecayProps[] Decay { get; set; } = Array.Empty<WearAndTearDecayProps>();
+        public WearAndTearDecayProps[] Decay { get; set; } = new WearAndTearDecayProps[]
+        {
+            new()
+            {
+                Type = "time"
+            }
+        };
     }
 }

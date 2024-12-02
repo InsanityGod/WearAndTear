@@ -6,6 +6,6 @@ namespace WearAndTear.Interfaces
 {
     public interface IDecayEngine
     {
-        public float GetDecayLoss(ICoreAPI api, WearAndTearPartBehavior part, WearAndTearDecayProps decayProps, double daysPassed);
+        public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed);
     }
 }

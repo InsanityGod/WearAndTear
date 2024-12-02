@@ -4,6 +4,6 @@
     {
         public string RepairType { get; set; }
 
-        public float RepairStrength { get; set; } = .5f;
+        public float Strength { get; set; } = .5f;
     }
 }

@@ -30,7 +30,49 @@
         "name": "WearAndTear"
       },
       {
-        "name": "WearAndTearHelveItem"
+        "name": "WearAndTearHelveItem",
+        "properties": {
+          "Name": "HelveItem"
+        }
+      }
+    ]
+  },
+  {
+    "file": "game:blocktypes/mechanics/angledgears.json", //TODO 
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTear"
+      },
+      {
+        "name": "WearAndTearPart",
+        "properties": {
+          "Name": "Frame",
+          "RepairType": "wood",
+          "Decay": [
+            {
+              "Type": "humidity"
+            }
+          ]
+        }
+      },
+      {
+        "name": "WearAndTearProtectivePart",
+        "properties": {
+          "Name": "Wax",
+          "RepairType": "wax",
+          "Decay": [
+            {
+              "Type": "humidity"
+            }
+          ],
+          "EffectiveFor": [
+            {
+              "RepairType": "wood"
+            }
+          ]
+        }
       }
     ]
   }

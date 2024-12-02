@@ -16,7 +16,7 @@ namespace WearAndTear.Behaviours
         public override void Initialize(JsonObject properties)
         {
             base.Initialize(properties);
-            Props = properties.AsObject<WearAndTearRepairItemProps>();
+            Props = properties.AsObject<WearAndTearRepairItemProps>() ?? new();
             //TODO maybe a consumeDurability mode
             //TODO require tool in offhand mode
         }
@@ -67,7 +67,7 @@ namespace WearAndTear.Behaviours
 
             var wearAndTear = slot.Inventory.Api.World.BlockAccessor.GetBlockEntity(blockSel.Position)?.GetBehavior<IWearAndTear>();
 
-            if (wearAndTear != null && wearAndTear.TryRepair(Props, slot, byEntity))
+            if (wearAndTear != null && wearAndTear.TryMaintenance(Props, slot, byEntity))
             {
                 repairing = true;
                 handling = EnumHandling.Handled;

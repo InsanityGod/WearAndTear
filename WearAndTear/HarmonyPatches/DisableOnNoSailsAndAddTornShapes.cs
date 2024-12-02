@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours.parts;
+using WearAndTear.Behaviours.Parts;
 
 namespace WearAndTear.HarmonyPatches
 {

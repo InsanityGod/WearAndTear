@@ -31,7 +31,10 @@
         "name": "WearAndTear"
       },
       {
-        "name": "WearAndTearHelveItem"
+        "name": "WearAndTearHelveItem",
+        "properties": {
+          "Name": "HelveItem"
+        }
       }
     ],
     "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]

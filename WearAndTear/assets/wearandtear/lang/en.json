@@ -1,7 +1,7 @@
 {
   "durability": "durability",
-  "repairfailed-notbroken": "No parts are broken enough to repair",
-  "repairfailed-moving": "Can't repair while object is active",
+  "failed-maintenance-not-required": "This type of maintenance is not currently required",
+  "failed-maintenance-moving": "Can't do this type of maintenance while object is moving",
 
   //Handbook entries
 

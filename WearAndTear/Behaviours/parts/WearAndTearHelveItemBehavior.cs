@@ -4,11 +4,12 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Behaviours.Parts.Abstract;
 
-namespace WearAndTear.Behaviours.parts
+namespace WearAndTear.Behaviours.Parts
 {
     //TODO create a base class for Item parts
-    public class WearAndTearHelveItemBehavior : WearAndTearPartBehavior
+    public class WearAndTearHelveItemBehavior : WearAndTearOptionalPartBehavior
     {
         public readonly BEHelveHammer HelveHammerBase;
 
@@ -36,7 +37,7 @@ namespace WearAndTear.Behaviours.parts
         {
             get
             {
-                if (HelveHammerBase.HammerStack == null) return 1;
+                if (HelveHammerBase.HammerStack == null) return 0;
                 var maxDurability = HelveHammerBase.HammerStack.Collectible.GetMaxDurability(HelveHammerBase.HammerStack);
                 var durability = HelveHammerBase.HammerStack.Attributes.GetInt("durability", maxDurability);
                 return durability / (float)maxDurability;

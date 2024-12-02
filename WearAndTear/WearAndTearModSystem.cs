@@ -5,7 +5,8 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Behaviours;
-using WearAndTear.Behaviours.parts;
+using WearAndTear.Behaviours.Parts;
+using WearAndTear.Behaviours.Parts.Protective;
 using WearAndTear.Config;
 using WearAndTear.DecayEngines;
 using WearAndTear.HarmonyPatches;
@@ -24,7 +25,8 @@ namespace WearAndTear
         public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
         {
             { "wind", new WindDecayEngine()},
-            { "rain", new RainDecayEngine()}
+            { "humidity", new HumidityDecayEngine()},
+            { "time", new TimeDecayEngine()},
         };
 
         public override void Start(ICoreAPI api)
@@ -67,6 +69,7 @@ namespace WearAndTear
         {
             api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPart", typeof(WearAndTearPartBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearProtectivePart", typeof(WearAndTearProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
 
