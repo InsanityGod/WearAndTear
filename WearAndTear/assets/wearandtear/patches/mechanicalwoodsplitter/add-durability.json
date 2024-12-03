@@ -11,6 +11,10 @@
       "*-meteoriciron": 1800,
       "*-steel": 2700
     },
+    "condition": {
+      "when": "WearAndTear_Feature_HelveAxe",
+      "isValue": "true"
+    },
     "dependsOn": [ { "modid": "mechanicalwoodsplitter" } ]
   }
 ]

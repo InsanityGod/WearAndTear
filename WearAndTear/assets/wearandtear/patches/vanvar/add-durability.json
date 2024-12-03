@@ -11,6 +11,10 @@
       "*-meteoriciron": 4200,
       "*-steel": 9000
     },
+    "condition": {
+      "when": "WearAndTear_Feature_HelveHammer",
+      "isValue": "true"
+    },
     "dependsOn": [ { "modid": "vanvar" } ]
   }
 ]

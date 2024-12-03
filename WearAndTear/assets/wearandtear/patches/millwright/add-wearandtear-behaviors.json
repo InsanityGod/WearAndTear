@@ -20,6 +20,10 @@
         }
       }
     ],
+    "condition": {
+      "when": "WearAndTear_Feature_WindmillRotor",
+      "isValue": "true"
+    },
     "dependsOn": [ { "modid": "millwright" } ]
   }
 ]

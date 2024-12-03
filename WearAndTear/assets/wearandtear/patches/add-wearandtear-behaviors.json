@@ -19,7 +19,11 @@
           ]
         }
       }
-    ]
+    ],
+    "condition": {
+      "when": "WearAndTear_Feature_WindmillRotor",
+      "isValue": "true"
+    }
   },
   {
     "file": "game:blocktypes/mechanics/helvehammerbase.json",
@@ -38,7 +42,7 @@
     ]
   },
   {
-    "file": "game:blocktypes/mechanics/angledgears.json", //TODO 
+    "file": "game:blocktypes/mechanics/angledgears.json",
     "op": "addmerge",
     "path": "/entityBehaviors",
     "value": [
@@ -50,6 +54,7 @@
         "properties": {
           "Name": "Frame",
           "RepairType": "wood",
+          "IsCritical": true,
           "Decay": [
             {
               "Type": "humidity"
@@ -74,6 +79,10 @@
           ]
         }
       }
-    ]
+    ],
+    "condition": {
+      "when": "WearAndTear_Feature_AngledGear",
+      "isValue": "true"
+    }
   }
 ]

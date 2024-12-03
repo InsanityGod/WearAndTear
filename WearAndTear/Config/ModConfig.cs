@@ -42,5 +42,7 @@
         /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
         /// </summary>
         public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set; } = true;
+
+        public FeatureConfig Features { get; set; } = new();
     }
 }

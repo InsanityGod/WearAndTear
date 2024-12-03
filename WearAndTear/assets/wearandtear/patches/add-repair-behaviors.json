@@ -25,5 +25,19 @@
         }
       }
     ]
+  },
+  {
+    "file": "game:itemtypes/resource/resin.json",
+    "op": "addmerge",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "WearAndTearRepairItem",
+        "properties": {
+          "RepairType": "wood",
+          "Strength": 0.3
+        }
+      }
+    ]
   }
 ]

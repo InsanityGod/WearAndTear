@@ -10,6 +10,10 @@
       "*-iron": 3600,
       "*-meteoriciron": 4200,
       "*-steel": 9000
+    },
+    "condition": {
+      "when": "WearAndTear_Feature_HelveHammer",
+      "isValue": "true"
     }
   }
 ]

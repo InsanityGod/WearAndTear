@@ -11,6 +11,13 @@
       "*-meteoriciron": 4200,
       "*-steel": 9000
     },
-    "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]
+    "condition": {
+      "when": "WearAndTear_Feature_HelveHammer",
+      "isValue": "true"
+    },
+    "dependsOn": [
+      { "modid": "vanvar" },
+      { "modid": "wildcrafttree" }
+    ]
   }
 ]

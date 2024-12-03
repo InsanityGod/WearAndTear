@@ -106,6 +106,12 @@ namespace WearAndTear.Behaviours
             foreach (var part in Parts)
                 part.UpdateDecay(daysPassed);
 
+            if(Parts.Exists(part => part.Props.IsCritical && part.Durability <= 0))
+            {
+                Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
+                //TODO Maybe allow for parts to drop stuff when this happens?
+            }
+
             Blockentity.MarkDirty();
         }
 

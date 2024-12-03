@@ -29,6 +29,8 @@ namespace WearAndTear
             { "time", new TimeDecayEngine()},
         };
 
+        public override void StartPre(ICoreAPI api) => LoadConfig(api);
+
         public override void Start(ICoreAPI api)
         {
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
@@ -47,7 +49,7 @@ namespace WearAndTear
                         {
                             harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
                             harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
-                            harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), postfix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
+                            harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
                         }
                     }
                     catch (Exception ex)
@@ -57,8 +59,6 @@ namespace WearAndTear
                     }
                 }
             }
-
-            LoadConfig(api);
             RegisterBehaviours(api);
         }
 
@@ -77,12 +77,8 @@ namespace WearAndTear
         {
             try
             {
-                Config ??= api.LoadModConfig<ModConfig>(ConfigName);
-                if (Config == null)
-                {
-                    Config = new();
-                    api.StoreModConfig(Config, ConfigName);
-                }
+                Config = api.LoadModConfig<ModConfig>(ConfigName) ?? new();
+                api.StoreModConfig(Config, ConfigName);
             }
             catch (Exception ex)
             {
@@ -90,6 +86,13 @@ namespace WearAndTear
                 api.Logger.Warning("Failed to load config, using default values instead");
                 Config = new();
             }
+            LoadFeatureFlags(api);
+        }
+
+        public static void LoadFeatureFlags(ICoreAPI api)
+        {
+            foreach(var prop in typeof(FeatureConfig).GetProperties())
+                api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", (bool)prop.GetValue(Config.Features));
         }
 
         public override void Dispose()

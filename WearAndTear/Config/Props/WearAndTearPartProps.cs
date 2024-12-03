@@ -26,6 +26,12 @@ namespace WearAndTear.Config.Props
         public float DurabilityEfficiencyRatio { get; set; } = 1;
 
         /// <summary>
+        /// Whether this part is critical to the object.
+        /// If this is set to true, the entire object will fall apart when
+        /// </summary>
+        public bool IsCritical { get; set; } = false;
+
+        /// <summary>
         /// The decay affecting this part (this are used to select the DecayEngines)
         /// </summary>
         public WearAndTearDecayProps[] Decay { get; set; } = new WearAndTearDecayProps[]

@@ -20,7 +20,14 @@
         }
       }
     ],
-    "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]
+    "condition": {
+      "when": "WearAndTear_Feature_WindmillRotor",
+      "isValue": "true"
+    },
+    "dependsOn": [
+      { "modid": "vanvar" },
+      { "modid": "wildcrafttree" }
+    ]
   },
   {
     "file": "wildcrafttree:blocktypes/wood/mechanics/helvehammerbase.json",
@@ -37,6 +44,57 @@
         }
       }
     ],
-    "dependsOn": [ { "modid": "vanvar" }, { "modid": "wildcrafttree" } ]
+    "dependsOn": [
+      { "modid": "vanvar" },
+      { "modid": "wildcrafttree" }
+    ]
+  },
+  {
+    "file": "wildcrafttree:blocktypes/wood/mechanics/angledgears.json",
+    "op": "addmerge",
+    "path": "/entityBehaviors",
+    "value": [
+      {
+        "name": "WearAndTear"
+      },
+      {
+        "name": "WearAndTearPart",
+        "properties": {
+          "Name": "Frame",
+          "RepairType": "wood",
+          "IsCritical": true,
+          "Decay": [
+            {
+              "Type": "humidity"
+            }
+          ]
+        }
+      },
+      {
+        "name": "WearAndTearProtectivePart",
+        "properties": {
+          "Name": "Wax",
+          "RepairType": "wax",
+          "Decay": [
+            {
+              "Type": "humidity"
+            }
+          ],
+          "EffectiveFor": [
+            {
+              "RepairType": "wood"
+            }
+          ]
+        }
+      }
+    ],
+    "condition": {
+      "when": "WearAndTear_Feature_AngledGear",
+      "isValue": "true"
+    },
+    "dependsOn": [
+      { "modid": "vanvar" },
+      { "modid": "wildcrafttree" }
+    ]
   }
 ]

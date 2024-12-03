@@ -6,6 +6,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Config.Props;
 using WearAndTear.Interfaces;
@@ -60,15 +61,6 @@ namespace WearAndTear.Behaviours
             tree.GetOrAddTreeAttribute("WearAndTear-Durability").SetFloat(Props.Name, Durability);
         }
 
-        public void UpdateForNewDurability()
-        {
-            var mpBase = Blockentity.GetBehavior<BEBehaviorMPBase>();
-            if(mpBase != null)
-            {
-                //TODO
-            }
-        }
-
         public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
             dsc.AppendLine($"{Lang.Get(Props.Name)}: {(int)(Durability * 100)}%");
@@ -92,7 +84,7 @@ namespace WearAndTear.Behaviours
 
                 Durability -= loss;
             }
-            Durability = Math.Max(Durability, WearAndTearModSystem.Config.MinDurability);
+            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
         }
 
         public WearAndTearPartProps Props { get; private set; }
