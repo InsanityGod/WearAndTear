@@ -2,19 +2,35 @@
 using System;
 using System.Text;
 using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Behaviours.Parts.Abstract;
+using WearAndTear.Config.Props;
 using WearAndTear.Interfaces;
 
 namespace WearAndTear.Behaviours.Parts
 {
-    public class WearAndTearSailBehavior : WearAndTearPartBehavior, IWearAndTearPart
+    public class WearAndTearSailBehavior : WearAndTearOptionalPartBehavior, IWearAndTearPart
     {
         public WearAndTearSailBehavior(BlockEntity blockentity) : base(blockentity)
         {
         }
 
-        //TODO think of a neater solution
+        public bool AreSailsRolledUp { get; set; } = false;
+
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            tree.SetBool("AreSailsRolledUp", AreSailsRolledUp);
+            base.ToTreeAttributes(tree);
+        }
+
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        {
+            AreSailsRolledUp = tree.GetAsBool("AreSailsRolledUp", AreSailsRolledUp);
+            base.FromTreeAttributes(tree, worldAccessForResolve);
+        }
+
         public int SailLength
         {
             get
@@ -72,35 +88,38 @@ namespace WearAndTear.Behaviours.Parts
             base.Initialize(api, properties);
         }
 
-        private int? prevSailLength;
+        public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props) => IsPresent && props.RepairType == Props.RepairType;
+
+        public override bool IsPresent => CachedSailLength != 0;
+
+        public int? CachedSailLength { get; set; }
 
         public override void UpdateDecay(double daysPassed)
         {
             //Fix sail durability when more sails have been added
             var sailLength = SailLength;
-            if (prevSailLength != null && prevSailLength < sailLength)
+            if(CachedSailLength != null && sailLength != CachedSailLength)
             {
-                var addedSails = sailLength - prevSailLength.Value;
-                Durability = (Durability * prevSailLength.Value + addedSails) / sailLength;
+                if(CachedSailLength == 0 && sailLength > 0)
+                {
+                    Durability = 1;
+                }
+                else if (CachedSailLength < sailLength)
+                {
+                    var addedSails = sailLength - CachedSailLength.Value;
+                    Durability = (Durability * CachedSailLength.Value + addedSails) / sailLength;
+                }
             }
-            prevSailLength = sailLength;
 
-            if (sailLength == 0)
-            {
-                Durability = 1;
-                return;
-            }
+            CachedSailLength = sailLength;
+            if(AreSailsRolledUp) return;
             base.UpdateDecay(daysPassed);
-        }
-
-        public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
-        {
-            if (SailLength == 0) return;
-            base.GetWearAndTearInfo(forPlayer, dsc);
         }
 
         public void DropSails()
         {
+            if(!IsPresent) return;
+
             if (Durability > WearAndTearModSystem.Config.DurabilityLeeway) Durability = 1;
             var item = SailAssetLocation;
             var sailCount = BladeCount;
@@ -108,33 +127,46 @@ namespace WearAndTear.Behaviours.Parts
 
             var sailItemCount = sailLength * sailCount * Durability;
 
+            while (sailItemCount >= 1)
+            {
+                var stackSize = (int)Math.Min(sailItemCount, sailCount);
+                sailItemCount -= stackSize;
+
+                Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation(item)), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
+            }
+
             if (sailItemCount > 0)
             {
-                while (sailItemCount >= 1)
-                {
-                    var stackSize = (int)Math.Min(sailItemCount, sailCount);
-                    sailItemCount -= stackSize;
-
-                    Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation(item)), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
-                }
-
-                if (sailItemCount > 0)
-                {
-                    sailItemCount *= sailCount;
-                }
-
-                while (sailItemCount >= 1)
-                {
-                    var stackSize = (int)Math.Min(sailItemCount, 32);
-                    sailItemCount -= stackSize;
-
-                    Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation("flaxtwine")), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
-                }
+                sailItemCount *= sailCount;
             }
+
+            while (sailItemCount >= 1)
+            {
+                var stackSize = (int)Math.Min(sailItemCount, 32);
+                sailItemCount -= stackSize;
+
+                Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation("flaxtwine")), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
+            }
+            
 
             SailLength = 0;
             Durability = 1;
             Blockentity.MarkDirty(true);
+        }
+
+        public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
+        {
+            if(!IsPresent) return;
+            dsc.AppendLine($"{Lang.Get(Props.Name)}{(AreSailsRolledUp ? " (Rolled Up)" : "")}: {(int)(Durability * 100)}%");
+        }
+
+        public float? EfficiencyModifier
+        {
+            get
+            {
+                if(AreSailsRolledUp) return 0;
+                return Props.DurabilityEfficiencyRatio == 0 ? null : 1 - ((1f - Durability) * Props.DurabilityEfficiencyRatio);
+            }
         }
 
         public float DoMaintenanceFor(float repairStrength)
@@ -148,20 +180,32 @@ namespace WearAndTear.Behaviours.Parts
             return Math.Min(realLeftOver, 0);
         }
 
-        public virtual void UpdateShape(BEBehaviorMPBase beh, string typeVariant)
+        public virtual void UpdateShape(BEBehaviorMPBase beh)
         {
             //TODO revamp this to be more generic
             if (Api == null) return;
-            int? durabilityVariant = null;
+            AssetLocation newLocation = null;
 
-            if (Durability < 0.05) durabilityVariant = 0;
-            else if (Durability < 0.50) durabilityVariant = 50;
-            else if (Durability < 0.75) durabilityVariant = 75;
+            if (AreSailsRolledUp)
+            {
+                    newLocation = beh.Shape.Base.Clone();
+                newLocation.Path = $"{newLocation.Path}-rolledup";
+            }
+            else 
+            {
+                int? durabilityVariant = null;
 
-            if (durabilityVariant == null) return;
+                if (Durability < 0.05) durabilityVariant = 0;
+                else if (Durability < 0.50) durabilityVariant = 50;
+                else if (Durability < 0.75) durabilityVariant = 75;
 
-            var newLocation = beh.Shape.Base.Clone();
-            newLocation.Path = $"{newLocation.Path}-{typeVariant}-{durabilityVariant}";
+                if(durabilityVariant != null)
+                {
+                    newLocation = beh.Shape.Base.Clone();
+                    newLocation.Path = $"{newLocation.Path}-torn-{durabilityVariant}";
+                }
+            }
+            if(newLocation == null) return;
 
             var oldShape = beh.Shape;
             try
@@ -177,5 +221,6 @@ namespace WearAndTear.Behaviours.Parts
                 beh.Shape = oldShape;
             }
         }
+
     }
 }

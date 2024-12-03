@@ -45,12 +45,9 @@ namespace WearAndTear
                         var beh = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BEBehaviorWindmillRotorEnhanced");
                         if (beh != null)
                         {
-                            //TODO maybe see if I can make this work
                             harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
                             harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
-                            harmony.Patch(AccessTools.PropertyGetter(beh, "TorqueFactor"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.TorqueFactorPostfix))));
-                            harmony.Patch(AccessTools.PropertyGetter(beh, "TargetSpeed"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed).GetMethod(nameof(IncludeWearAndTearEfficiencyInTorqueFactorAndTargetSpeed.TargetSpeedPostfix))));
-                            harmony.Patch(AccessTools.PropertyGetter(beh, "AccelerationFactor"), postfix: new HarmonyMethod(typeof(IncludeWearAndTearEfficiencyInAccelerationFactor).GetMethod(nameof(IncludeWearAndTearEfficiencyInAccelerationFactor.Postfix))));
+                            harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), postfix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
                         }
                     }
                     catch (Exception ex)

@@ -1,4 +1,5 @@
-﻿using Vintagestory.API.Common;
+﻿using Vintagestory.API.Client;
+using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Config.Props;
 using WearAndTear.Interfaces;
@@ -20,11 +21,6 @@ namespace WearAndTear.Behaviours
             //TODO maybe a consumeDurability mode
             //TODO require tool in offhand mode
         }
-
-        //TODO remove
-        private bool repairing;
-
-        private void DisableLock(float _) => repairing = false;
 
         public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)
         {
@@ -69,9 +65,21 @@ namespace WearAndTear.Behaviours
 
             if (wearAndTear != null && wearAndTear.TryMaintenance(Props, slot, byEntity))
             {
-                repairing = true;
                 handling = EnumHandling.Handled;
             }
+        }
+
+        public override WorldInteraction[] GetHeldInteractionHelp(ItemSlot inSlot, ref EnumHandling handling)
+        {
+            handling = EnumHandling.PassThrough;
+
+            return new WorldInteraction[] 
+            {
+                new() {
+                    ActionLangCode = "wearandtear:maintenance",
+                    MouseButton = EnumMouseButton.Right
+                }
+            };
         }
     }
 }

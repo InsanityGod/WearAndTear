@@ -19,13 +19,15 @@ namespace WearAndTear.Interfaces
 
         public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props) => props.RepairType == Props.RepairType;
 
-        public float EfficiencyModifier => 1 - ((1f - Durability) * Props.DurabilityEfficiencyRatio);
+        public float? EfficiencyModifier => Props.DurabilityEfficiencyRatio == 0 ? null : 1 - ((1f - Durability) * Props.DurabilityEfficiencyRatio);
 
         float Durability { get; set; }
 
         void UpdateDecay(double daysPassed);
 
         public BlockPos Pos { get; }
+
+        bool IsActive { get; }
 
         /// <summary>
         /// Repairs item and returns remaining repair strength

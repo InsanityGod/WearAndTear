@@ -12,7 +12,7 @@ namespace WearAndTear.HarmonyPatches
         {
             var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
             if (wearAndTearBehaviour == null || wearAndTearBehaviour.SailLength == 0) return;
-            wearAndTearBehaviour.UpdateShape(__instance, "torn");
+            wearAndTearBehaviour.UpdateShape(__instance);
         }
     }
 }

@@ -21,12 +21,17 @@
         /// <summary>
         /// How often the durability update method runs
         /// </summary>
-        public int DurabilityUpdateFrequencyInMs { get; set; } = 30000;
+        public int DurabilityUpdateFrequencyInMs { get; set; } = 15000;
 
         /// <summary>
         /// How often the check if entity is inside room is done
         /// </summary>
         public int RoomCheckFrequencyInMs { get; set; } = 30000;
+
+        /// <summary>
+        /// Whether objects can only be repaired while they are not active
+        /// </summary>
+        public bool MaintenanceRequiresInactivePart { get; set; } = true;
 
         /// <summary>
         /// When calculating decay for stuff that was unloaded for a long time this decides the ammount of dates the rainfall/temperature is collected from to get an average

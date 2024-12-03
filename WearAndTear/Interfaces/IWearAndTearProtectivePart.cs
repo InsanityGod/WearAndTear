@@ -12,7 +12,7 @@ namespace WearAndTear.Interfaces
     {
         //By default protective parts don't affect efficiency
         //TODO maybe have lubrication as a protective part and allow for it to increase efficiency / reduce resistance
-        float IWearAndTearPart.EfficiencyModifier => 1;
+        float? IWearAndTearPart.EfficiencyModifier => null;
 
         WearAndTearProtectivePartProps ProtectiveProps { get; }
     }

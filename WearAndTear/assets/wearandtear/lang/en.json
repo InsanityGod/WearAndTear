@@ -1,13 +1,35 @@
 {
   "durability": "durability",
+  "maintenance": "maintenance",
   "failed-maintenance-not-required": "This type of maintenance is not currently required",
-  "failed-maintenance-moving": "Can't do this type of maintenance while object is moving",
+  "failed-maintenance-active": "Can't do this type of maintenance while object is active",
 
   //Handbook entries
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",
   "wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>
-The following devices break down over time and require occasional maintence / replacement:
+Although mechanical devices make life easier by automating various tasks, they are no source of infinite power and require maintenance to continue functioning as intended.
+This page will go over the various kinds of decay these devices are susceptible to, how to protect them against this and how to repair them.
+
+<font weight='bold' align='center'>Rule Of Thumb</font>
+  - Objects last longer inside
+  - Not repairing objects will result in loss of efficiency or complete breaking of the Object
+  - You can't do maintenance on a mechanical block if it is active (receiving mechanical power)
+
+<font weight='bold' align='center'>Wind Decay</font>
+Sails and the like will slowly wear an tear as they are exposed to wind. Sails can be rolled up by crouch interacting with an empty hand, this will prevent the sail from taking damage while you don't need it to be active.
+Sails and other cloth like objects can be repaired with sewing kits
+
+<font weight='bold' align='center'>Humidity Decay</font>
+Blocks made of wood such as gears are susceptible to damage from humidity (or rather the things caused/accelerated by humidity such as damage due to expansion/retraction and fungi), the two main ways of reducing this damage ar as following:
+  - Waxing the wood using beeswax (keep in mind that the wax coating also decays and will have to be renewed)
+  - Keeping the object inside (using pass through axles from MillWright is highly recommended to keep infrastructure inside whenever possible)
+
+<font weight='bold' align='center'>Usage Decay</font>
+Items such as helve hammers will take damage as they are used, you can prevent excessive damage to the helve hammer by making sure it isn't smashing against the anvil while you aren't using it. (Can be changed in config so it only takes damage when actually doing work on the anvil)
+These kind of items usually can't be repaired and have to be replaced when broken.
+
+The following devices break down over time and require occasional maintence / replacement
 	- Windmill
 	- Helve hammer
 	- Helve axe (if 'Helve Axe addon for In dappled Groves' is installed)

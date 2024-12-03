@@ -35,9 +35,10 @@ namespace WearAndTear.Behaviours
                 
                 foreach(var part in Parts)
                 {
-                    if(part is IWearAndTearProtectivePart)
+                    //TODO maybe make some extra code for item holding parts like HelveItemPart
+                    if(part is IWearAndTearOptionalPart optionalPart)
                     {
-                        if(part.Durability == 0) tree.RemoveAttribute(part.Props.Name);
+                        if(!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Name);
                         continue;
                     }
 
@@ -110,35 +111,42 @@ namespace WearAndTear.Behaviours
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
         {
-            var powerDevice = Blockentity.GetBehavior<IMechanicalPowerDevice>();
-            if (powerDevice?.Network != null && powerDevice.Network.Speed > 0.001)
-            {
-                if (Api is ICoreClientAPI clientApi) clientApi?.TriggerIngameError(this, "wearandtear:failed-maintenance-moving", Lang.Get("wearandtear:failed-maintenance-moving"));
-                return false;
-            }
-
             var maintenanceStrength = props.Strength;
             var anyPartRequiredMaintenance = false;
+            var anyPartActive = false;
             foreach (var part in Parts)
             {
                 if (!part.CanDoMaintenanceWith(props) || part.Durability > WearAndTearModSystem.Config.MinMaintenanceDurability) continue;
-
                 anyPartRequiredMaintenance = true;
+
+                if (WearAndTearModSystem.Config.MaintenanceRequiresInactivePart && part.IsActive)
+                {
+                    anyPartActive = true;
+                    continue;
+                }
 
                 maintenanceStrength = part.DoMaintenanceFor(maintenanceStrength);
                 if (maintenanceStrength <= 0) break;
             }
 
-            if (!anyPartRequiredMaintenance && Api is ICoreClientAPI clientApi2)
-            {
-                clientApi2.TriggerIngameError(this, "wearandtear:failed-maintenance-not-required", Lang.Get("wearandtear:failed-maintenance-not-required"));
-            }
-
+            //If any maintenance was done
             if (maintenanceStrength < props.Strength)
             {
                 slot.TakeOut(1);
                 slot.MarkDirty();
+                Blockentity.MarkDirty();
                 return true;
+            }
+            else if(Api is ICoreClientAPI clientApi2)
+            {
+                if (!anyPartRequiredMaintenance)
+                {
+                    clientApi2.TriggerIngameError(this, "wearandtear:failed-maintenance-not-required", Lang.Get("wearandtear:failed-maintenance-not-required"));
+                }
+                else if (anyPartActive)
+                {
+                    clientApi2.TriggerIngameError(this, "wearandtear:failed-maintenance-active", Lang.Get("wearandtear:failed-maintenance-active"));
+                }
             }
 
             return false;

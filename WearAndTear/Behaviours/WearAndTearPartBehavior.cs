@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
@@ -96,5 +97,14 @@ namespace WearAndTear.Behaviours
 
         public WearAndTearPartProps Props { get; private set; }
         public virtual float Durability { get; set; } = 1;
+
+        public bool IsActive
+        {
+            get
+            {
+                var powerDevice = Blockentity.GetBehavior<IMechanicalPowerDevice>();
+                return powerDevice?.Network != null && powerDevice.Network.Speed > 0.001;
+            }
+        }
     }
 }
