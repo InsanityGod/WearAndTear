@@ -4,6 +4,7 @@ using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Behaviours.Parts.Abstract;
 using WearAndTear.Config.Props;
@@ -169,15 +170,23 @@ namespace WearAndTear.Behaviours.Parts
             }
         }
 
-        public float DoMaintenanceFor(float repairStrength)
+        public float DoMaintenanceFor(float MaintenanceStrength)
         {
-            var realRepairStrength = repairStrength * (4f / (SailLength * BladeCount));
-            Durability += realRepairStrength;
+            var realMaintenanceStrength = MaintenanceStrength * (4f / (SailLength * BladeCount));
+            
+            var realAllowedMaintenanceStrength = HasMaintenanceLimit ? 
+                GameMath.Clamp(MaintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
+                MaintenanceStrength;
+            
+            Durability += realAllowedMaintenanceStrength;
 
-            float realLeftOver = (Durability - 1f) * SailLength * BladeCount / 4f;
+            float realLeftOverMaintenanceStrength = (realMaintenanceStrength - realAllowedMaintenanceStrength) + Math.Max(Durability - 1, 0);
 
-            Durability = Math.Min(Durability, 1);
-            return Math.Min(realLeftOver, 0);
+            if(HasMaintenanceLimit) RepairedDurability += realAllowedMaintenanceStrength - Math.Max(Durability - 1, 0);
+            
+            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+
+            return Math.Max(realLeftOverMaintenanceStrength * SailLength * BladeCount / 4f, 0);
         }
 
         public virtual void UpdateShape(BEBehaviorMPBase beh)

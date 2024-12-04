@@ -29,18 +29,28 @@ namespace WearAndTear.Interfaces
 
         bool IsActive { get; }
 
+        bool HasMaintenanceLimit => !WearAndTearModSystem.Config.AllowForInfiniteMaintenance && Props.MaintenanceLimit != null;
+
         /// <summary>
         /// Repairs item and returns remaining repair strength
         /// </summary>
-        /// <param name="repairStrength">How much can be repaired</param>
+        /// <param name="maintenanceStrength">How much can be repaired</param>
         /// <returns>How much can still be repaired with this item (on other parts that is)</returns>
-        float DoMaintenanceFor(float repairStrength)
+        float DoMaintenanceFor(float maintenanceStrength)
         {
-            Durability += repairStrength;
-            var leftOver = Durability - 1;
+            var allowedMaintenanceStrength = HasMaintenanceLimit ? 
+                GameMath.Clamp(maintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
+                maintenanceStrength;
 
-            Durability = Math.Min(Durability, 1);
-            return Math.Min(leftOver, 0);
+            Durability += allowedMaintenanceStrength;
+            var leftOverMaintenanceStrength = (maintenanceStrength - allowedMaintenanceStrength) + Math.Max(Durability - 1, 0);
+
+            if(HasMaintenanceLimit) RepairedDurability += allowedMaintenanceStrength - Math.Max(Durability - 1, 0);
+
+            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+            return Math.Max(leftOverMaintenanceStrength, 0);
         }
+
+        public float RepairedDurability { get; set; }
     }
 }

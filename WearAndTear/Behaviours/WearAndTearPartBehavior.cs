@@ -44,6 +44,7 @@ namespace WearAndTear.Behaviours
             if(tree != null)
             {
                 Durability = tree.GetFloat(Props.Name, Durability);
+                RepairedDurability = tree.GetFloat(Props.Name + "_Repaired", RepairedDurability);
             }
         }
 
@@ -52,13 +53,19 @@ namespace WearAndTear.Behaviours
             base.FromTreeAttributes(tree, worldAccessForResolve);
             Props ??= properties.AsObject<WearAndTearPartProps>() ?? new(); //This is to deal with this method being called before Initialize
             if (Props == null) return;
-            Durability = tree.GetOrAddTreeAttribute("WearAndTear-Durability").GetFloat(Props.Name, Durability);
+
+            tree = tree.GetOrAddTreeAttribute("WearAndTear-Durability");
+            Durability = tree.GetFloat(Props.Name, Durability);
+            if(HasMaintenanceLimit) RepairedDurability = tree.GetFloat(Props.Name + "_Repaired", RepairedDurability);
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            tree.GetOrAddTreeAttribute("WearAndTear-Durability").SetFloat(Props.Name, Durability);
+
+            tree = tree.GetOrAddTreeAttribute("WearAndTear-Durability");
+            tree.SetFloat(Props.Name, Durability);
+            if(HasMaintenanceLimit) tree.SetFloat(Props.Name + "_Repaired", RepairedDurability);
         }
 
         public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
@@ -88,7 +95,13 @@ namespace WearAndTear.Behaviours
         }
 
         public WearAndTearPartProps Props { get; private set; }
+        
         public virtual float Durability { get; set; } = 1;
+
+        public float RepairedDurability { get; set; } = 0;
+
+        //HACK mod system is disposed before ToTreeAttributes is called resulting in Config being null...
+        public bool HasMaintenanceLimit => !(WearAndTearModSystem.Config?.AllowForInfiniteMaintenance ?? false) && Props.MaintenanceLimit != null;
 
         public bool IsActive
         {

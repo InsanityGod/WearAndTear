@@ -8,6 +8,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Config.Props;
@@ -35,6 +36,11 @@ namespace WearAndTear.Behaviours
                 
                 foreach(var part in Parts)
                 {
+                    if (part.Props.IsCritical && part.Durability == 0)
+                    {
+                        //TODO maybe some code to allow individual parts cause item drops like wood scrap or something
+                        return itemStacks.Remove(normalItem);
+                    }
                     //TODO maybe make some extra code for item holding parts like HelveItemPart
                     if(part is IWearAndTearOptionalPart optionalPart)
                     {
@@ -44,6 +50,13 @@ namespace WearAndTear.Behaviours
 
                     if(part.Durability > WearAndTearModSystem.Config.DurabilityLeeway) tree.RemoveAttribute(part.Props.Name);
                 }
+
+                //Remove all unnecary variables
+                foreach(var item in tree.Where(item => item.Key.EndsWith("_Repaired") && (float)item.Value.GetValue() == 0).ToList())
+                {
+                    tree.RemoveAttribute(item.Key);
+                }
+
                 if(tree.Count > 0) 
                 {
                     normalItem.Attributes
@@ -119,6 +132,7 @@ namespace WearAndTear.Behaviours
         {
             var maintenanceStrength = props.Strength;
             var anyPartRequiredMaintenance = false;
+            var anyPartMaintenanceLimitReached = false;
             var anyPartActive = false;
             foreach (var part in Parts)
             {
@@ -131,7 +145,15 @@ namespace WearAndTear.Behaviours
                     continue;
                 }
 
-                maintenanceStrength = part.DoMaintenanceFor(maintenanceStrength);
+                var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength);
+
+
+                if(!WearAndTearModSystem.Config.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
+                {
+                    anyPartMaintenanceLimitReached = true;
+                }
+
+                maintenanceStrength = remainingMaintenanceStrength;
                 if (maintenanceStrength <= 0) break;
             }
 
@@ -152,6 +174,10 @@ namespace WearAndTear.Behaviours
                 else if (anyPartActive)
                 {
                     clientApi2.TriggerIngameError(this, "wearandtear:failed-maintenance-active", Lang.Get("wearandtear:failed-maintenance-active"));
+                }
+                else if (anyPartMaintenanceLimitReached)
+                {
+                    clientApi2.TriggerIngameError(this, "wearandtear:failed-maintenance-limit-reached", Lang.Get("wearandtear:failed-maintenance-limit-reached"));
                 }
             }
 

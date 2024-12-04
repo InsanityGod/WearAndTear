@@ -32,6 +32,11 @@ namespace WearAndTear.Config.Props
         public bool IsCritical { get; set; } = false;
 
         /// <summary>
+        /// The maximum ammount of durability that can be repaired before the item has to be fully replaced
+        /// </summary>
+        public float? MaintenanceLimit { get; set; }
+
+        /// <summary>
         /// The decay affecting this part (this are used to select the DecayEngines)
         /// </summary>
         public WearAndTearDecayProps[] Decay { get; set; } = new WearAndTearDecayProps[]

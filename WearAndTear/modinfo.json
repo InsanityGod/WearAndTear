@@ -3,9 +3,9 @@
     "modid": "wearandtear",
     "name": "WearAndTear",
     "authors": [
-        "Unknown"
+        "TheInsanityGod"
     ],
-    "description": "To be added",
+    "description": "Wear And Tear for various mechanical devices",
     "version": "0.8.0",
     "dependencies": {
         "game": ""

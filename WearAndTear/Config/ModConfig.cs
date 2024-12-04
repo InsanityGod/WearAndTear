@@ -39,6 +39,12 @@
         public double PollIntervalInDays { get; set; } = 0.1;
 
         /// <summary>
+        /// Whether you can infinitely repair stuff
+        /// (When set true you won't ever have to replace stuff but can just continue to repair it)
+        /// </summary>
+        public bool AllowForInfiniteMaintenance { get; set; } = false;
+
+        /// <summary>
         /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
         /// </summary>
         public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set; } = true;

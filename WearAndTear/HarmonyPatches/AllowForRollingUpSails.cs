@@ -22,7 +22,7 @@ namespace WearAndTear.HarmonyPatches
                 var sail = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
                 if(sail != null && sail.Durability >= 0.05)
                 {
-                    if (sail.IsActive) //TODO PREVENT IF NO DURABILITY
+                    if (sail.IsActive)
                     {
                         if(__instance.Api is ICoreClientAPI clientApi) clientApi.TriggerIngameError(__instance, "wearandtear:failed-maintenance-active", Lang.Get("wearandtear:failed-maintenance-active"));
                         return true;

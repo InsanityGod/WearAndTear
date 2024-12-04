@@ -1,0 +1,20 @@
+[
+  {
+    "file": "game:recipes/grid/plank.json",
+    "op": "Add",
+    "path": "/0/ingredients/L/returnedstack",
+    "value": {
+      "type": "item",
+      "code": "wearandtear:sawdust"
+    }
+  },
+  {
+    "file": "game:recipes/grid/plank.json",
+    "op": "Add",
+    "path": "/1/ingredients/L/returnedstack",
+    "value": {
+      "type": "item",
+      "code": "wearandtear:sawdust"
+    }
+  }
+]
