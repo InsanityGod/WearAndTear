@@ -9,6 +9,7 @@ using WearAndTear.Behaviours.Parts;
 using WearAndTear.Behaviours.Parts.Protective;
 using WearAndTear.Config;
 using WearAndTear.DecayEngines;
+using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
 using WearAndTear.Interfaces;
 
@@ -92,7 +93,23 @@ namespace WearAndTear
         public static void LoadFeatureFlags(ICoreAPI api)
         {
             foreach(var prop in typeof(FeatureConfig).GetProperties())
-                api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", (bool)prop.GetValue(Config.Features));
+            {
+                var obj = prop.GetValue(Config.Features);
+                if(obj is bool turned_on) api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", turned_on);
+            }
+        }
+
+        public override void AssetsFinalize(ICoreAPI api)
+        {
+            if(api.Side != EnumAppSide.Server) return;
+
+            foreach (var block in api.World.Blocks)
+            {
+                if(block?.Code == null) continue;
+                BlockPatches.PatchGenericWood(block);
+                if(Config.Features.WindmillRotor) BlockPatches.PatchWindmill(block);
+                BlockPatches.PatchHelve(block);
+            }
         }
 
         public override void Dispose()

@@ -1,7 +1,9 @@
 {
   "durability": "durability",
   "item-sawdust": "Sawdust",
+  "itemdesc-sawdust": "Byproduct created when sawing wood",
   "item-woodfiller": "Wood Filler",
+  "itemdesc-woodfiller": "Usefull for repairing damage to wood",
   "maintenance": "Do maintenance",
   "repaired": "repaired",
   "failed-maintenance-not-required": "This type of maintenance is not currently required",
