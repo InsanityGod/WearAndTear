@@ -62,6 +62,10 @@ namespace WearAndTear.DynamicPatches
                 new()
                 {
                     Type = "humidity"
+                },
+                new()
+                {
+                    Type = "time"
                 }
             }
         };
@@ -205,7 +209,6 @@ namespace WearAndTear.DynamicPatches
                 );
 
                 //TODO other parts
-                //TODO look at toolsworks
             }
         }
     }

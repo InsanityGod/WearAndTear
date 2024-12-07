@@ -15,6 +15,8 @@ namespace WearAndTear.DecayEngines
         {
             double degradationRate = 1 / (part.Props.AvgLifeSpanInYears * api.World.Calendar.DaysPerYear);
 
+            if(part.WearAndTear.IsSheltered) degradationRate *= .5;
+
             return (float)(degradationRate * daysPassed);
         }
     }
