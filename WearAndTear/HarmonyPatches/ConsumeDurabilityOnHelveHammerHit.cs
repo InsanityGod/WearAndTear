@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Behaviours.Parts;
+using WearAndTear.Behaviours.Parts.Item;
+using WearAndTear.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {
@@ -29,32 +30,6 @@ namespace WearAndTear.HarmonyPatches
             if (!found) throw new InvalidOperationException("Transpiler failed to find OnHelveHammerHit call to inject code after");
         }
 
-        public static void ConsumeDurability(BEHelveHammer instance)
-        {
-            var wearAndTearBehaviour = instance.GetBehavior<WearAndTearHelveItemBehavior>();
-            if (wearAndTearBehaviour == null || !wearAndTearBehaviour.ItemCanBeDamaged) return;
-
-            var anvil = Traverse.Create(instance).Field("targetAnvil").GetValue<BlockEntityAnvil>();
-            if (anvil.GetType().Name == "FakeBlockEntityAnvil")
-            {
-                var container = Traverse.Create(anvil)
-                    .Field("IDGChoppingBlockContainer")
-                    .GetValue<BlockEntityDisplay>();
-
-                if (container == null || container.Inventory.Empty) return;
-            }
-            else if (!WearAndTearModSystem.Config.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null) return;
-
-            var durability = instance.HammerStack.Attributes.GetInt("durability", instance.HammerStack.Collectible.GetMaxDurability(instance.HammerStack));
-
-            if (durability <= 1)
-            {
-                instance.Api.World.PlaySoundAt(new("sounds/effect/toolbreak"), instance.Pos.X, instance.Pos.Y, instance.Pos.Z, null, true, 32f, 1f);
-                instance.HammerStack = null;
-            }
-            else instance.HammerStack.Attributes.SetInt("durability", durability - 1);
-
-            instance.MarkDirty();
-        }
+        public static void ConsumeDurability(BEHelveHammer instance) => instance.GetBehavior<WearAndTearHelveItemBehavior>()?.DamageItem();
     }
 }

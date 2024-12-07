@@ -10,7 +10,7 @@ namespace WearAndTear.DecayEngines
         public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed)
         {
             //No wind decay inside
-            if(part.WearAndTear.IsInsideRoom) return 0;
+            if(part.WearAndTear.IsSheltered) return 0;
 
             var avgWindSpeed = .5;
 

@@ -2,15 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {
-    [HarmonyPatch(typeof(Block), nameof(Block.GetDrops))]
+    [HarmonyPatch]
     public static class ConnectBlockDropModifier
     {
         public static void Postfix(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, ref ItemStack[] __result)
@@ -20,6 +22,13 @@ namespace WearAndTear.HarmonyPatches
             {
                 __result = wearAndTear.ModifyDroppedItemStacks(__result, world, pos, byPlayer);
             }
+        }
+
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+
+            yield return typeof(Block).GetMethod("GetDrops");
+            yield return typeof(BlockPulverizer).GetMethod("GetDrops");
         }
     }
 }

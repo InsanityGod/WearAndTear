@@ -13,7 +13,6 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance, ref double __result)
         {
-            //TODO more generic
             var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
             if (wearAndTearBehaviour == null) return;
             __result *= wearAndTearBehaviour.AvgEfficiencyModifier;

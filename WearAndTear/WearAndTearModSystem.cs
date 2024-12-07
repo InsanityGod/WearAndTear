@@ -7,6 +7,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Behaviours;
 using WearAndTear.Behaviours.Parts;
+using WearAndTear.Behaviours.Parts.Item;
 using WearAndTear.Behaviours.Parts.Protective;
 using WearAndTear.Config;
 using WearAndTear.DecayEngines;
@@ -76,6 +77,7 @@ namespace WearAndTear
             api.RegisterBlockEntityBehaviorClass("WearAndTearProtectivePart", typeof(WearAndTearProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
 
             api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
         }
@@ -115,6 +117,7 @@ namespace WearAndTear
                 BlockPatches.PatchGenericWood(block);
                 if(Config.Features.WindmillRotor) BlockPatches.PatchWindmill(block);
                 BlockPatches.PatchHelve(block);
+                BlockPatches.PatchPulverizer(block);
             }
         }
 

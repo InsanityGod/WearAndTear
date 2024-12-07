@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WearAndTear.Behaviours.Parts.Item;
 
 namespace WearAndTear.Config
 {
@@ -17,6 +18,11 @@ namespace WearAndTear.Config
         /// Whether helve axes will decay
         /// </summary>
         public bool HelveAxe { get; set; } = true;
+
+        /// <summary>
+        /// Wether pounders have durability
+        /// </summary>
+        public bool Pounder { get; set; } = true;
 
         /// <summary>
         /// Whether windmills will decay

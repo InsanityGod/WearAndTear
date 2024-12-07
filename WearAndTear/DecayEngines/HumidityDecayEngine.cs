@@ -20,7 +20,7 @@ namespace WearAndTear.DecayEngines
             // Calculate degradation factor (adjusted to daily wear rate)
             double degradationRate = degradationFactor / (part.Props.AvgLifeSpanInYears * api.World.Calendar.DaysPerYear);
             //0.0036467929129247313
-            if(part.WearAndTear.IsInsideRoom) degradationRate *= .5;
+            if(part.WearAndTear.IsSheltered) degradationRate *= .5;
 
             return (float)(degradationRate * daysPassed);
         }

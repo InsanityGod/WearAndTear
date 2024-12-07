@@ -12,7 +12,7 @@ namespace WearAndTear.Interfaces
 
         List<IWearAndTearPart> Parts { get; }
 
-        public bool IsInsideRoom => false;
+        public bool IsSheltered => false;
 
         public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer);
 

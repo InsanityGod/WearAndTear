@@ -48,6 +48,13 @@
         /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
         /// </summary>
         public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set; } = true;
+        
+        /// <summary>
+        /// Leeway for considering something as Sheltered.
+        /// Setting this higher means that you can build larger tunnels and still having it be considered sheltered.
+        /// Setting this to -1 will make everything be considered outside
+        /// </summary>
+        public int RoomExitCountLeeway { get; set; } = 18;
 
         public FeatureConfig Features { get; set; } = new();
     }

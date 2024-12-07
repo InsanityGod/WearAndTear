@@ -15,5 +15,22 @@
       "when": "WearAndTear_Feature_HelveHammer",
       "isValue": "true"
     }
+  },
+  {
+    "file": "game:itemtypes/part/poundercap.json",
+    "op": "addmerge",
+    "path": "/durabilitybytype",
+    "value": {
+      "*-tinbronze": 750,
+      "*-bismuthbronze": 900,
+      "*-blackbronze": 1100,
+      "*-iron": 1800,
+      "*-meteoriciron": 2100,
+      "*-steel": 4500
+    },
+    "condition": {
+      "when": "WearAndTear_Feature_Pounder",
+      "isValue": "true"
+    }
   }
 ]

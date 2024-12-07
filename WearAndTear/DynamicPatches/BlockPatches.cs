@@ -47,7 +47,8 @@ namespace WearAndTear.DynamicPatches
             "woodentoggle",
             "angledgears",
             "clutch",
-            "largegear3"
+            "largegear3",
+            "pulverizerframe"
         };
 
         public static WearAndTearPartProps DefaultWoodFramePartProps => new()
@@ -132,6 +133,11 @@ namespace WearAndTear.DynamicPatches
             Name = "HelveItem"
         };
 
+        public static WearAndTearPartProps DefaultPulverizerItemPartProps => new()
+        {
+            Name = "PulverizerItem"
+        };
+
         public static void PatchWindmill(Block block)
         {
             if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced" && block.AllowedToBePatched())
@@ -171,6 +177,30 @@ namespace WearAndTear.DynamicPatches
                     {
                         Name = "WearAndTearHelveItem",
                         properties = new JsonObject(JToken.FromObject(DefaultHelveItemPartProps))
+                    }
+                );
+            }
+        }
+
+        public static void PatchPulverizer(Block block)
+        {
+            if(block is BlockPulverizer)
+            {
+                if (!block.HasWearAndTearBehavior())
+                {
+                    block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
+                        new BlockEntityBehaviorType
+                        {
+                            Name = "WearAndTear"
+                        }
+                    );
+                }
+
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
+                    new BlockEntityBehaviorType
+                    {
+                        Name = "WearAndTearPulverizerItem",
+                        properties = new JsonObject(JToken.FromObject(DefaultPulverizerItemPartProps))
                     }
                 );
             }

@@ -74,8 +74,8 @@ namespace WearAndTear.Behaviours
             Parts = Blockentity.Behaviors.OfType<IWearAndTearPart>().ToList();
 
             RoomRegistry = Api.ModLoader.GetModSystem<RoomRegistry>(true);
-            Blockentity.RegisterGameTickListener(UpdateIsInsideRoom, WearAndTearModSystem.Config.RoomCheckFrequencyInMs);
-            UpdateIsInsideRoom(0);
+            Blockentity.RegisterGameTickListener(UpdateIsSheltered, WearAndTearModSystem.Config.RoomCheckFrequencyInMs);
+            UpdateIsSheltered(0);
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
             if (api.Side != EnumAppSide.Server) return;
@@ -102,15 +102,15 @@ namespace WearAndTear.Behaviours
         {
             base.GetBlockInfo(forPlayer, dsc);
             dsc.AppendLine();
-            dsc.AppendLine($"<strong>WearAndTear {(IsInsideRoom ? "(Inside)" : "(Outside)")}</strong>");
+            dsc.AppendLine($"<strong>WearAndTear {(IsSheltered ? "(Sheltered)" : "(Unsheltered)")}</strong>");
             foreach (var part in Parts) part.GetWearAndTearInfo(forPlayer, dsc);
 
             dsc.AppendLine();
         }
 
-        public bool IsInsideRoom { get; private set; }
+        public bool IsSheltered { get; private set; }
 
-        public void UpdateIsInsideRoom(float secondsPassed) => IsInsideRoom = RoomRegistry.GetRoomForPosition(Pos).ExitCount == 0;
+        public void UpdateIsSheltered(float secondsPassed) => IsSheltered = RoomRegistry.GetRoomForPosition(Pos).ExitCount <= WearAndTearModSystem.Config.RoomExitCountLeeway;
 
         public void UpdateDecay(double daysPassed, bool updateLastUpdatedAt = true)
         {
