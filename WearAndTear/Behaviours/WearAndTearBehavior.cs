@@ -38,10 +38,9 @@ namespace WearAndTear.Behaviours
                 {
                     if (part.Props.IsCritical && part.Durability == 0)
                     {
-                        //TODO maybe some code to allow individual parts cause item drops like wood scrap or something
                         return itemStacks.Remove(normalItem);
                     }
-                    //TODO maybe make some extra code for item holding parts like HelveItemPart
+                    
                     if(part is IWearAndTearOptionalPart optionalPart)
                     {
                         if(!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Name);

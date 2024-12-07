@@ -42,6 +42,8 @@ namespace WearAndTear.Config
 
         public string[] GenericBlacklist { get; set; }
 
-        //TODO maybe include too friction being able to cause friction?
+        public bool Experiment_001_Auto_Part_Assignment { get; set; } = false;
+
+        //TODO maybe include too friction being able to cause fire?
     }
 }

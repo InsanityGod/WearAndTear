@@ -132,10 +132,15 @@ namespace WearAndTear
             foreach (var block in api.World.Blocks)
             {
                 if(block?.Code == null) continue;
-                BlockPatches.PatchGenericWood(block);
+                BlockPatches.PatchDefaultWood(block);
                 if(Config.Features.WindmillRotor) BlockPatches.PatchWindmill(block);
                 BlockPatches.PatchHelve(block);
                 BlockPatches.PatchPulverizer(block);
+
+                if (Config.Features.Experiment_001_Auto_Part_Assignment)
+                {
+                    BlockPatches.Experimental_PatchWood(block);
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
+using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Config.Props;
 
@@ -53,7 +54,7 @@ namespace WearAndTear.DynamicPatches
 
         public static WearAndTearPartProps DefaultWoodFramePartProps => new()
         {
-            Name = "Frame (wood)",
+            Name = "Frame (Wood)",
             IsCritical = true,
             RepairType = "wood",
             MaintenanceLimit = .5f,
@@ -94,7 +95,20 @@ namespace WearAndTear.DynamicPatches
             }
         };
 
-        public static void PatchGenericWood(Block block)
+        public static void AddWearAndTearIfMissing(this Block block)
+        {
+            if (!block.HasWearAndTearBehavior())
+            {
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
+                    new BlockEntityBehaviorType
+                    {
+                        Name = "WearAndTear"
+                    }
+                );
+            }
+        }
+
+        public static void PatchDefaultWood(Block block)
         {
             if(!block.GenericWoodAllowedToBePatched()) return;
 
@@ -117,6 +131,40 @@ namespace WearAndTear.DynamicPatches
                     properties = new JsonObject(waxPartProps)
                 }
             );
+        }
+
+        public static bool ContainsPartOfMaterial(this Block block, string material, string type = "WearAndTearPart") => Array.Exists(
+            block.BlockEntityBehaviors,
+            beh => (type == null || beh.Name == type) && beh.properties?.AsObject<WearAndTearPartProps>()?.RepairType == material
+        );
+
+        public static void Experimental_PatchWood(Block block)
+        {
+            if (block is BlockMPBase && block.BlockMaterial == EnumBlockMaterial.Wood && !block.ContainsPartOfMaterial("wood", null))
+            {
+                block.AddWearAndTearIfMissing();
+                var woodPartProps = DefaultWoodFramePartProps;
+                woodPartProps.AvgLifeSpanInYears *= 1.5f;
+
+                var waxProps = DefaultWaxPartProps;
+                waxProps.AvgLifeSpanInYears *= 1.5f;
+
+                var waxPartProps = (JContainer)JToken.FromObject(waxProps);
+                waxPartProps.Merge(JToken.FromObject(DefaultWaxProtectivePartProps));
+
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
+                    new BlockEntityBehaviorType
+                    {
+                        Name = "WearAndTearPart",
+                        properties = new JsonObject(JToken.FromObject(woodPartProps))
+                    },
+                    new BlockEntityBehaviorType
+                    {
+                        Name = "WearAndTearProtectivePart",
+                        properties = new JsonObject(waxPartProps)
+                    }
+                );
+            }
         }
 
         public static WearAndTearPartProps DefaultSailPartProps => new()
@@ -190,15 +238,7 @@ namespace WearAndTear.DynamicPatches
         {
             if(block is BlockPulverizer)
             {
-                if (!block.HasWearAndTearBehavior())
-                {
-                    block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
-                        new BlockEntityBehaviorType
-                        {
-                            Name = "WearAndTear"
-                        }
-                    );
-                }
+                block.AddWearAndTearIfMissing();
 
                 block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
                     new BlockEntityBehaviorType

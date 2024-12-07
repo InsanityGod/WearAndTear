@@ -91,7 +91,7 @@ namespace WearAndTear.Behaviours.Parts
 
         public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props) => IsPresent && props.RepairType == Props.RepairType;
 
-        public override bool IsPresent => CachedSailLength != 0;
+        public override bool IsPresent => SailLength != 0;
 
         public int? CachedSailLength { get; set; }
 
