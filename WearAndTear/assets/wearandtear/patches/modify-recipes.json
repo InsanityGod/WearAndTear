@@ -6,7 +6,13 @@
     "value": {
       "type": "item",
       "code": "wearandtear:sawdust"
-    }
+    },
+    "dependsOn": [
+      {
+        "modid": "indappledgroves",
+        "invert": "true"
+      }
+    ]
   },
   {
     "file": "game:recipes/grid/plank.json",
@@ -15,6 +21,12 @@
     "value": {
       "type": "item",
       "code": "wearandtear:sawdust"
-    }
+    },
+    "dependsOn": [
+      {
+        "modid": "indappledgroves",
+        "invert": "true"
+      }
+    ]
   }
 ]

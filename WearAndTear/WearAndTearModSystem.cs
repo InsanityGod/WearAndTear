@@ -13,6 +13,7 @@ using WearAndTear.Config;
 using WearAndTear.DecayEngines;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
+using WearAndTear.HarmonyPatches.indappledgroves;
 using WearAndTear.Interfaces;
 using WearAndTear.Rendering;
 
@@ -42,6 +43,25 @@ namespace WearAndTear
                 harmony = new Harmony(Mod.Info.ModID);
                 harmony.PatchAll();
 
+                var indappledgroves = api.ModLoader.GetMod("indappledgroves");
+                if(indappledgroves != null)
+                {
+                    try
+                    {
+                        var sys = indappledgroves.Systems.First();
+                        var sawbuck = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "IDGBESawBuck");
+                        var tool = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BehaviorIDGTool");
+
+                        harmony.Patch(sawbuck.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustSawBuck))));
+                        harmony.Patch(tool.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustGroundRecipe))));
+                    }
+                    catch (Exception ex)
+                    {
+                        api.Logger.Error(ex);
+                        api.Logger.Warning("Failed to do compatibility patches between WearAndTear and InDappledGroves");
+                    }
+                }
+
                 var millwright = api.ModLoader.GetMod("millwright");
                 if (millwright != null)
                 {
@@ -49,14 +69,12 @@ namespace WearAndTear
                     {
                         var sys = millwright.Systems.First();
                         var beh = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BEBehaviorWindmillRotorEnhanced");
-                        if (beh != null)
-                        {
-                            harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
-                            harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
-                            harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
 
-                            harmony.Patch(AccessTools.Method(beh, "updateShape", new Type[] { typeof(IWorldAccessor) }), postfix: new HarmonyMethod(typeof(FixWindmillShape).GetMethod(nameof(FixWindmillShape.Postfix))));
-                        }
+                        harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
+                        harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
+                        harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
+
+                        harmony.Patch(AccessTools.Method(beh, "updateShape", new Type[] { typeof(IWorldAccessor) }), postfix: new HarmonyMethod(typeof(FixWindmillShape).GetMethod(nameof(FixWindmillShape.Postfix))));
                     }
                     catch (Exception ex)
                     {

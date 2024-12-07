@@ -203,6 +203,9 @@ namespace WearAndTear.DynamicPatches
                         properties = new JsonObject(JToken.FromObject(DefaultPulverizerItemPartProps))
                     }
                 );
+
+                //TODO other parts
+                //TODO look at toolsworks
             }
         }
     }
