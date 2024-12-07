@@ -173,10 +173,10 @@ namespace WearAndTear.Behaviours.Parts
         public float DoMaintenanceFor(float MaintenanceStrength)
         {
             var realMaintenanceStrength = MaintenanceStrength * (4f / (SailLength * BladeCount));
-            
+
             var realAllowedMaintenanceStrength = HasMaintenanceLimit ? 
-                GameMath.Clamp(MaintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
-                MaintenanceStrength;
+                GameMath.Clamp(realMaintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
+                realMaintenanceStrength;
             
             Durability += realAllowedMaintenanceStrength;
 
@@ -191,44 +191,43 @@ namespace WearAndTear.Behaviours.Parts
 
         public virtual void UpdateShape(BEBehaviorMPBase beh)
         {
-            //TODO revamp this to be more generic
             if (Api == null) return;
             AssetLocation newLocation = null;
 
             if (AreSailsRolledUp)
             {
-                    newLocation = beh.Shape.Base.Clone();
+                newLocation = beh.Shape.Base.Clone();
                 newLocation.Path = $"{newLocation.Path}-rolledup";
             }
             else 
             {
                 int? durabilityVariant = null;
 
-                if (Durability < 0.05) durabilityVariant = 0;
-                else if (Durability < 0.50) durabilityVariant = 50;
-                else if (Durability < 0.75) durabilityVariant = 75;
+                if(Block.Code.Domain == "game")
+                {
+                    if (Durability < 0.05) durabilityVariant = 0;
+                    else if (Durability < 0.50) durabilityVariant = 50;
+                    else if (Durability < 0.75) durabilityVariant = 75;
+                }
+                else if(Durability < .75)
+                {
+                    durabilityVariant = (int)(Durability * 100);
+                }
 
                 if(durabilityVariant != null)
                 {
                     newLocation = beh.Shape.Base.Clone();
-                    newLocation.Path = $"{newLocation.Path}-torn-{durabilityVariant}";
+                    newLocation.Path = $"{newLocation.Path}-{durabilityVariant}";
                 }
             }
+
             if(newLocation == null) return;
 
-            var oldShape = beh.Shape;
-            try
+            beh.Shape = new CompositeShape
             {
-                beh.Shape = new CompositeShape
-                {
-                    Base = newLocation,
-                    rotateY = Block.Shape.rotateY
-                };
-            }
-            catch //Just in case the shape doesn't exist
-            {
-                beh.Shape = oldShape;
-            }
+                Base = newLocation,
+                rotateY = Block.Shape.rotateY,
+            };
         }
 
     }

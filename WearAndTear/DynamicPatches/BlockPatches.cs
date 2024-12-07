@@ -52,7 +52,7 @@ namespace WearAndTear.DynamicPatches
 
         public static WearAndTearPartProps DefaultWoodFramePartProps => new()
         {
-            Name = "Frame",
+            Name = "Frame (wood)",
             IsCritical = true,
             RepairType = "wood",
             MaintenanceLimit = .5f,
@@ -147,6 +147,14 @@ namespace WearAndTear.DynamicPatches
                         properties = new JsonObject(JToken.FromObject(DefaultSailPartProps))
                     }
                 );
+
+                ((JContainer)block.Attributes.Token).Merge(JToken.FromObject(new
+                {
+                    mechanicalPower = new
+                    {
+                        renderer = "wearandtear:windmillrotor"
+                    }
+                }));
             }
         }
 

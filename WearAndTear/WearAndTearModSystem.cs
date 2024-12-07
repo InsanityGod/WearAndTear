@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
+using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Behaviours;
 using WearAndTear.Behaviours.Parts;
 using WearAndTear.Behaviours.Parts.Protective;
@@ -12,6 +13,7 @@ using WearAndTear.DecayEngines;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
 using WearAndTear.Interfaces;
+using WearAndTear.Rendering;
 
 namespace WearAndTear
 {
@@ -51,6 +53,8 @@ namespace WearAndTear
                             harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
                             harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
                             harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
+
+                            harmony.Patch(AccessTools.Method(beh, "updateShape", new Type[] { typeof(IWorldAccessor) }), postfix: new HarmonyMethod(typeof(FixWindmillShape).GetMethod(nameof(FixWindmillShape.Postfix))));
                         }
                     }
                     catch (Exception ex)
@@ -60,6 +64,8 @@ namespace WearAndTear
                     }
                 }
             }
+
+            MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
         }
 
@@ -114,6 +120,7 @@ namespace WearAndTear
 
         public override void Dispose()
         {
+            MechNetworkRenderer.RendererByCode.Remove("wearandtear:windmillrotor");
             harmony?.UnpatchAll(Mod.Info.ModID);
             Config = null;
         }
