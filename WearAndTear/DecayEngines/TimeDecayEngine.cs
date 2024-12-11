@@ -17,7 +17,7 @@ namespace WearAndTear.DecayEngines
 
             if(part.WearAndTear.IsSheltered) degradationRate *= .5;
 
-            return (float)(degradationRate * daysPassed);
+            return (float)(degradationRate * daysPassed) * WearAndTearModSystem.Config.DecayModifier.Time;
         }
     }
 }

@@ -24,6 +24,7 @@ This page will go over the various kinds of decay these devices are susceptible 
   - You can't do maintenance on a mechanical block if it is active.
     (receiving mechanical power usually means it's active)
   - Maintenance has it's limits, at some point you will have to replace it.
+  - Better metal = longer life span
 
 <font weight='bold' align='center'>Wind Decay</font>
 Sails and the like will slowly wear an tear as they are exposed to wind. Sails can be rolled up by crouch interacting with an empty hand, this will prevent the sail from taking damage while you don't need it to be active.
@@ -41,5 +42,11 @@ Most Wooden objects can be repaired with resin or woodfiller.
 <font weight='bold' align='center'>Usage Decay</font>
 Items such as helve hammers will take damage as they are used, you can prevent excessive damage to the helve hammer by making sure it isn't smashing against the anvil while you aren't using it.
 These kind of items usually can't be repaired and have to be replaced when broken.
+
+<font weight='bold' align='center'>Metal parts</font>
+Metal parts can be repaired using matching nails and strips and a hammer in the offhand
+
+<font weight='bold' align='center'>Troubleshooting</font>
+if you can't repair something and you're not getting an error message try doing it while crouching and in the case of multiblocks try out the different blocks. On the Fruit Press for instance you need to crouch and aim at the bottom block. In the case of Metal Parts make sure your repair material matches the metal type (so Black bronze nails and strips for a Black bronze reinforcement)
 "
 }

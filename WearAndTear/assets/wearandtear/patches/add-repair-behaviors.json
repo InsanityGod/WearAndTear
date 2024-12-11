@@ -39,5 +39,21 @@
         }
       }
     ]
+  },
+  {
+    "file": "game:itemtypes/resource/metalnailsandstrips.json",
+    "op": "addmerge",
+    "path": "/behaviors",
+    "value": [
+      {
+        "name": "WearAndTearRepairItem",
+        "properties": {
+          "RepairType": "metal-{metal}",
+          "RequiredTool": "hammer-*",
+          "MissingToolLangCode": "game:Requires a hammer in the off hand",
+          "Strength": 0.2
+        }
+      }
+    ]
   }
 ]

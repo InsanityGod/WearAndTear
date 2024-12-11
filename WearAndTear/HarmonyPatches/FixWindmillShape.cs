@@ -9,7 +9,7 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance)
         {
-            if(!WearAndTearModSystem.Config.Features.WindmillRotoDecayedAppearance) return;
+            if(!WearAndTearModSystem.Config.SpecialParts.WindmillRotoDecayedAppearance) return;
             var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
             if (wearAndTearBehaviour == null || wearAndTearBehaviour.SailLength == 0) return;
             wearAndTearBehaviour.UpdateShape(__instance);

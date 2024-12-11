@@ -43,11 +43,6 @@
         /// (When set true you won't ever have to replace stuff but can just continue to repair it)
         /// </summary>
         public bool AllowForInfiniteMaintenance { get; set; } = false;
-
-        /// <summary>
-        /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
-        /// </summary>
-        public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set; } = true;
         
         /// <summary>
         /// Leeway for considering something as Sheltered.
@@ -56,6 +51,10 @@
         /// </summary>
         public int RoomExitCountLeeway { get; set; } = 18;
 
-        public FeatureConfig Features { get; set; } = new();
+        public DecayModifierConfig DecayModifier { get; set; } = new();
+
+        public SpecialPartConfig SpecialParts { get; set; } = new();
+
+        public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
     }
 }

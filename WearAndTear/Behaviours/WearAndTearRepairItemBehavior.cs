@@ -18,8 +18,7 @@ namespace WearAndTear.Behaviours
         {
             base.Initialize(properties);
             Props = properties.AsObject<WearAndTearRepairItemProps>() ?? new();
-            //TODO maybe a consumeDurability mode
-            //TODO require tool in offhand mode
+            //TODO maybe a consumeDurability mode?
         }
 
         public override bool OnHeldInteractStep(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandling handling)

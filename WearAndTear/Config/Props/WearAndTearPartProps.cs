@@ -23,7 +23,7 @@ namespace WearAndTear.Config.Props
         /// How the missing durability translates itself into loss in efficiency
         /// (0 meaning no loss even when fully broken, 1 means it will stop working altogether when fully broken)
         /// </summary>
-        public float DurabilityEfficiencyRatio { get; set; } = 1;
+        public float DurabilityEfficiencyRatio { get; set; } = 0;
 
         /// <summary>
         /// Whether this part is critical to the object.

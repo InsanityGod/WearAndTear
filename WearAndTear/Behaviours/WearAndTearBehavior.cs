@@ -129,6 +129,19 @@ namespace WearAndTear.Behaviours
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
         {
+            if(props.RequiredTool != null && !WildcardUtil.Match(props.RequiredTool, byEntity.LeftHandItemSlot?.Itemstack?.Collectible?.Code.Path ?? string.Empty))
+            {
+                if(Api is ICoreClientAPI clientApi)
+                {
+                    clientApi.TriggerIngameError(
+                        this,
+                        "wearandtear:failed-maintenance-missing-tool",
+                        Lang.Get(string.IsNullOrEmpty(props.MissingToolLangCode) ? props.RequiredTool : props.MissingToolLangCode)
+                    );
+                }
+
+                return false;
+            }
             var maintenanceStrength = props.Strength;
             var anyPartRequiredMaintenance = false;
             var anyPartMaintenanceLimitReached = false;
@@ -162,6 +175,12 @@ namespace WearAndTear.Behaviours
                 slot.TakeOut(1);
                 slot.MarkDirty();
                 Blockentity.MarkDirty();
+
+                if (props.RequiredTool != null && props.ToolDurabilityCost > 0)
+                {
+                    byEntity.LeftHandItemSlot.Itemstack.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
+                }
+
                 return true;
             }
             else if(Api is ICoreClientAPI clientApi2)

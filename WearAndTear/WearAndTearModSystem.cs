@@ -34,7 +34,11 @@ namespace WearAndTear
             { "time", new TimeDecayEngine()},
         };
 
-        public override void StartPre(ICoreAPI api) => LoadConfig(api);
+        public override void StartPre(ICoreAPI api)
+        {
+            AutoPartRegistry.Api = api;
+            LoadConfig(api);
+        }
 
         public override void Start(ICoreAPI api)
         {
@@ -93,6 +97,7 @@ namespace WearAndTear
             api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPart", typeof(WearAndTearPartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearProtectivePart", typeof(WearAndTearProtectivePartBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearOptionalProtectivePart", typeof(WearAndTearOptionalProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
@@ -118,10 +123,10 @@ namespace WearAndTear
 
         public static void LoadFeatureFlags(ICoreAPI api)
         {
-            foreach(var prop in typeof(FeatureConfig).GetProperties())
+            foreach(var prop in typeof(SpecialPartConfig).GetProperties())
             {
-                var obj = prop.GetValue(Config.Features);
-                if(obj is bool turned_on) api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", turned_on);
+                var obj = prop.GetValue(Config.SpecialParts);
+                api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", obj is bool turned_on ? turned_on : obj != null);
             }
         }
 
@@ -132,14 +137,14 @@ namespace WearAndTear
             foreach (var block in api.World.Blocks)
             {
                 if(block?.Code == null) continue;
-                BlockPatches.PatchDefaultWood(block);
-                if(Config.Features.WindmillRotor) BlockPatches.PatchWindmill(block);
+                BlockPatches.PatchWindmill(block);
                 BlockPatches.PatchHelve(block);
                 BlockPatches.PatchPulverizer(block);
+                BlockPatches.PatchClutch(block);
 
-                if (Config.Features.Experiment_001_Auto_Part_Assignment)
+                if (Config.AutoPartRegistry.Enabled)
                 {
-                    BlockPatches.Experimental_PatchWood(block);
+                    AutoPartRegistry.Register(block);
                 }
             }
         }
@@ -148,6 +153,7 @@ namespace WearAndTear
         {
             MechNetworkRenderer.RendererByCode.Remove("wearandtear:windmillrotor");
             harmony?.UnpatchAll(Mod.Info.ModID);
+            AutoPartRegistry.Api = null;
             Config = null;
         }
     }

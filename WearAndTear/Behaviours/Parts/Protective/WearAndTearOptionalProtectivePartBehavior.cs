@@ -11,10 +11,12 @@ using WearAndTear.Interfaces;
 
 namespace WearAndTear.Behaviours.Parts.Protective
 {
-    public class WearAndTearProtectivePartBehavior : WearAndTearPartBehavior , IWearAndTearProtectivePart
+    public class WearAndTearOptionalProtectivePartBehavior : WearAndTearOptionalPartBehavior , IWearAndTearProtectivePart
     {
-        public WearAndTearProtectivePartBehavior(BlockEntity blockentity) : base(blockentity)
+        public WearAndTearOptionalProtectivePartBehavior(BlockEntity blockentity) : base(blockentity)
         {
+            //Optional Protective parts don't start with any durability
+            Durability = 0;
         }
 
         public WearAndTearProtectivePartProps ProtectiveProps { get; private set; }

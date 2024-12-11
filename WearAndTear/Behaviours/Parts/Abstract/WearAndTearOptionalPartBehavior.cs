@@ -9,7 +9,7 @@ using WearAndTear.Interfaces;
 
 namespace WearAndTear.Behaviours.Parts.Abstract
 {
-    public abstract class WearAndTearOptionalPartBehavior : WearAndTearPartBehavior
+    public abstract class WearAndTearOptionalPartBehavior : WearAndTearPartBehavior, IWearAndTearOptionalPart
     {
         protected WearAndTearOptionalPartBehavior(BlockEntity blockentity) : base(blockentity)
         {

@@ -81,8 +81,9 @@ namespace WearAndTear.Behaviours
 
                 foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
                 {
-                    if(protectivePart.Durability <= 0) continue;
-                    var protection = Array.Find(protectivePart.ProtectiveProps.EffectiveFor, target => target.IsEffectiveFor(Props));
+                    if(protectivePart is IWearAndTearOptionalPart optionalPart && !optionalPart.IsPresent) continue;
+
+                    var protection = Array.Find(protectivePart!.ProtectiveProps.EffectiveFor, target => target.IsEffectiveFor(Props));
                     if (protection != null)
                     {
                         loss *= protection.DecayMultiplier;

@@ -38,7 +38,7 @@ namespace WearAndTear.Behaviours.Parts.Item
 
                 if (container == null || container.Inventory.Empty) return;
             }
-            else if (!WearAndTearModSystem.Config.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null) return;
+            else if (!WearAndTearModSystem.Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null) return;
 
             base.DamageItem(amount);
         }

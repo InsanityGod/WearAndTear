@@ -28,7 +28,7 @@ namespace WearAndTear.DecayEngines
             // Calculate degradation factor (adjusted to daily wear rate)
             double degradationRate = degradationFactor / (part.Props.AvgLifeSpanInYears * api.World.Calendar.DaysPerYear);
 
-            return (float)(degradationRate * daysPassed);
+            return (float)(degradationRate * daysPassed) * WearAndTearModSystem.Config.DecayModifier.Wind;
         }
     }
 }
