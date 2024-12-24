@@ -16,6 +16,7 @@ using WearAndTear.HarmonyPatches;
 using WearAndTear.HarmonyPatches.indappledgroves;
 using WearAndTear.Interfaces;
 using WearAndTear.Rendering;
+using static ImmersiveOreCrush.ImmersiveOreCrush;
 
 namespace WearAndTear
 {
@@ -86,6 +87,23 @@ namespace WearAndTear
                         api.Logger.Warning("Failed to do compatibility patches between WearAndTear and Millwright");
                     }
                 }
+
+                var immersiveOreCrush = api.ModLoader.GetMod("immersiveorecrush");
+                if(immersiveOreCrush != null)
+                {
+                    try
+                    {
+                        if (!Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil)
+                        {
+                            harmony.Patch(AccessTools.Method(typeof(AnvilWithOreSmashing), nameof(AnvilWithOreSmashing.OnHelveHammerHit)), transpiler: new HarmonyMethod(AccessTools.Method(typeof(HarmonyPatches.ImmersiveOreCrush.ConsumeDurabilityOnHelveHammerHit), nameof(HarmonyPatches.ImmersiveOreCrush.ConsumeDurabilityOnHelveHammerHit.Transpiler))));
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        api.Logger.Error(ex);
+                        api.Logger.Warning("Failed to do compatibility patches between WearAndTear and ImmersiveOreCrush");
+                    }
+                }
             }
 
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
@@ -136,6 +154,7 @@ namespace WearAndTear
 
             foreach (var block in api.World.Blocks)
             {
+                //Dynammically add BlockEntityBehaviors server side
                 if(block?.Code == null) continue;
                 BlockPatches.PatchWindmill(block);
                 BlockPatches.PatchHelve(block);

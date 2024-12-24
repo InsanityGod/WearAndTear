@@ -42,5 +42,7 @@ namespace WearAndTear.Behaviours.Parts.Item
 
             base.DamageItem(amount);
         }
+
+        public void ManualDamageIem(int amount = 1) => base.DamageItem(amount);
     }
 }
