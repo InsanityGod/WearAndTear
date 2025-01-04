@@ -155,6 +155,8 @@ namespace WearAndTear.DynamicPatches
         {
             if(block.Textures == null) return null;
 
+            if(block is BlockPulverizer && block.Code.Domain == "vanvar") return null; //Thank you other mod creator for putting a bunch of unused metal textures in your block type definition...
+
             var metalKeys = block.Textures.Keys.Where(key => WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.ContainsKey(key.ToLower())).ToList();
             if(metalKeys.Count != 0)
             {

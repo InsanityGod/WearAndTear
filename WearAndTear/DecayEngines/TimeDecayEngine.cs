@@ -9,6 +9,7 @@ using WearAndTear.Interfaces;
 
 namespace WearAndTear.DecayEngines
 {
+    //TODO look into wood decay texture
     public class TimeDecayEngine : IDecayEngine
     {
         public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed)

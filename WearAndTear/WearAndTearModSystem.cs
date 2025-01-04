@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Behaviours;
 using WearAndTear.Behaviours.Parts;
@@ -16,7 +15,6 @@ using WearAndTear.HarmonyPatches;
 using WearAndTear.HarmonyPatches.indappledgroves;
 using WearAndTear.Interfaces;
 using WearAndTear.Rendering;
-using static ImmersiveOreCrush.ImmersiveOreCrush;
 
 namespace WearAndTear
 {
@@ -46,8 +44,9 @@ namespace WearAndTear
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
             {
                 harmony = new Harmony(Mod.Info.ModID);
-                harmony.PatchAll();
+                harmony.PatchAllUncategorized();
 
+                //TODO: revamp to use patch category
                 var indappledgroves = api.ModLoader.GetMod("indappledgroves");
                 if(indappledgroves != null)
                 {
@@ -67,6 +66,7 @@ namespace WearAndTear
                     }
                 }
 
+                //TODO: revamp to use patch category
                 var millwright = api.ModLoader.GetMod("millwright");
                 if (millwright != null)
                 {
@@ -88,21 +88,9 @@ namespace WearAndTear
                     }
                 }
 
-                var immersiveOreCrush = api.ModLoader.GetMod("immersiveorecrush");
-                if(immersiveOreCrush != null)
+                if (api.ModLoader.IsModEnabled("immersiveorecrush"))
                 {
-                    try
-                    {
-                        if (!Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil)
-                        {
-                            harmony.Patch(AccessTools.Method(typeof(AnvilWithOreSmashing), nameof(AnvilWithOreSmashing.OnHelveHammerHit)), transpiler: new HarmonyMethod(AccessTools.Method(typeof(HarmonyPatches.ImmersiveOreCrush.ConsumeDurabilityOnHelveHammerHit), nameof(HarmonyPatches.ImmersiveOreCrush.ConsumeDurabilityOnHelveHammerHit.Transpiler))));
-                        }
-                    }
-                    catch(Exception ex)
-                    {
-                        api.Logger.Error(ex);
-                        api.Logger.Warning("Failed to do compatibility patches between WearAndTear and ImmersiveOreCrush");
-                    }
+                    harmony.PatchCategory("immersiveorecrush");
                 }
             }
 

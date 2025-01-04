@@ -2,24 +2,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Behaviours.Parts.Item;
-using static ImmersiveOreCrush.ImmersiveOreCrush;
 
-namespace WearAndTear.HarmonyPatches.ImmersiveOreCrush
+namespace WearAndTear.HarmonyPatches.ImmersiveOreCrushCompatibility
 {
+    [HarmonyPatchCategory("immersiveorecrush")]
+    [HarmonyPatch]
     public static class ConsumeDurabilityOnHelveHammerHit
     {
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+            yield return AccessTools.Method(typeof(ImmersiveOreCrush.ImmersiveOreCrush.AnvilWithOreSmashing), nameof(ImmersiveOreCrush.ImmersiveOreCrush.AnvilWithOreSmashing.OnHelveHammerHit));
+        }
+
+        [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             var codes = instructions.ToList();
             bool found = false;
-            var methodToFind = AccessTools.Method(typeof(ImmersiveOreCrushStaticMethods), nameof(ImmersiveOreCrushStaticMethods.HandleNuggetDropStatic));
+            var methodToFind = AccessTools.Method(typeof(ImmersiveOreCrush.ImmersiveOreCrush.ImmersiveOreCrushStaticMethods), nameof(ImmersiveOreCrush.ImmersiveOreCrush.ImmersiveOreCrushStaticMethods.HandleNuggetDropStatic));
             var methodToCall = AccessTools.Method(typeof(ConsumeDurabilityOnHelveHammerHit), nameof(TryConsumeDurability));
 
             for ( var i = 0; i < codes.Count; i++)

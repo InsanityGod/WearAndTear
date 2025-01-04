@@ -21,7 +21,7 @@ namespace WearAndTear.Rendering
             else if(WearAndTearModSystem.Config.SpecialParts.WindmillRotorDecayAutoGenShapes)
             {
                 //Creating seeded random so it will be consistent
-                var random = new Random(55); //55
+                var random = new Random(55); //55 //TODO use block position
                 RecursiveRemoveCloth(shape.Elements, random, durability / 100d);
             }
         }
