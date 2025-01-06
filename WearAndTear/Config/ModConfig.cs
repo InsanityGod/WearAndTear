@@ -9,7 +9,8 @@
         public float MinDurability { get; set; } = 0;
 
         /// <summary>
-        /// Until which point you don't actually lose any items if you where to break the block without first repairing.
+        /// Until which point the item/block is still considered to be fully repaired when broken
+        /// (this affects whether the block is dropped with durability attributes or if the item is broken into ingredients)
         /// </summary>
         public float DurabilityLeeway { get; set; } = .95f;
 
