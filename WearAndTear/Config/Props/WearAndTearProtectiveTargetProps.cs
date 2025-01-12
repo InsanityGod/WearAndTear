@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,10 +11,21 @@ namespace WearAndTear.Config.Props
 {
     public class WearAndTearProtectiveTargetProps
     {
+        /// <summary>
+        /// Parts with this name will gain this protection
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Parts of this repair type will gain this protection
+        /// </summary>
         public string RepairType { get; set; }
 
+        /// <summary>
+        /// Multiplier on how much damage is done
+        /// </summary>
+        [DefaultValue(0.5f)]
+        [Range(0, float.PositiveInfinity)]
         public float DecayMultiplier { get; set; } = .5f;
 
         public bool IsEffectiveFor(WearAndTearPartProps props) => props.Name == Name || props.RepairType == RepairType;

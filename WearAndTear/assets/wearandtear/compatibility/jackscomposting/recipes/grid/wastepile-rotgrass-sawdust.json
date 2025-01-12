@@ -1,0 +1,25 @@
+[
+  {
+    "ingredientPattern": "R,T",
+    "recipeGroup": 1,
+    "ingredients": {
+      "R": {
+        "type": "item",
+        "code": "game:rot"
+      },
+      "T": {
+        "type": "item",
+        "code": "wearandtear:sawdust"
+      }
+    },
+    "width": 2,
+    "height": 1,
+    "shapeless": true,
+    "name": "waste pile sawdust mix",
+    "output": {
+      "type": "item",
+      "code": "jackscomposting:wastepile",
+      "quantity": 2
+    }
+  }
+]

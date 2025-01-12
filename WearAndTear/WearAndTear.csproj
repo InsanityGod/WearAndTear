@@ -4,6 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <OutputPath>bin\$(Configuration)\Mods\mod</OutputPath>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -63,6 +64,10 @@
     <Content Include="modicon.png">
     	<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+</ItemGroup>
+
+<ItemGroup>
+  <Folder Include="assets\wearandtear\patches\jackscomposting\" />
 </ItemGroup>
 
 <ProjectExtensions><VisualStudio><UserProperties assets_4wearandtear_4lang_4en_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,19 +11,26 @@ namespace WearAndTear.Config
     public class DecayModifierConfig
     {
         /// <summary>
-        /// Decay caused by wind
+        /// Multiplier on decay (damage) caused by wind
         /// </summary>
+        [DefaultValue(1)]
+        [Range(0, float.PositiveInfinity)]
         public float Wind { get; set; } = 1;
         
         /// <summary>
-        /// Decay caused by humidity (rainfall)
+        /// Multiplier on decay (damage) caused by humidity (rainfall)
         /// </summary>
+        [DefaultValue(1)]
+        [Range(0, float.PositiveInfinity)]
         public float Humidity { get; set; } = 1;
 
+
         /// <summary>
-        /// Decay caused by the passing of time 
+        /// Multiplier on decay (damage) caused by the passing of time 
         /// (Time decay is usually a secondary decay type)
         /// </summary>
+        [DefaultValue(1)]
+        [Range(0, float.PositiveInfinity)]
         public float Time { get; set; } = 1;
     }
 }

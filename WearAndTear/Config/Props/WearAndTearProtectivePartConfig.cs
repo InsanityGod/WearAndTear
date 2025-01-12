@@ -10,10 +10,17 @@ namespace WearAndTear.Config.Props
 {
     public class WearAndTearProtectivePartConfig
     {
+        /// <summary>
+        /// The general part properties
+        /// </summary>
         public WearAndTearPartProps PartProps { get; set; } = new();
+        
+        /// <summary>
+        /// The properties specific to protective parts
+        /// </summary>
         public WearAndTearProtectivePartProps ProtectiveProps { get; set; } = new();
 
-        public JContainer AsMergedJContainer()
+        internal JContainer AsMergedJContainer()
         {
             var container = (JContainer)JToken.FromObject(PartProps);
             container.Merge(JToken.FromObject(ProtectiveProps));
