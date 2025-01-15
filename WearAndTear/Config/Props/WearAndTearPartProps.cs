@@ -20,7 +20,7 @@ namespace WearAndTear.Config.Props
         /// How long the object should last on average
         /// </summary>
         [DefaultValue(1f)]
-        [Range(0, float.PositiveInfinity)] 
+        [Range(0, float.PositiveInfinity)]
         public float AvgLifeSpanInYears { get; set; } = 1;
 
         /// <summary>

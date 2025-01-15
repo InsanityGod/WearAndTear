@@ -80,7 +80,6 @@ namespace CakeBuild
                     Configuration = context.BuildConfiguration
                 });
 
-
             context.DotNetPublish($"../{BuildContext.ProjectName}/{BuildContext.ProjectName}.csproj",
                 new DotNetPublishSettings
                 {

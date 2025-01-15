@@ -64,7 +64,7 @@ namespace WearAndTear.Config
         /// </summary>
         [DefaultValue(false)]
         public bool AllowForInfiniteMaintenance { get; set; } = false;
-        
+
         /// <summary>
         /// Leeway for considering something as Sheltered.
         /// Setting this higher means that you can build larger tunnels and still having it be considered sheltered.

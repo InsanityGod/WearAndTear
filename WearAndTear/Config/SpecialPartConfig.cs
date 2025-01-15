@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.MathTools;
-using WearAndTear.Behaviours.Parts.Item;
+﻿using System.ComponentModel;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Config
@@ -23,7 +16,7 @@ namespace WearAndTear.Config
         /// </summary>
         [DefaultValue(true)]
         public bool DamageHelveHammerEvenIfNothingOnAnvil { get; set; } = true;
-        
+
         /// <summary>
         /// Whether helve axes will decay
         /// </summary>
@@ -33,7 +26,7 @@ namespace WearAndTear.Config
         /// <summary>
         /// Wether pounders have durability
         /// </summary>
-        [DefaultValue(true)] 
+        [DefaultValue(true)]
         public bool Pounder { get; set; } = true;
 
         /// <summary>
@@ -65,14 +58,14 @@ namespace WearAndTear.Config
         /// Wether decayed windmills will have decayed models (look like they have are torn sails)
         /// </summary>
         [DefaultValue(true)]
-        public bool WindmillRotoDecayedAppearance { get; set;} = true;
+        public bool WindmillRotoDecayedAppearance { get; set; } = true;
 
         /// <summary>
         /// Wether missing shapes (for showing decay in model if `WindmillRotoDecayedAppearance` is set to true) should be auto generated
         /// (Will still attempt to remove cloth if fully broken)
         /// </summary>
         [DefaultValue(true)]
-        public bool WindmillRotorDecayAutoGenShapes { get; set;} = true;
+        public bool WindmillRotorDecayAutoGenShapes { get; set; } = true;
 
         //TODO maybe include too friction being able to cause fire?
     }

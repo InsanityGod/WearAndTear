@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using WearAndTear.Config.Props;
 
@@ -30,7 +27,7 @@ namespace WearAndTear.Config
         /// <summary>
         /// Any mod specified in here won't be affected by auto part registry
         /// </summary>
-        public string[] ModBlacklist { get; set; } = new string[] 
+        public string[] ModBlacklist { get; set; } = new string[]
         {
             "medievalexpansion" //Has it's own durability mechanics //TODO maybe add an option to overwrite medieval expansions own durability system?
         };
@@ -38,7 +35,10 @@ namespace WearAndTear.Config
         /// <summary>
         /// Any block with matching code in here won't be affected by auto part registry
         /// </summary>
-        public string[] CodeBlacklist { get; set; } = Array.Empty<string>();
+        public string[] CodeBlacklist { get; set; } = new string[]
+        {
+            "mixingbowlmini" //Because they defined this as Wood for some reason -_-
+        };
 
         /// <summary>
         /// The minimal percentage the composition of metal ingredients is required for that metal to be the primary metal
@@ -46,14 +46,14 @@ namespace WearAndTear.Config
         [Range(0, 1)]
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
-        public float MinimalMetalCompositionPercentage { get; set;} = .8f;
+        public float MinimalMetalCompositionPercentage { get; set; } = .8f;
 
         /// <summary>
         /// The default parts to use for each BlockMaterial
         /// </summary>
         public Dictionary<EnumBlockMaterial, WearAndTearPartProps> DefaultFrameProps { get; set; } = new()
         {
-            { 
+            {
                 EnumBlockMaterial.Wood,
                 new()
                 {
@@ -64,11 +64,11 @@ namespace WearAndTear.Config
                     MaintenanceLimit = .4f,
                     Decay = new WearAndTearDecayProps[]
                     {
-                        new() 
+                        new()
                         {
                             Type = "humidity"
                         },
-                        new() 
+                        new()
                         {
                             Type = "time"
                         }
@@ -76,13 +76,13 @@ namespace WearAndTear.Config
                 }
             }
         };
-        
+
         /// <summary>
         /// The default protective parts to use for each BlockMaterial
         /// </summary>
         public Dictionary<EnumBlockMaterial, WearAndTearProtectivePartConfig[]> DefaultProtectivePartProps { get; set; } = new()
         {
-            { 
+            {
                 EnumBlockMaterial.Wood,
                 new WearAndTearProtectivePartConfig[]
                 {
@@ -95,11 +95,11 @@ namespace WearAndTear.Config
                             RepairType = "wax",
                             Decay = new WearAndTearDecayProps[]
                             {
-                                new() 
+                                new()
                                 {
                                     Type = "humidity"
                                 },
-                                new() 
+                                new()
                                 {
                                     Type = "time"
                                 }
@@ -159,15 +159,15 @@ namespace WearAndTear.Config
         /// </summary>
         public Dictionary<string, MetalReinforcementConfig> MetalConfig { get; set; } = new()
         {
-            { 
+            {
                 "default",
                 new()
             },
-            { 
+            {
                 "copper",
                 new()
             },
-            { 
+            {
                 "tinbronze",
                 new()
                 {
@@ -175,7 +175,7 @@ namespace WearAndTear.Config
                     AvgLifeSpanInYears = 3f
                 }
             },
-            { 
+            {
                 "bismuthbronze",
                 new()
                 {
@@ -183,7 +183,7 @@ namespace WearAndTear.Config
                     AvgLifeSpanInYears = 3.3f
                 }
             },
-            { 
+            {
                 "blackbronze",
                 new()
                 {
@@ -191,7 +191,7 @@ namespace WearAndTear.Config
                     AvgLifeSpanInYears = 3.6f
                 }
             },
-            { 
+            {
                 "iron",
                 new()
                 {
@@ -199,7 +199,7 @@ namespace WearAndTear.Config
                     AvgLifeSpanInYears = 4f
                 }
             },
-            { 
+            {
                 "meteoriciron",
                 new()
                 {
