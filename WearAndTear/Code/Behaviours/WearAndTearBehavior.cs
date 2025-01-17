@@ -45,7 +45,7 @@ namespace WearAndTear.Code.Behaviours
                         continue;
                     }
 
-                    if (part.Durability > WearAndTearModSystem.Config.DurabilityLeeway) tree.RemoveAttribute(part.Props.Name);
+                    if (part.Durability > WearAndTearModSystem.Config.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Name);
                 }
 
                 //Remove all unnecary variables
