@@ -49,6 +49,12 @@ namespace WearAndTear.Config
         public float MinimalMetalCompositionPercentage { get; set; } = .8f;
 
         /// <summary>
+        /// Wether all recipes have to contain metal for it to apply metal reinforcement
+        /// </summary>
+        [DefaultValue(false)]
+        public bool RequireAllRecipesToContainMetal { get; set; } = false;
+
+        /// <summary>
         /// The default parts to use for each BlockMaterial
         /// </summary>
         public Dictionary<EnumBlockMaterial, WearAndTearPartProps> DefaultFrameProps { get; set; } = new()

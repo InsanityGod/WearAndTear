@@ -175,11 +175,22 @@ namespace WearAndTear.Code.AutoRegistry
             return null;
         }
 
+        public static string GetMetalVariant(GridRecipeIngredient ingredient)
+        {
+            var collectible = ingredient.ResolvedItemstack?.Collectible;
+            if(collectible == null) return null;
+
+            var result = collectible.Variant["metal"];
+            if (result != null) return result;
+
+            //TODO maybe see if the block it is crafted with has metal reinforcement
+
+            return result;
+        }
+
         public static void DetectAndAddMetalReinforcements(this Block block)
         {
             if (block.BlockMaterial == EnumBlockMaterial.Metal) return; //Otherwise all metal objects would end up being metal reinforced :p
-
-            //TODO see if the block it is crafted with has metal reinforcement
 
             var metalVariant = block.Variant["metal"];
             if (metalVariant != null)
@@ -203,7 +214,7 @@ namespace WearAndTear.Code.AutoRegistry
                 recipe => recipe.resolvedIngredients.Where(
                     item => item != null && !item.IsTool
                 ).Select(
-                    item => (item.ResolvedItemstack?.Collectible.Variant["metal"], item.ResolvedItemstack?.StackSize ?? 1)
+                    item => (GetMetalVariant(item), item.ResolvedItemstack?.StackSize ?? 1)
                 ).Where(
                     metal => metal.Item1 != null
                 ).ToList()
@@ -211,7 +222,7 @@ namespace WearAndTear.Code.AutoRegistry
             .ToList();
 
             if (metalComponents.Count == 0) return; //Doesn't contain metal
-            if (metalComponents.Count != craftedBy.Count) return; //This would mean you can craft it with metal but you are not required to? not sure what to do in this case
+            if (WearAndTearModSystem.Config.AutoPartRegistry.RequireAllRecipesToContainMetal && metalComponents.Count != craftedBy.Count) return; //This would mean you can craft it with metal but you are not required to? not sure what to do in this case
 
             var metalComposition = metalComponents
                 .SelectMany(metal => metal)
