@@ -192,7 +192,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             try
             {
-                return Pos.X ^ (Pos.Y << 10) ^ (Pos.Z << 20);
+                return Math.Abs(Pos.X ^ (Pos.Y << 10) ^ (Pos.Z << 20));
             }
             catch
             {
