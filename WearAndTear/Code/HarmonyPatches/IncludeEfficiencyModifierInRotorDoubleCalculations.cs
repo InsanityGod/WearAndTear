@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
@@ -23,9 +24,7 @@ namespace WearAndTear.HarmonyPatches
             var baseType = typeof(BEBehaviorMPRotor);
 
             // Find all derived classes, including the base class itself
-            var derivedTypes = AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(assembly => assembly.GetTypes())
-                .Where(type => type != baseType && baseType.IsAssignableFrom(type));
+            var derivedTypes = WearAndTearModSystem.ModTypesForHarmonyScan.Where(type => type != baseType && baseType.IsAssignableFrom(type));
 
             foreach (var type in derivedTypes)
             {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -40,8 +41,35 @@ namespace WearAndTear.Code
             LoadConfig(api);
         }
 
+        #region HarmonyWorkAround
+        private static ICoreAPI apiCache;
+
+        public static IEnumerable<Assembly> ModAssembliesForHarmonyScan => apiCache.ModLoader.Mods.Select(mod => mod.Systems.FirstOrDefault())
+            .Where(modSystem => modSystem != null)
+            .Select(modSystem => modSystem.GetType().Assembly);
+
+        public static IEnumerable<Type> ModTypesForHarmonyScan => ModAssembliesForHarmonyScan.SelectMany(assembly =>
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch
+            {
+                try
+                {
+                    apiCache.Logger.Warning($"Could not get types from assembly '{assembly.FullName}', WearAndTear Harmony Patches might not have applied propperly for this mod");
+                }
+                catch { }
+                return Enumerable.Empty<Type>();
+            }
+        });
+        #endregion HarmonyWorkAround
+
         public override void Start(ICoreAPI api)
         {
+            apiCache = api;
+
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
             {
                 harmony = new Harmony(Mod.Info.ModID);
@@ -97,6 +125,8 @@ namespace WearAndTear.Code
 
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
+
+            apiCache = null;
         }
 
         private static void RegisterBehaviours(ICoreAPI api)
