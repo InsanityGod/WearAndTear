@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace WearAndTear.Config
         /// </summary>
         [Category("Axle in Blocks")]
         [DefaultValue(1.5f)]
+        [Range(0.1f, float.PositiveInfinity)]
         public float EncasedPartLifeSpanMultiplier { get; set; } = 1.5f;
     }
 }
