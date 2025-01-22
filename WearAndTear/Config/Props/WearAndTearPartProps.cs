@@ -33,7 +33,7 @@ namespace WearAndTear.Config.Props
 
         /// <summary>
         /// Whether this part is critical to the object.
-        /// If this is set to true, the entire object will fall apart when
+        /// If this is set to true, the entire object will fall apart when durability reaches 0%
         /// </summary>
         public bool IsCritical { get; set; }
 

@@ -79,5 +79,7 @@ namespace WearAndTear.Config
         public SpecialPartConfig SpecialParts { get; set; } = new();
 
         public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
+
+        public CompatibilityConfig Compatibility { get; set; } = new();
     }
 }

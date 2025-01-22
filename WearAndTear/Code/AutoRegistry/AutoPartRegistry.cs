@@ -8,6 +8,7 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.AutoRegistry.Compatibility;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -132,8 +133,16 @@ namespace WearAndTear.Code.AutoRegistry
             if (IsBlacklisted(block)) return;
 
             block.EnsureBaseWearAndTear();
-            block.EnsureFrameWearAndTearPart();
-            block.DetectAndAddMetalReinforcements();
+
+            if(block.Code.Domain == "axleinblocks")
+            {
+                AxleInBlocks.Register(block);
+            }
+            else
+            {
+                block.EnsureFrameWearAndTearPart();
+                block.DetectAndAddMetalReinforcements();
+            }
             block.CleanupWearAndTearAutoRegistry();
         }
 

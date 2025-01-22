@@ -20,5 +20,7 @@ namespace WearAndTear.HarmonyPatches.indappledgroves
             var sawdust = api.World.GetItem(new AssetLocation("wearandtear:sawdust"));
             api.World.SpawnItemEntity(new ItemStack(sawdust, 1), pos.ToVec3d(), new Vec3d(0.05000000074505806, 0.10000000149011612, 0.05000000074505806));
         }
+
+        //TODO maybe have wood material matter
     }
 }

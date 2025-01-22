@@ -114,12 +114,21 @@ namespace WearAndTear.Code.Behaviours
             if (updateLastUpdatedAt) LastDecayUpdate = Api.World.Calendar.TotalDays;
 
             foreach (var part in Parts)
-                part.UpdateDecay(daysPassed);
-
-            if (Parts.Exists(part => part.Props.IsCritical && part.Durability <= 0))
             {
-                Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
-                //TODO Maybe allow for parts to drop stuff when this happens?
+                part.UpdateDecay(daysPassed);
+            }
+            
+            //Seperate loop since we want to ensure all durability is updated for block drop modifications
+            foreach (var part in Parts)
+            {
+                if(part.Durability <= 0)
+                {
+                    if (part.Props.IsCritical)
+                    {
+                        Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
+                        return;
+                    }
+                }
             }
 
             Blockentity.MarkDirty();
