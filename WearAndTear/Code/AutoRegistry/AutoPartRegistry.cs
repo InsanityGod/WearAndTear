@@ -130,7 +130,7 @@ namespace WearAndTear.Code.AutoRegistry
             var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
             
-            var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is not BlockIngotMold && typeof(ILiquidMetalSink).IsAssignableFrom(entityClass) && block.BlockMaterial == EnumBlockMaterial.Ceramic;
+            var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
             
             if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
 
