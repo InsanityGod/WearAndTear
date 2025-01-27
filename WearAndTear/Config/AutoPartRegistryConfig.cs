@@ -80,6 +80,24 @@ namespace WearAndTear.Config
                         }
                     }
                 }
+            },
+            {
+                EnumBlockMaterial.Ceramic,
+                new()
+                {
+                    Name = "Frame (Ceramic)",
+                    AvgLifeSpanInYears = 1,
+                    RepairType = "ceramic",
+                    IsCritical = true,
+                    MaintenanceLimit = .4f,
+                    Decay = new WearAndTearDecayProps[]
+                    {
+                        new()
+                        {
+                            Type = "time"
+                        }
+                    }
+                }
             }
         };
 

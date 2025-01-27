@@ -76,6 +76,8 @@ namespace WearAndTear.Code.Behaviours
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
             if (api.Side != EnumAppSide.Server) return;
+            if (!Parts.Exists(part => part.RequiresUpdateDecay)) return;
+            //TODO maybe register with an offset?
             Blockentity.RegisterGameTickListener(_ => UpdateDecay(Api.World.Calendar.TotalDays - LastDecayUpdate.Value), WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs);
         }
 
@@ -125,7 +127,10 @@ namespace WearAndTear.Code.Behaviours
                 {
                     if (part.Props.IsCritical)
                     {
-                        Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
+                        if (part.OnBreak())
+                        {
+                            Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
+                        }
                         return;
                     }
                 }

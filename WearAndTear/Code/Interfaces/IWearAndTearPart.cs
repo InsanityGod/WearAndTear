@@ -8,6 +8,7 @@ namespace WearAndTear.Code.Interfaces
 {
     public interface IWearAndTearPart
     {
+        public bool RequiresUpdateDecay => true;
         public IWearAndTear WearAndTear { get; }
 
         public WearAndTearPartProps Props { get; }
@@ -50,6 +51,12 @@ namespace WearAndTear.Code.Interfaces
             Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
             return Math.Max(leftOverMaintenanceStrength, 0);
         }
+
+        /// <summary>
+        /// Code that can run/override breaking behavior
+        /// </summary>
+        /// <returns>true if default behavior should run</returns>
+        public bool OnBreak() => true;
 
         public float RepairedDurability { get; set; }
     }

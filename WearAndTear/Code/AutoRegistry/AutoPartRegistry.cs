@@ -9,6 +9,7 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry.Compatibility;
+using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -86,7 +87,7 @@ namespace WearAndTear.Code.AutoRegistry
 
             block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
             {
-                Name = "WearAndTearPart",
+                Name = block is BlockToolMold ? "WearAndTearMold" : "WearAndTearPart", //TODO make a cleaner more extensible way of doing this
                 properties = new JsonObject(JToken.FromObject(frameProps))
             });
 
@@ -120,17 +121,31 @@ namespace WearAndTear.Code.AutoRegistry
             });
         }
 
-        public static void Register(Block block)
+        public static void Register(ICoreAPI api, Block block, HarmonyLib.Harmony harmony)
         {
-            //Millwright sail is deciding to turn again despite sail entirely broken
-            if (
-
-                    block is not BlockMPBase
-                    && (block is not BlockFruitPress || !WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress)
-
-                && !block.HasWearAndTearBehavior()) return; //Only handle non mechanical blocks if they where already marked as WearAndTear
-
             if (IsBlacklisted(block)) return;
+
+            var hasWearAndTear = block.HasWearAndTearBehavior();
+            var isMechanicalBlock = block is BlockMPBase;
+            var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
+            var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
+            
+            var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is not BlockIngotMold && typeof(ILiquidMetalSink).IsAssignableFrom(entityClass) && block.BlockMaterial == EnumBlockMaterial.Ceramic;
+            
+            if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
+
+            if (acceptMold)
+            {
+                var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
+                if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
+                {
+                    AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
+                }
+                if(block.GetType() != typeof(Block))
+                {
+                    AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
+                }
+            }
 
             block.EnsureBaseWearAndTear();
 

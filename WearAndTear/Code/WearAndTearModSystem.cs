@@ -136,6 +136,7 @@ namespace WearAndTear.Code
             api.RegisterBlockEntityBehaviorClass("WearAndTearProtectivePart", typeof(WearAndTearProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearOptionalProtectivePart", typeof(WearAndTearOptionalProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(WearAndTearMoldPartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
 
@@ -182,7 +183,7 @@ namespace WearAndTear.Code
 
                 if (Config.AutoPartRegistry.Enabled)
                 {
-                    AutoPartRegistry.Register(block);
+                    AutoPartRegistry.Register(api, block, harmony);
                 }
             }
         }

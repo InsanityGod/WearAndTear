@@ -30,6 +30,12 @@ namespace WearAndTear.Config
         public bool Pounder { get; set; } = true;
 
         /// <summary>
+        /// Wether molds have durability (NOTE: doesn't affect tool molds currently due to limitations)
+        /// </summary>
+        [DefaultValue(true)]
+        public bool Molds { get; set; } = true;
+
+        /// <summary>
         /// The default clutch part
         /// BEWARE: Setting this doesn't currently do anything other making it be included in AutoPartRegistry
         /// TODO: Planning on having a custom damage type from engaging at very high speeds

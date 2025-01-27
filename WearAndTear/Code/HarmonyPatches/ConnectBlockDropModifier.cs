@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
 
