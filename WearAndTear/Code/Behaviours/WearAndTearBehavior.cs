@@ -25,7 +25,7 @@ namespace WearAndTear.Code.Behaviours
         public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer)
         {
             string blockCode = Block.Code.Path.Split('-')[0];
-            var normalItem = Array.Find(itemStacks, item => blockCode == item?.Block.Code.Path.Split('-')[0]);
+            var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
             if (normalItem != null)
             {
                 ITreeAttribute tree = new TreeAttribute();

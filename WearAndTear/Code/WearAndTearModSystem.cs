@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
 using WearAndTear.Code.Behaviours;
@@ -11,6 +12,7 @@ using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.Behaviours.Parts.Item;
 using WearAndTear.Code.Behaviours.Parts.Protective;
 using WearAndTear.Code.DecayEngines;
+using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Config;
@@ -170,6 +172,23 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
+            foreach(var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
+            {
+                var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
+                if(entityClass == null) continue;
+
+                var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
+                if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
+                {
+                    AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
+                }
+                if(block.GetType() != typeof(Block))
+                {
+                    AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
+                }
+            }
+
+
             if (api.Side != EnumAppSide.Server) return;
 
             foreach (var block in api.World.Blocks)

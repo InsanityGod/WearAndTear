@@ -9,7 +9,6 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry.Compatibility;
-using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -84,11 +83,18 @@ namespace WearAndTear.Code.AutoRegistry
 
             var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
+            var behaviorName = "WearAndTearPart";
+            var behaviorProperties = new JsonObject(JToken.FromObject(frameProps));
+            if(block is BlockToolMold)
+            {
+                behaviorName = "WearAndTearMold";
+                behaviorProperties.Token["Name"] = "Mold";
+            }
 
             block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
             {
-                Name = block is BlockToolMold ? "WearAndTearMold" : "WearAndTearPart", //TODO make a cleaner more extensible way of doing this
-                properties = new JsonObject(JToken.FromObject(frameProps))
+                Name = behaviorName,
+                properties = behaviorProperties
             });
 
             block.EnsureProtectivePart(block.BlockMaterial);
@@ -133,19 +139,6 @@ namespace WearAndTear.Code.AutoRegistry
             if(acceptMold && block.BlockEntityBehaviors.Count(beh => beh.Name.Contains("WearAndTear")) > 1) return; //Has custom registry //TODO make better global implementation of this
 
             if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
-
-            if (acceptMold)
-            {
-                var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
-                if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
-                {
-                    AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
-                }
-                if(block.GetType() != typeof(Block))
-                {
-                    AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
-                }
-            }
 
             block.EnsureBaseWearAndTear();
 
