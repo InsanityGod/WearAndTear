@@ -173,6 +173,11 @@ namespace WearAndTear.Config
                     {
                         RepairType = "wood"
                         //Decay modifier is metal dependant
+                    },
+                    new()
+                    {
+                        RepairType = "ceramic"
+                        //Decay modifier is metal dependant
                     }
                 }
             }

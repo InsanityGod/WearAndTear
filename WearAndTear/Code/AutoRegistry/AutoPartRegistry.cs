@@ -124,14 +124,14 @@ namespace WearAndTear.Code.AutoRegistry
         public static void Register(ICoreAPI api, Block block, HarmonyLib.Harmony harmony)
         {
             if (IsBlacklisted(block)) return;
-
             var hasWearAndTear = block.HasWearAndTearBehavior();
             var isMechanicalBlock = block is BlockMPBase;
             var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
             
             var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
-            
+            if(acceptMold && block.BlockEntityBehaviors.Count(beh => beh.Name.Contains("WearAndTear")) > 1) return; //Has custom registry //TODO make better global implementation of this
+
             if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
 
             if (acceptMold)
