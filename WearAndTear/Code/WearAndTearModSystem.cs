@@ -172,22 +172,24 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            foreach(var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
+            if(harmony != null)
             {
-                var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
-                if(entityClass == null) continue;
+                foreach(var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
+                {
+                    var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
+                    if(entityClass == null) continue;
 
-                var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
-                if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
-                {
-                    AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
-                }
-                if(block.GetType() != typeof(Block))
-                {
-                    AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
+                    var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
+                    if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
+                    {
+                        AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
+                    }
+                    if(block.GetType() != typeof(Block))
+                    {
+                        AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
+                    }
                 }
             }
-
 
             if (api.Side != EnumAppSide.Server) return;
 
