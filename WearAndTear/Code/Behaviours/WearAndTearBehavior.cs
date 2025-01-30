@@ -34,7 +34,7 @@ namespace WearAndTear.Code.Behaviours
 
                 foreach (var part in Parts)
                 {
-                    if (part.Props.IsCritical && part.Durability == 0)
+                    if (part.Props.IsCritical && part.Durability <= 0)
                     {
                         return itemStacks.Remove(normalItem);
                     }

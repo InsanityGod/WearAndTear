@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -11,6 +12,7 @@ using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.Behaviours.Parts.Item;
 using WearAndTear.Code.Behaviours.Parts.Protective;
+using WearAndTear.Code.Commands;
 using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
@@ -41,6 +43,12 @@ namespace WearAndTear.Code
         {
             AutoPartRegistry.Api = api;
             LoadConfig(api);
+        }
+
+        public override void StartServerSide(ICoreServerAPI api)
+        {
+            base.StartServerSide(api);
+            SetDurabilityCommand.Register(api);
         }
 
         #region HarmonyWorkAround

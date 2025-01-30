@@ -27,6 +27,8 @@ namespace WearAndTear.Code.Behaviours.Parts
 
         public bool OnBreak()
         {
+            var canShatter = Block.Attributes != null && Block.Attributes["shatteredShape"].Exists;
+            if(!canShatter) return true;
             if(Blockentity is BlockEntityToolMold toolMold)
             {
                 if (!toolMold.Shattered)
