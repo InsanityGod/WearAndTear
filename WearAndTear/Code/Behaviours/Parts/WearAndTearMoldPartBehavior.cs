@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
-using static HarmonyLib.Code;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
@@ -34,13 +29,16 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             if(Blockentity is BlockEntityToolMold toolMold)
             {
-                Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicbreak"), Pos, -0.4, null, true, 32f, 1f);
-				Block.SpawnBlockBrokenParticles(Pos);
-				Block.SpawnBlockBrokenParticles(Pos);
-                toolMold.MetalContent = null;
-				toolMold.Shattered = true;
-                toolMold.UpdateRenderer();
-				toolMold.MarkDirty(true);
+                if (!toolMold.Shattered)
+                {
+                    Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicbreak"), Pos, -0.4, null, true, 32f, 1f);
+				    Block.SpawnBlockBrokenParticles(Pos);
+				    Block.SpawnBlockBrokenParticles(Pos);
+                    toolMold.MetalContent = null;
+				    toolMold.Shattered = true;
+                    toolMold.UpdateRenderer();
+				    toolMold.MarkDirty(true);
+                }
                 return false;
             }
             
@@ -61,7 +59,6 @@ namespace WearAndTear.Code.Behaviours.Parts
                     damage *= protection.DecayMultiplier;
                 }
             }
-
             Durability -= damage;
             Blockentity.GetBehavior<WearAndTearBehavior>().UpdateDecay(0, false);
         }

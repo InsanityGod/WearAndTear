@@ -12,6 +12,7 @@ namespace WearAndTear.DynamicPatches
 {
     public static class BlockPatches
     {
+        //TODO Molds should live outside AutoPartRegistry scope as well
         public static WearAndTearPartProps DefaultHelveItemPartProps => new()
         {
             Name = "HelveItem"
@@ -25,7 +26,7 @@ namespace WearAndTear.DynamicPatches
         public static void PatchClutch(Block block)
         {
             if (WearAndTearModSystem.Config.SpecialParts.Clutch == null || block is not BlockClutch) return;
-            block.EnsureBaseWearAndTear();
+            block.EnsureBaseWearAndTear(true);
             //TODO special part
         }
 
@@ -35,15 +36,8 @@ namespace WearAndTear.DynamicPatches
 
             if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced")
             {
-                block.EnsureBaseWearAndTear();
-
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
-                    new BlockEntityBehaviorType
-                    {
-                        Name = "WearAndTearSail",
-                        properties = new JsonObject(JToken.FromObject(WearAndTearModSystem.Config.SpecialParts.WindmillSails))
-                    }
-                );
+                block.EnsureBaseWearAndTear(true);
+                block.MergeOrAddBehavior("WearAndTearSail", (JContainer)JToken.FromObject(WearAndTearModSystem.Config.SpecialParts.WindmillSails));
 
                 ((JContainer)block.Attributes.Token).Merge(JToken.FromObject(new
                 {
@@ -59,14 +53,8 @@ namespace WearAndTear.DynamicPatches
         {
             if (block is BlockHelveHammer)
             {
-                block.EnsureBaseWearAndTear();
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
-                    new BlockEntityBehaviorType
-                    {
-                        Name = "WearAndTearHelveItem",
-                        properties = new JsonObject(JToken.FromObject(DefaultHelveItemPartProps))
-                    }
-                );
+                block.EnsureBaseWearAndTear(true);
+                block.MergeOrAddBehavior("WearAndTearHelveItem", (JContainer)JToken.FromObject(DefaultHelveItemPartProps));
             }
         }
 
@@ -74,14 +62,8 @@ namespace WearAndTear.DynamicPatches
         {
             if (block is BlockPulverizer)
             {
-                block.EnsureBaseWearAndTear();
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(
-                    new BlockEntityBehaviorType
-                    {
-                        Name = "WearAndTearPulverizerItem",
-                        properties = new JsonObject(JToken.FromObject(DefaultPulverizerItemPartProps))
-                    }
-                );
+                block.EnsureBaseWearAndTear(true);
+                block.MergeOrAddBehavior("WearAndTearPulverizerItem", (JContainer)JToken.FromObject(DefaultPulverizerItemPartProps));
 
                 //TODO other parts
             }

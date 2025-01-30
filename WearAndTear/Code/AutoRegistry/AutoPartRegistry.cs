@@ -25,6 +25,11 @@ namespace WearAndTear.Code.AutoRegistry
             beh => typeof(IWearAndTear).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
         );
 
+        public static BlockEntityBehaviorType FindWearAndTearBehavior(this Block block) => Array.Find(
+            block.BlockEntityBehaviors,
+            beh => typeof(IWearAndTear).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
+        );
+
         public static bool HasWearAndTearFramePart(this Block block) => Array.Exists(
             block.BlockEntityBehaviors,
             beh => typeof(IWearAndTearPart).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
@@ -39,6 +44,36 @@ namespace WearAndTear.Code.AutoRegistry
                     && beh.properties["Name"].AsString(string.Empty) == name
         );
 
+        public static bool MayMergeBehaviors(this Block block)
+        {
+            var wearAndTearBehavior = block.FindWearAndTearBehavior();
+            return wearAndTearBehavior?.properties != null && wearAndTearBehavior.properties["MergeWithAutoRegistry"].AsBool();
+        }
+
+        public static void MergeOrAddBehavior(this Block block, string behaviorName, JContainer properties)
+        {
+            var toMerge = block.MayMergeBehaviors() ? Array.Find(block.BlockEntityBehaviors, item =>
+            {
+                if (item.Name != behaviorName) return false;
+                if(item.properties != null && item.properties["Name"].AsString() != null && item.properties["Name"].AsString() != properties["Name"].Value<string>()) return false;
+                return true;
+            }) : null;
+
+            if (toMerge != null)
+            {
+                properties.Merge(toMerge.properties?.Token);
+                toMerge.properties = new JsonObject(properties);
+            }
+            else
+            {
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
+                {
+                    Name = behaviorName,
+                    properties = new JsonObject(properties)
+                });
+            }
+        }
+
         //TODO check medieval expasion waterwheel (and add to blacklist if needed)
         public static bool IsBlacklisted(Block block) =>
             Array.Exists(
@@ -50,24 +85,24 @@ namespace WearAndTear.Code.AutoRegistry
                 codeMatch => WildcardUtil.Match(codeMatch, block.Code.ToString())
             );
 
-        public static void EnsureBaseWearAndTear(this Block block)
+        public static BlockEntityBehaviorType EnsureBaseWearAndTear(this Block block, bool allowMerge = false)
         {
-            if (!block.HasWearAndTearBehavior())
+            var behavior = block.FindWearAndTearBehavior();
+            if (behavior == null)
             {
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType { Name = "WearAndTear" });
+                behavior = new BlockEntityBehaviorType { Name = "WearAndTear" };
+
+                if (allowMerge)
+                {
+                    behavior.properties = new JsonObject(JToken.FromObject(new { MergeWithAutoRegistry = true }));
+                }
+
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(behavior);
             }
+            return behavior;
         }
 
-        public static void EnsureProtectivePart(this Block block, WearAndTearProtectivePartConfig part)
-        {
-            if (block.HasWearAndTearPart(part.PartProps.Name)) return;
-
-            block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
-            {
-                Name = "WearAndTearOptionalProtectivePart",
-                properties = new JsonObject(part.AsMergedJContainer())
-            });
-        }
+        public static void EnsureProtectivePart(this Block block, WearAndTearProtectivePartConfig part) => block.MergeOrAddBehavior("WearAndTearOptionalProtectivePart", part.AsMergedJContainer());
 
         public static void EnsureProtectivePart(this Block block, EnumBlockMaterial protectiveType)
         {
@@ -79,23 +114,19 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureFrameWearAndTearPart(this Block block)
         {
-            if (block.HasWearAndTearFramePart()) return;
 
             var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
+
             var behaviorName = "WearAndTearPart";
-            var behaviorProperties = new JsonObject(JToken.FromObject(frameProps));
+            var behaviorProperties = JToken.FromObject(frameProps);
             if(block is BlockToolMold)
             {
                 behaviorName = "WearAndTearMold";
-                behaviorProperties.Token["Name"] = "Mold";
+                behaviorProperties["Name"] = "Mold";
             }
 
-            block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
-            {
-                Name = behaviorName,
-                properties = behaviorProperties
-            });
+            block.MergeOrAddBehavior(behaviorName, (JContainer)behaviorProperties);
 
             block.EnsureProtectivePart(block.BlockMaterial);
         }
@@ -120,11 +151,7 @@ namespace WearAndTear.Code.AutoRegistry
                 target[nameof(WearAndTearProtectiveTargetProps.DecayMultiplier)] = metalConfig.DecayMultiplier;
             }
 
-            block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
-            {
-                Name = "WearAndTearProtectivePart",
-                properties = new JsonObject(props)
-            });
+            block.MergeOrAddBehavior("WearAndTearProtectivePart", props);
         }
 
         public static void Register(ICoreAPI api, Block block, HarmonyLib.Harmony harmony)
@@ -136,11 +163,15 @@ namespace WearAndTear.Code.AutoRegistry
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
             
             var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
-            if(acceptMold && block.BlockEntityBehaviors.Count(beh => beh.Name.Contains("WearAndTear")) > 1) return; //Has custom registry //TODO make better global implementation of this
 
             if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
 
             block.EnsureBaseWearAndTear();
+            if(hasWearAndTear && !block.MayMergeBehaviors())
+            {
+                block.CleanupWearAndTearAutoRegistry();
+                return;
+            }
 
             if(block.Code.Domain == "axleinblocks")
             {
@@ -259,6 +290,16 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void CleanupWearAndTearAutoRegistry(this Block block)
         {
+            //Removing all parts that do not have name (for overrides specified in patch that did not match an actual part)
+            block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh =>
+            {
+                if (typeof(IWearAndTearPart).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name)))
+                {
+                    return beh.properties != null && !string.IsNullOrEmpty(beh.properties["Name"].AsString());
+                }
+                return true;
+            }).ToArray();
+            
             if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("WearAndTear")) == 1)
             {
                 block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("WearAndTear")).ToArray();
