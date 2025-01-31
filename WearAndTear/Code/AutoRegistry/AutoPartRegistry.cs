@@ -50,6 +50,12 @@ namespace WearAndTear.Code.AutoRegistry
             return wearAndTearBehavior?.properties != null && wearAndTearBehavior.properties["MergeWithAutoRegistry"].AsBool();
         }
 
+        public static bool OnlyMergeIfNormallyAutoReg(this Block block)
+        {
+            var wearAndTearBehavior = block.FindWearAndTearBehavior();
+            return wearAndTearBehavior?.properties != null && wearAndTearBehavior.properties["OnlyMergeIfNormallyAutoReg"].AsBool();
+        }
+
         public static void MergeOrAddBehavior(this Block block, string behaviorName, JContainer properties)
         {
             var toMerge = block.MayMergeBehaviors() ? Array.Find(block.BlockEntityBehaviors, item =>
@@ -164,7 +170,18 @@ namespace WearAndTear.Code.AutoRegistry
             
             var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
 
-            if (!hasWearAndTear && !isMechanicalBlock && !acceptFruitPress && !acceptMold) return;
+            if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)
+            {
+                if (hasWearAndTear)
+                {
+                    if (!block.MayMergeBehaviors() || block.OnlyMergeIfNormallyAutoReg())
+                    {
+                        block.CleanupWearAndTearAutoRegistry();
+                        return;
+                    }
+                }
+                else return;
+            }
 
             block.EnsureBaseWearAndTear();
             if(hasWearAndTear && !block.MayMergeBehaviors())

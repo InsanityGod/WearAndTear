@@ -32,6 +32,23 @@ namespace WearAndTear.Config
         public float MinMaintenanceDurability { get; set; } = .95f;
 
         /// <summary>
+        /// If the durability drops bellow this amount of durability you will see visual tearing
+        /// (set to 0 to disable entirely)
+        /// </summary>
+        [DefaultValue(0.6f)]
+        [Range(0,1)]
+        [DisplayFormat(DataFormatString = "P")]
+        public float VisualTearingMinDurability { get; set; } = 0.6f;
+
+        /// <summary>
+        /// Wether visual tearing should be disabled on MP blocks
+        /// (MP blocks generally move/turn and since the tearing doesn't it will end up looking weirdly)
+        /// </summary>
+        [DefaultValue(true)]
+        [DisplayName("Disable Visual Tearing on MP Blocks")]
+        public bool DisableVisualTearingOnMPBlocks { get; set; } = true;
+
+        /// <summary>
         /// How often the durability update method runs
         /// </summary>
         [DefaultValue(15000)]

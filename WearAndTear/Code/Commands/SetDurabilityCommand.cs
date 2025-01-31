@@ -24,7 +24,7 @@ namespace WearAndTear.Code.Commands
         {
             var api = args.Caller.Entity.Api;
             var blockSelect = args.Caller.Player.CurrentBlockSelection;
-            var entity = api.World.BlockAccessor.GetBlockEntity(blockSelect.Position);
+            var entity = blockSelect != null ? api.World.BlockAccessor.GetBlockEntity(blockSelect.Position) : null;
             var wearAndTear = entity?.GetBehavior<IWearAndTear>();
             if (wearAndTear == null) return TextCommandResult.Error("Not aiming at a WearAndTear affected block");
             var partIndex = (int)args.Parsers[0].GetValue();

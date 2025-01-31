@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +10,9 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
+using Vintagestory.Client.NoObf;
 using Vintagestory.GameContent;
+using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -75,6 +79,7 @@ namespace WearAndTear.Code.Behaviours
             UpdateIsSheltered(0);
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
+            if(api.Side == EnumAppSide.Client) QueueDecalUpdate();
             if (api.Side != EnumAppSide.Server) return;
             if (!Parts.Exists(part => part.RequiresUpdateDecay)) return;
             //TODO maybe create a manager for this to reduce the ammount of GameTickListeners
@@ -87,6 +92,8 @@ namespace WearAndTear.Code.Behaviours
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
             LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
+
+            QueueDecalUpdate();
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -137,6 +144,73 @@ namespace WearAndTear.Code.Behaviours
             }
 
             Blockentity.MarkDirty();
+        }
+
+        private object decal;
+        private Traverse DecalCreator;
+        private Traverse DecalCache;
+        private Traverse DecalUpdator;
+        private Traverse<int> DecalId;
+
+        public void QueueDecalUpdate(int delay = 1)
+        {
+            if(Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase)) return;
+            Blockentity.RegisterDelayedCallback(_ => UpdateDecal(), delay);
+        }
+
+        public void UpdateDecal()
+        {
+            //TODO option to hide this for MechanicalBlocks
+            if(Api is not ICoreClientAPI clientApi) return;
+            
+            if(DecalCreator == null)
+            {
+                var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
+                var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();
+                DecalCreator = Traverse.Create(decalSystem).Method("AddBlockBreakDecal", new Type[] { typeof(BlockPos), typeof(int)});
+            }
+
+            if(DecalCache == null)
+            {
+
+                var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
+                var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();
+                DecalCache = Traverse.Create(decalSystem).Field("decals");
+            }
+
+            var criticalparts = Parts.Where(part => part.Props.IsCritical).ToArray();
+            var durability = criticalparts.Length > 0 ? criticalparts.Min(part => part.Durability) : 1;
+
+            if(durability > WearAndTearModSystem.Config.VisualTearingMinDurability)
+            {
+                if(decal != null) DecalCache.GetValue<IDictionary>().Remove(DecalId.Value);
+                return;
+            }
+            var stage = 10 - (int)Math.Max(1, durability / WearAndTearModSystem.Config.VisualTearingMinDurability * 10);
+
+            decal ??= DecalCreator.GetValue(Pos, stage);
+
+            if(decal == null) return; //Just in case
+
+            var DecalStage = Traverse.Create(decal).Field<int>("AnimationStage");
+            DecalId = Traverse.Create(decal).Field<int>("DecalId");
+
+            if (!DecalCache.GetValue<IDictionary>().Contains(DecalId.Value))
+            {
+                decal = DecalCreator.GetValue(Pos, stage);
+                if(decal == null) return; //Just in case
+            }
+            
+            DecalStage.Value = stage;
+
+            if(DecalUpdator == null)
+            {
+                var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
+                var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();
+                DecalUpdator = Traverse.Create(decalSystem).Method("UpdateDecal", new Type[] { decal.GetType() });
+            }
+
+            DecalUpdator.GetValue(decal);
         }
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
