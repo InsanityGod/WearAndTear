@@ -33,6 +33,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             {
                 if (!toolMold.Shattered)
                 {
+                    Durability = 1; //Reset durability so it won't create breakage decal
                     Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicbreak"), Pos, -0.4, null, true, 32f, 1f);
 				    Block.SpawnBlockBrokenParticles(Pos);
 				    Block.SpawnBlockBrokenParticles(Pos);
