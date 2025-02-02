@@ -93,7 +93,7 @@ namespace WearAndTear.Code.Behaviours
             base.FromTreeAttributes(tree, worldAccessForResolve);
             LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
 
-            QueueDecalUpdate();
+            if(Api.Side == EnumAppSide.Client) QueueDecalUpdate();
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -161,7 +161,7 @@ namespace WearAndTear.Code.Behaviours
         public void UpdateDecal()
         {
             //TODO option to hide this for MechanicalBlocks
-            if(Api is not ICoreClientAPI clientApi) return;
+            if(Api is not ICoreClientAPI clientApi || Parts == null) return;
             
             if(DecalCreator == null)
             {
