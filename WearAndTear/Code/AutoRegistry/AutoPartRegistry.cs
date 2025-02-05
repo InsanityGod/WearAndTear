@@ -88,7 +88,7 @@ namespace WearAndTear.Code.AutoRegistry
             ) ||
             Array.Exists(
                 WearAndTearModSystem.Config.AutoPartRegistry.CodeBlacklist,
-                codeMatch => WildcardUtil.Match(codeMatch, block.Code.ToString())
+                codeMatch => WildcardUtil.Match(codeMatch, block.Code.Path)
             );
 
         public static BlockEntityBehaviorType EnsureBaseWearAndTear(this Block block, bool allowMerge = false)

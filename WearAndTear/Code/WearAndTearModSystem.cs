@@ -30,6 +30,7 @@ namespace WearAndTear.Code
 
         private Harmony harmony;
 
+        public static bool HelveAxeModLoaded { get; private set; }
         public static ModConfig Config { get; private set; }
 
         public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
@@ -78,6 +79,7 @@ namespace WearAndTear.Code
 
         public override void Start(ICoreAPI api)
         {
+            HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             apiCache = api;
 
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
@@ -85,18 +87,19 @@ namespace WearAndTear.Code
                 harmony = new Harmony(Mod.Info.ModID);
                 harmony.PatchAllUncategorized();
 
-                //TODO: revamp to use patch category
                 var indappledgroves = api.ModLoader.GetMod("indappledgroves");
                 if (indappledgroves != null)
                 {
                     try
                     {
-                        var sys = indappledgroves.Systems.First();
-                        var sawbuck = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "IDGBESawBuck");
-                        var tool = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BehaviorIDGTool");
-
-                        harmony.Patch(sawbuck.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustSawBuck))));
-                        harmony.Patch(tool.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustGroundRecipe))));
+                        harmony.PatchCategory("indappledgroves");
+                        
+                        //var sys = indappledgroves.Systems.First();
+                        //var sawbuck = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "IDGBESawBuck");
+                        //var tool = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BehaviorIDGTool");
+                        //
+                        //harmony.Patch(sawbuck.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustSawBuck))));
+                        //harmony.Patch(tool.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustGroundRecipe))));
                     }
                     catch (Exception ex)
                     {

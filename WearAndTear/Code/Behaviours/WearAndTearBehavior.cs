@@ -93,7 +93,7 @@ namespace WearAndTear.Code.Behaviours
             base.FromTreeAttributes(tree, worldAccessForResolve);
             LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
 
-            if(Api.Side == EnumAppSide.Client) QueueDecalUpdate();
+            if(Api?.Side == EnumAppSide.Client) QueueDecalUpdate();
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
