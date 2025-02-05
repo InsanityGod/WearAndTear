@@ -1,0 +1,48 @@
+{
+  "durability": "Wytrzymałość",
+  "item-sawdust": "Trociny",
+  "itemdesc-sawdust": "Produkt uboczny powstający podczas piłowania drewna",
+  "item-woodfiller": "Szpachla do Drewna",
+  "itemdesc-woodfiller": "Przydatna do naprawiania uszkodzeń drewna",
+  "maintenance": "Konserwacja",
+  "repaired": "naprawiono",
+  "failed-maintenance-not-required": "Ten rodzaj konserwacji nie jest obecnie wymagany",
+  "failed-maintenance-active": "Nie można przeprowadzić tego rodzaju konserwacji, gdy obiekt jest aktywny",
+  "failed-maintenance-limit-reached": "Osiągnięto limit dla tego rodzaju konserwacji",
+
+  //Handbook entries
+
+  "wearandtearguide-title": "Zużycie i Konserwacja",
+  "wearandtearguide-text": "<font weight='bold' align='center'>Zużycie i Konserwacja</font>
+Chociaż mechaniczne urządzenia ułatwiają życie, automatyzując różne zadania, nie są one źródłem nieskończonej mocy i wymagają konserwacji, aby nadal funkcjonować zgodnie z przeznaczeniem.
+Ta strona omówi różne rodzaje uszkodzeń, na które te urządzenia są podatne, sposoby ich ochrony przed nimi oraz metody naprawy.
+
+<font weight='bold' align='center'>Zasady Ogólne</font>
+  - Obiekty zużywają się wolniej wewnątrz budynków
+  - Nienaprawianie obiektów skutkuje spadkiem wydajności, a w pewnym momencie zniszczeniem obiektu.
+  - Nie można konserwować mechanicznego bloku, gdy jest aktywny (pobieranie mocy mechanicznej zwykle oznacza, że jest aktywny)
+  - Konserwacja ma swoje granice, w pewnym momencie będziesz musiał obiekt wymienić.
+  - Lepszy metal = dłuższa żywotność
+
+<font weight='bold' align='center'>Zużycie od Wiatru</font>
+Żagle i podobne elementy będą się powoli zużywać pod wpływem wiatru. Żagle można zwinąć, kucając i wchodząc w interakcję z pustą ręką, co zapobiegnie ich uszkodzeniu, gdy nie są potrzebne.
+Żagle i inne przedmioty wykonane z tkaniny można naprawiać za pomocą zestawów do szycia
+
+<font weight='bold' align='center'>Zużycie od Wilgoci</font>
+Bloki wykonane z drewna, takie jak przekładnie, są podatne na uszkodzenia spowodowane wilgocią. Istnieją dwa główne sposoby ograniczenia tych uszkodzeń:
+  - Woskowanie drewna za pomocą wosku pszczelego (pamiętaj, że powłoka wosku również ulega zniszczeniu i będzie musiała zostać odnowiona)
+  - Umieszczanie obiektu wewnątrz budynków (stosowanie osi przelotowych z MillWright jest wysoce zalecane, aby w miarę możliwości zachować infrastrukturę wewnątrz)
+
+Większość drewnianych przedmiotów można naprawiać za pomocą żywicy lub szpachli do drewna.
+
+<font weight='bold' align='center'>Zużycie od Użytkowania</font>
+Przedmioty takie jak młoty z trzonem będą ulegać uszkodzeniom w trakcie używania. Można zapobiec nadmiernym uszkodzeniom młota z trzonem, upewniając się, że nie uderza on o kowadło, gdy nie jest używany.
+Tego rodzaju przedmioty zwykle nie mogą być naprawiane i muszą zostać wymienione po zepsuciu.
+
+<font weight='bold' align='center'>Metalowe Części</font>
+Metalowe części można naprawiać za pomocą pasujących gwoździ i pasków oraz młotka trzymanego w drugiej ręce
+
+<font weight='bold' align='center'>Rozwiązywanie Problemów</font>
+Jeśli nie możesz czegoś naprawić i nie pojawia się komunikat o błędzie, spróbuj zrobić to, kucając, a w przypadku multibloków wypróbuj różne bloki. Na przykład w przypadku prasy do owoców musisz kucnąć i celować w dolny blok. W przypadku metalowych części upewnij się, że materiał naprawczy pasuje do rodzaju metalu (np. gwoździe i paski z brązu korynckiego do wzmocnienia z brązu korynckiego)
+"
+}
