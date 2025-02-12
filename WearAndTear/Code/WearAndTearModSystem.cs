@@ -1,10 +1,13 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -18,6 +21,7 @@ using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Config;
+using WearAndTear.Config.Props;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
 using WearAndTear.HarmonyPatches.indappledgroves;
@@ -77,6 +81,23 @@ namespace WearAndTear.Code
         });
         #endregion HarmonyWorkAround
 
+        public void TryPatchCompatibility(ICoreAPI api, string modId)
+        {
+            var mod = api.ModLoader.GetMod(modId);
+            if (mod != null)
+            {
+                try
+                {
+                    harmony.PatchCategory(modId);
+                }
+                catch (Exception ex)
+                {
+                    api.Logger.Error(ex);
+                    api.Logger.Warning($"Failed to do compatibility patches between WearAndTear and {mod.Info.Name}");
+                }
+            }
+        }
+
         public override void Start(ICoreAPI api)
         {
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
@@ -84,29 +105,12 @@ namespace WearAndTear.Code
 
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
             {
+
                 harmony = new Harmony(Mod.Info.ModID);
                 harmony.PatchAllUncategorized();
-
-                var indappledgroves = api.ModLoader.GetMod("indappledgroves");
-                if (indappledgroves != null)
-                {
-                    try
-                    {
-                        harmony.PatchCategory("indappledgroves");
-                        
-                        //var sys = indappledgroves.Systems.First();
-                        //var sawbuck = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "IDGBESawBuck");
-                        //var tool = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BehaviorIDGTool");
-                        //
-                        //harmony.Patch(sawbuck.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustSawBuck))));
-                        //harmony.Patch(tool.GetMethod("SpawnOutput"), postfix: new HarmonyMethod(typeof(CreateSawDust).GetMethod(nameof(CreateSawDust.SpawnSawDustGroundRecipe))));
-                    }
-                    catch (Exception ex)
-                    {
-                        api.Logger.Error(ex);
-                        api.Logger.Warning("Failed to do compatibility patches between WearAndTear and InDappledGroves");
-                    }
-                }
+                
+                TryPatchCompatibility(api, "indappledgroves");
+                TryPatchCompatibility(api, "linearpower");
 
                 //TODO: revamp to use patch category
                 var millwright = api.ModLoader.GetMod("millwright");
@@ -150,6 +154,7 @@ namespace WearAndTear.Code
             api.RegisterBlockEntityBehaviorClass("WearAndTearOptionalProtectivePart", typeof(WearAndTearOptionalProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(WearAndTearMoldPartBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearGenericItemDisplay", typeof(WearAndTearGenericItemDisplayBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
 

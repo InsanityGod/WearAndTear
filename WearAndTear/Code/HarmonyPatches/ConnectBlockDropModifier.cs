@@ -25,6 +25,9 @@ namespace WearAndTear.HarmonyPatches
         {
             yield return typeof(Block).GetMethod("GetDrops");
             yield return typeof(BlockPulverizer).GetMethod("GetDrops");
+
+            var sawmillDropMethod = AccessTools.TypeByName("sawmill.BlockSawmill")?.GetMethod("GetDrops");
+            if(sawmillDropMethod != null) yield return sawmillDropMethod;
         }
     }
 }

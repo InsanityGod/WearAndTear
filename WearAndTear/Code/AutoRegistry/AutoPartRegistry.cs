@@ -202,6 +202,22 @@ namespace WearAndTear.Code.AutoRegistry
                 block.EnsureFrameWearAndTearPart();
                 block.DetectAndAddMetalReinforcements();
             }
+
+            if(block.Code.Domain == "linearpower" && block.Code.FirstCodePart() == "sawmill")
+            {
+                var props = JToken.FromObject(new WearAndTearPartProps
+                {
+                    Name = "Sawblade"
+                }) as JContainer;
+                props.Merge(JToken.FromObject(new WearAndTearGenericItemDisplayProps { ItemSlotIndex = 1 }));
+
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
+                {
+                    Name = "WearAndTearGenericItemDisplay",
+                    properties = new JsonObject(props)
+                });
+            }
+
             block.CleanupWearAndTearAutoRegistry();
         }
 
