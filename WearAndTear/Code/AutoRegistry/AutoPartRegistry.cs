@@ -88,8 +88,11 @@ namespace WearAndTear.Code.AutoRegistry
             ) ||
             Array.Exists(
                 WearAndTearModSystem.Config.AutoPartRegistry.CodeBlacklist,
-                codeMatch => WildcardUtil.Match(codeMatch, block.Code.Path)
+                codeMatch => MatchString(codeMatch, block.Code)
             );
+
+        public static bool MatchString(string needle, AssetLocation haystack) => 
+            needle.Contains(':') ? WildcardUtil.Match((AssetLocation)needle, haystack) : WildcardUtil.Match(needle, haystack.Path);
 
         public static BlockEntityBehaviorType EnsureBaseWearAndTear(this Block block, bool allowMerge = false)
         {
