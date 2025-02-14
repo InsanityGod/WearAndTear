@@ -45,16 +45,16 @@ namespace WearAndTear.Code.Rendering
             if (shape == null)
             {
                 var parts = loc.Path.Split('-');
-                
+
                 int randomNoise = 0;
                 var lastPart = parts[^1];
-                
+
                 var rolledUp = (lastPart == "rolledup");
 
                 if (rolledUp) lastPart = "100";
                 else int.TryParse(parts[^2], out randomNoise);
 
-                loc.Path = string.Join("-", parts[..^(rolledUp ? 1 :2)]);
+                loc.Path = string.Join("-", parts[..^(rolledUp ? 1 : 2)]);
                 shape = Shape.TryGet(capi, loc.WithPathPrefixOnce("shapes/").WithPathAppendixOnce(".json"));
                 if (int.TryParse(lastPart, out int durability))
                 {

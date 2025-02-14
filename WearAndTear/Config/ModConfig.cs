@@ -36,7 +36,7 @@ namespace WearAndTear.Config
         /// (set to 0 to disable entirely)
         /// </summary>
         [DefaultValue(0.6f)]
-        [Range(0,1)]
+        [Range(0, 1)]
         [DisplayFormat(DataFormatString = "P")]
         public float VisualTearingMinDurability { get; set; } = 0.6f;
 

@@ -9,7 +9,7 @@ using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
-    public class WearAndTearMoldPartBehavior : WearAndTearPartBehavior , IWearAndTearPart
+    public class WearAndTearMoldPartBehavior : WearAndTearPartBehavior, IWearAndTearPart
     {
         public WearAndTearMoldPartBehavior(BlockEntity blockentity) : base(blockentity)
         {
@@ -28,23 +28,23 @@ namespace WearAndTear.Code.Behaviours.Parts
         public bool OnBreak()
         {
             var canShatter = Block.Attributes != null && Block.Attributes["shatteredShape"].Exists;
-            if(!canShatter) return true;
-            if(Blockentity is BlockEntityToolMold toolMold)
+            if (!canShatter) return true;
+            if (Blockentity is BlockEntityToolMold toolMold)
             {
                 if (!toolMold.Shattered)
                 {
                     Durability = 1; //Reset durability so it won't create breakage decal
                     Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicbreak"), Pos, -0.4, null, true, 32f, 1f);
-				    Block.SpawnBlockBrokenParticles(Pos);
-				    Block.SpawnBlockBrokenParticles(Pos);
+                    Block.SpawnBlockBrokenParticles(Pos);
+                    Block.SpawnBlockBrokenParticles(Pos);
                     toolMold.MetalContent = null;
-				    toolMold.Shattered = true;
+                    toolMold.Shattered = true;
                     toolMold.UpdateRenderer();
-				    toolMold.MarkDirty(true);
+                    toolMold.MarkDirty(true);
                 }
                 return false;
             }
-            
+
             return true;
         }
 
@@ -73,7 +73,7 @@ namespace WearAndTear.Code.Behaviours.Parts
 
         public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
-            if(Blockentity is BlockEntityToolMold toolMold && toolMold.Shattered) return;
+            if (Blockentity is BlockEntityToolMold toolMold && toolMold.Shattered) return;
             base.GetWearAndTearInfo(forPlayer, dsc);
         }
     }

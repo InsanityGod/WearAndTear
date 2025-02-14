@@ -79,7 +79,7 @@ namespace WearAndTear.Code.Behaviours
             UpdateIsSheltered(0);
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
-            if(api.Side == EnumAppSide.Client) QueueDecalUpdate();
+            if (api.Side == EnumAppSide.Client) QueueDecalUpdate();
             if (api.Side != EnumAppSide.Server) return;
             if (!Parts.Exists(part => part.RequiresUpdateDecay)) return;
             //TODO maybe create a manager for this to reduce the ammount of GameTickListeners
@@ -93,7 +93,7 @@ namespace WearAndTear.Code.Behaviours
             base.FromTreeAttributes(tree, worldAccessForResolve);
             LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
 
-            if(Api?.Side == EnumAppSide.Client) QueueDecalUpdate();
+            if (Api?.Side == EnumAppSide.Client) QueueDecalUpdate();
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -126,11 +126,11 @@ namespace WearAndTear.Code.Behaviours
             {
                 part.UpdateDecay(daysPassed);
             }
-            
+
             //Seperate loop since we want to ensure all durability is updated for block drop modifications
             foreach (var part in Parts)
             {
-                if(part.Durability <= 0)
+                if (part.Durability <= 0)
                 {
                     if (part.Props.IsCritical)
                     {
@@ -154,25 +154,24 @@ namespace WearAndTear.Code.Behaviours
 
         public void QueueDecalUpdate(int delay = 1)
         {
-            if(Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase)) return;
+            if (Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase)) return;
             Blockentity.RegisterDelayedCallback(_ => UpdateDecal(), delay);
         }
 
         public void UpdateDecal()
         {
             //TODO option to hide this for MechanicalBlocks
-            if(Api is not ICoreClientAPI clientApi || Parts == null) return;
-            
-            if(DecalCreator == null)
+            if (Api is not ICoreClientAPI clientApi || Parts == null) return;
+
+            if (DecalCreator == null)
             {
                 var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
                 var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();
-                DecalCreator = Traverse.Create(decalSystem).Method("AddBlockBreakDecal", new Type[] { typeof(BlockPos), typeof(int)});
+                DecalCreator = Traverse.Create(decalSystem).Method("AddBlockBreakDecal", new Type[] { typeof(BlockPos), typeof(int) });
             }
 
-            if(DecalCache == null)
+            if (DecalCache == null)
             {
-
                 var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
                 var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();
                 DecalCache = Traverse.Create(decalSystem).Field("decals");
@@ -181,16 +180,16 @@ namespace WearAndTear.Code.Behaviours
             var criticalparts = Parts.Where(part => part.Props.IsCritical).ToArray();
             var durability = criticalparts.Length > 0 ? criticalparts.Min(part => part.Durability) : 1;
 
-            if(durability > WearAndTearModSystem.Config.VisualTearingMinDurability)
+            if (durability > WearAndTearModSystem.Config.VisualTearingMinDurability)
             {
-                if(decal != null) DecalCache.GetValue<IDictionary>().Remove(DecalId.Value);
+                if (decal != null) DecalCache.GetValue<IDictionary>().Remove(DecalId.Value);
                 return;
             }
             var stage = 10 - (int)Math.Max(1, durability / WearAndTearModSystem.Config.VisualTearingMinDurability * 10);
 
             decal ??= DecalCreator.GetValue(Pos, stage);
 
-            if(decal == null) return; //Just in case
+            if (decal == null) return; //Just in case
 
             var DecalStage = Traverse.Create(decal).Field<int>("AnimationStage");
             DecalId = Traverse.Create(decal).Field<int>("DecalId");
@@ -198,12 +197,12 @@ namespace WearAndTear.Code.Behaviours
             if (!DecalCache.GetValue<IDictionary>().Contains(DecalId.Value))
             {
                 decal = DecalCreator.GetValue(Pos, stage);
-                if(decal == null) return; //Just in case
+                if (decal == null) return; //Just in case
             }
-            
+
             DecalStage.Value = stage;
 
-            if(DecalUpdator == null)
+            if (DecalUpdator == null)
             {
                 var clientMain = Traverse.Create(clientApi).Field<ClientMain>("gamemain").Value;
                 var decalSystem = clientMain.clientSystems.OfType<SystemRenderDecals>().First();

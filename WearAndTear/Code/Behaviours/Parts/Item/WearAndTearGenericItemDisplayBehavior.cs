@@ -1,10 +1,6 @@
-﻿using HarmonyLib;
-using MechanicalWoodSplitter.Code.FakeStuff;
-using MechanicalWoodSplitter.Code.Items;
-using Vintagestory.API.Common;
+﻿using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
-using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts.Abstract;
 using WearAndTear.Config.Props;
 
@@ -18,7 +14,7 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
 
         public WearAndTearGenericItemDisplayBehavior(BlockEntity blockentity) : base(blockentity)
         {
-            if(blockentity is BlockEntityContainer container)
+            if (blockentity is BlockEntityContainer container)
             {
                 Inventory = container.Inventory;
             }
@@ -31,6 +27,5 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
         }
 
         public override ItemSlot ItemSlot => Inventory[displayProps.ItemSlotIndex];
-
     }
 }

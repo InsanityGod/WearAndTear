@@ -15,10 +15,10 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
     public static class AutoRegistryPatches
     {
         //TODO should probably come up with a cleaner way of doing this (though really people should remember to call base classes themself -_-)
-        
+
         public static void EnsureBaseMethodCall(ICoreAPI api, Harmony harmony, MethodInfo method)
         {
-            if(!method.IsVirtual || harmony.GetPatchedMethods().Contains(method)) return;
+            if (!method.IsVirtual || harmony.GetPatchedMethods().Contains(method)) return;
 
             try
             {
@@ -34,18 +34,18 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
         {
             var codes = instructions.ToList();
             var baseMethod = ((MethodInfo)__originalMethod).GetBaseDefinition();
-            for(var i = 0; i < codes.Count; i++)
+            for (var i = 0; i < codes.Count; i++)
             {
                 var code = codes[i];
-                if(code.opcode == OpCodes.Call && code.operand is MethodInfo info && info == baseMethod) throw new InvalidOperationException("Already calls base class");
-                if(code.opcode == OpCodes.Ret)
+                if (code.opcode == OpCodes.Call && code.operand is MethodInfo info && info == baseMethod) throw new InvalidOperationException("Already calls base class");
+                if (code.opcode == OpCodes.Ret)
                 {
                     var newCodes = new List<CodeInstruction>
                     {
                         CodeInstruction.LoadArgument(0)
                     };
 
-                    foreach(var param in baseMethod.GetParameters())
+                    foreach (var param in baseMethod.GetParameters())
                     {
                         newCodes.Add(CodeInstruction.LoadArgument(param.Position + 1));
                     }
@@ -65,14 +65,13 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
         public static void EnsureBlockDropsConnected(ICoreAPI api, Harmony harmony, Block block)
         {
             var method = block.GetType().GetMethod(nameof(Block.GetDrops));
-            if(harmony.GetPatchedMethods().Contains(method)) return;
+            if (harmony.GetPatchedMethods().Contains(method)) return;
             try
             {
                 harmony.Patch(method, postfix: new HarmonyMethod(typeof(ConnectBlockDropModifier), nameof(ConnectBlockDropModifier.Postfix)));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-
             }
         }
 
@@ -82,10 +81,10 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
         {
             var codes = instructions.ToList();
             var method = AccessTools.Method(typeof(AutoRegistryPatches), nameof(FixItemStack));
-            for(int i = 0; i < codes.Count; i++)
+            for (int i = 0; i < codes.Count; i++)
             {
                 var code = codes[i];
-                if(code.opcode == OpCodes.Stloc_2)
+                if (code.opcode == OpCodes.Stloc_2)
                 {
                     codes.InsertRange(i, new CodeInstruction[]
                     {
@@ -98,15 +97,14 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
             }
             return codes;
         }
-        
+
         public static ItemStack FixItemStack(ItemStack stack, BlockEntityToolMold instance, IPlayer byPlayer)
         {
             var wearAndTear = instance.Api.World.BlockAccessor.GetBlockEntity(instance.Pos)?.GetBehavior<IWearAndTear>();
             var fixedStacks = wearAndTear?.ModifyDroppedItemStacks(new ItemStack[] { stack }, instance.Api.World, instance.Pos, byPlayer);
-            if(fixedStacks?.Length == 1) return fixedStacks[0]; 
+            if (fixedStacks?.Length == 1) return fixedStacks[0];
             return stack;
         }
-
 
         //[HarmonyPatch(typeof(BlockBehaviorRightClickPickup), nameof(BlockBehaviorRightClickPickup.OnBlockInteractStart))]
         //[HarmonyTranspiler]
@@ -131,7 +129,7 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
         //    }
         //    return codes;
         //}
-        
+
         //public static ItemStack[] FixItemStacks(ItemStack[] stacks, IWorldAccessor world, IPlayer byPlayer, BlockPos pos)
         //{
         //    var wearAndTear = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<IWearAndTear>();

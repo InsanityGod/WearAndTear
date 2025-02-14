@@ -61,7 +61,7 @@ namespace WearAndTear.Code.AutoRegistry
             var toMerge = block.MayMergeBehaviors() ? Array.Find(block.BlockEntityBehaviors, item =>
             {
                 if (item.Name != behaviorName) return false;
-                if(item.properties != null && item.properties["Name"].AsString() != null && item.properties["Name"].AsString() != properties["Name"].Value<string>()) return false;
+                if (item.properties != null && item.properties["Name"].AsString() != null && item.properties["Name"].AsString() != properties["Name"].Value<string>()) return false;
                 return true;
             }) : null;
 
@@ -91,7 +91,7 @@ namespace WearAndTear.Code.AutoRegistry
                 codeMatch => MatchString(codeMatch, block.Code)
             );
 
-        public static bool MatchString(string needle, AssetLocation haystack) => 
+        public static bool MatchString(string needle, AssetLocation haystack) =>
             needle.Contains(':') ? WildcardUtil.Match((AssetLocation)needle, haystack) : WildcardUtil.Match(needle, haystack.Path);
 
         public static BlockEntityBehaviorType EnsureBaseWearAndTear(this Block block, bool allowMerge = false)
@@ -123,13 +123,12 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureFrameWearAndTearPart(this Block block)
         {
-
             var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
 
             var behaviorName = "WearAndTearPart";
             var behaviorProperties = JToken.FromObject(frameProps);
-            if(block is BlockToolMold)
+            if (block is BlockToolMold)
             {
                 behaviorName = "WearAndTearMold";
                 behaviorProperties["Name"] = "Mold";
@@ -170,7 +169,7 @@ namespace WearAndTear.Code.AutoRegistry
             var isMechanicalBlock = block is BlockMPBase;
             var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
-            
+
             var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
 
             if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)
@@ -187,13 +186,13 @@ namespace WearAndTear.Code.AutoRegistry
             }
 
             block.EnsureBaseWearAndTear();
-            if(hasWearAndTear && !block.MayMergeBehaviors())
+            if (hasWearAndTear && !block.MayMergeBehaviors())
             {
                 block.CleanupWearAndTearAutoRegistry();
                 return;
             }
 
-            if(block.Code.Domain == "axleinblocks")
+            if (block.Code.Domain == "axleinblocks")
             {
                 AxleInBlocks.Register(block);
             }
@@ -203,7 +202,7 @@ namespace WearAndTear.Code.AutoRegistry
                 block.DetectAndAddMetalReinforcements();
             }
 
-            if(block.Code.Domain == "linearpower" && block.Code.FirstCodePart() == "sawmill")
+            if (block.Code.Domain == "linearpower" && block.Code.FirstCodePart() == "sawmill")
             {
                 var props = JToken.FromObject(new WearAndTearPartProps
                 {
@@ -262,7 +261,7 @@ namespace WearAndTear.Code.AutoRegistry
         public static string GetMetalVariant(GridRecipeIngredient ingredient)
         {
             var collectible = ingredient.ResolvedItemstack?.Collectible;
-            if(collectible == null) return null;
+            if (collectible == null) return null;
 
             var result = collectible.Variant["metal"];
             if (result != null) return result;
@@ -335,7 +334,7 @@ namespace WearAndTear.Code.AutoRegistry
                 }
                 return true;
             }).ToArray();
-            
+
             if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("WearAndTear")) == 1)
             {
                 block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("WearAndTear")).ToArray();

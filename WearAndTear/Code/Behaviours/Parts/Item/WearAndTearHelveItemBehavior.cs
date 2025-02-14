@@ -30,7 +30,7 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
             var anvil = Traverse.Create(HelveHammerBase).Field("targetAnvil").GetValue<BlockEntityAnvil>();
             if (WearAndTearModSystem.HelveAxeModLoaded && IsHelveAxe)
             {
-                if(!ShoulDamageHelveAxe(anvil)) return;
+                if (!ShoulDamageHelveAxe(anvil)) return;
             }
             else if (!WearAndTearModSystem.Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null) return;
 

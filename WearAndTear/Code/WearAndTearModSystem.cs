@@ -1,13 +1,10 @@
 ﻿using HarmonyLib;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Common;
-using Vintagestory.API.Datastructures;
 using Vintagestory.API.Server;
-using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -21,10 +18,8 @@ using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Config;
-using WearAndTear.Config.Props;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
-using WearAndTear.HarmonyPatches.indappledgroves;
 
 namespace WearAndTear.Code
 {
@@ -57,6 +52,7 @@ namespace WearAndTear.Code
         }
 
         #region HarmonyWorkAround
+
         private static ICoreAPI apiCache;
 
         public static IEnumerable<Assembly> ModAssembliesForHarmonyScan => apiCache.ModLoader.Mods.Select(mod => mod.Systems.FirstOrDefault())
@@ -79,6 +75,7 @@ namespace WearAndTear.Code
                 return Enumerable.Empty<Type>();
             }
         });
+
         #endregion HarmonyWorkAround
 
         public void TryPatchCompatibility(ICoreAPI api, string modId)
@@ -105,10 +102,9 @@ namespace WearAndTear.Code
 
             if (!Harmony.HasAnyPatches(Mod.Info.ModID))
             {
-
                 harmony = new Harmony(Mod.Info.ModID);
                 harmony.PatchAllUncategorized();
-                
+
                 TryPatchCompatibility(api, "indappledgroves");
                 TryPatchCompatibility(api, "linearpower");
 
@@ -188,19 +184,19 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            if(harmony != null)
+            if (harmony != null)
             {
-                foreach(var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
+                foreach (var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
                 {
                     var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
-                    if(entityClass == null) continue;
+                    if (entityClass == null) continue;
 
                     var getBlockInfoMethod = entityClass.GetMethod(nameof(BlockEntity.GetBlockInfo));
-                    if(getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
+                    if (getBlockInfoMethod != null && getBlockInfoMethod.DeclaringType != typeof(BlockEntity))
                     {
                         AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
                     }
-                    if(block.GetType() != typeof(Block))
+                    if (block.GetType() != typeof(Block))
                     {
                         AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
                     }

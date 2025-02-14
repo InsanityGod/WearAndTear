@@ -1,9 +1,4 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Behaviours.Parts;
 
@@ -14,7 +9,7 @@ namespace WearAndTear.Code.HarmonyPatches
     {
         public static void Postfix(BlockEntityToolMold __instance, ref bool __result)
         {
-            if(!__result) return;
+            if (!__result) return;
             __instance.GetBehavior<WearAndTearMoldPartBehavior>()?.Damage();
         }
     }

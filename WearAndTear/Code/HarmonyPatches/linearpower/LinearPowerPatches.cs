@@ -24,7 +24,7 @@ namespace WearAndTear.Code.HarmonyPatches.linearpower
 
             var methodToFind = AccessTools.Method(typeof(IWorldAccessor), nameof(IWorldAccessor.SpawnItemEntity), new Type[] { typeof(ItemStack), typeof(Vec3d), typeof(Vec3d) });
 
-            for(var i = 0; i < codes.Count; i++)
+            for (var i = 0; i < codes.Count; i++)
             {
                 var code = codes[i];
                 if (code.opcode == OpCodes.Callvirt && code.operand is MethodInfo info && info == methodToFind)
@@ -41,7 +41,7 @@ namespace WearAndTear.Code.HarmonyPatches.linearpower
         {
             var normallCall = accesor.SpawnItemEntity(itemstack, position, velocity);
 
-            if(itemstack.StackSize > 0 && itemstack.Collectible.FirstCodePart() == "plank")
+            if (itemstack.StackSize > 0 && itemstack.Collectible.FirstCodePart() == "plank")
             {
                 var sawdust = accesor.GetItem(new AssetLocation("wearandtear:sawdust"));
                 var sawdustStack = new ItemStack(sawdust, 1);

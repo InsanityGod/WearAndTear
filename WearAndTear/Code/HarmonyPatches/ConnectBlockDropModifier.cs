@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
 
@@ -27,7 +26,7 @@ namespace WearAndTear.HarmonyPatches
             yield return typeof(BlockPulverizer).GetMethod("GetDrops");
 
             var sawmillDropMethod = AccessTools.TypeByName("sawmill.BlockSawmill")?.GetMethod("GetDrops");
-            if(sawmillDropMethod != null) yield return sawmillDropMethod;
+            if (sawmillDropMethod != null) yield return sawmillDropMethod;
         }
     }
 }
