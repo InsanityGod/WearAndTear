@@ -1,0 +1,15 @@
+{
+  "code": "rubble",
+  "class": "WearAndTear.RubbleBlock",
+  "entityClass": "WearAndTear.RubbleBlockEntity",
+  "lightAbsorption": 0,
+  "sideAo": { "all": false },
+  "sidesolid": {
+    "all": false
+  },
+  "sideopaque": {
+    "all": false
+  },
+  "blockmaterial": "Other",
+  "drops": []
+}

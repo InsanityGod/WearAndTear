@@ -12,6 +12,8 @@ using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.Behaviours.Parts.Item;
 using WearAndTear.Code.Behaviours.Parts.Protective;
+using WearAndTear.Code.BlockEntities;
+using WearAndTear.Code.Blocks;
 using WearAndTear.Code.Commands;
 using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
@@ -138,10 +140,10 @@ namespace WearAndTear.Code
 
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
+            RegisterOther(api);
 
             apiCache = null;
         }
-
         private static void RegisterBehaviours(ICoreAPI api)
         {
             api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
@@ -156,6 +158,13 @@ namespace WearAndTear.Code
 
             api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
         }
+
+        private static void RegisterOther(ICoreAPI api)
+        {
+            api.RegisterBlockClass("WearAndTear.RubbleBlock", typeof(RubbleBlock));
+            api.RegisterBlockEntityClass("WearAndTear.RubbleBlockEntity", typeof(RubbleBlockEntity));
+        }
+
 
         private static void LoadConfig(ICoreAPI api)
         {
