@@ -5,8 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Vintagestory.API.Common;
-using Vintagestory.GameContent;
-using WearAndTear.Code.Interfaces;
 using WearAndTear.HarmonyPatches;
 
 namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
@@ -73,37 +71,6 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
             catch (Exception ex)
             {
             }
-        }
-
-        [HarmonyPatch(typeof(BlockEntityToolMold), nameof(BlockEntityToolMold.OnPlayerInteract))]
-        [HarmonyTranspiler]
-        public static IEnumerable<CodeInstruction> FixRightClickToPickup(IEnumerable<CodeInstruction> instructions)
-        {
-            var codes = instructions.ToList();
-            var method = AccessTools.Method(typeof(AutoRegistryPatches), nameof(FixItemStack));
-            for (int i = 0; i < codes.Count; i++)
-            {
-                var code = codes[i];
-                if (code.opcode == OpCodes.Stloc_2)
-                {
-                    codes.InsertRange(i, new CodeInstruction[]
-                    {
-                        CodeInstruction.LoadArgument(0),
-                        CodeInstruction.LoadArgument(1),
-                        new(OpCodes.Call, method),
-                    });
-                    break;
-                }
-            }
-            return codes;
-        }
-
-        public static ItemStack FixItemStack(ItemStack stack, BlockEntityToolMold instance, IPlayer byPlayer)
-        {
-            var wearAndTear = instance.Api.World.BlockAccessor.GetBlockEntity(instance.Pos)?.GetBehavior<IWearAndTear>();
-            var fixedStacks = wearAndTear?.ModifyDroppedItemStacks(new ItemStack[] { stack }, instance.Api.World, instance.Pos, byPlayer);
-            if (fixedStacks?.Length == 1) return fixedStacks[0];
-            return stack;
         }
 
         //[HarmonyPatch(typeof(BlockBehaviorRightClickPickup), nameof(BlockBehaviorRightClickPickup.OnBlockInteractStart))]

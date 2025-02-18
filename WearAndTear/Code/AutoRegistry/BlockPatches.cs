@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code;
 using WearAndTear.Code.AutoRegistry;
@@ -44,6 +46,21 @@ namespace WearAndTear.DynamicPatches
                     }
                 }));
             }
+        }
+
+        public static void PatchIngotMold(Block block)
+        {
+            if(!WearAndTearModSystem.Config.SpecialParts.Molds || block is not BlockIngotMold) return; //TODO maybe check for entity as well
+
+            block.EnsureBaseWearAndTear(true);
+            var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
+            var frame = JToken.FromObject(frameProps);
+            
+            frame["Name"] = "Ingot Mold (Left)";
+            block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame.DeepClone());
+            
+            frame["Name"] = "Ingot Mold (Right)";
+            block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame);
         }
 
         public static void PatchHelve(Block block)

@@ -98,5 +98,11 @@ namespace WearAndTear.Config
         public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
 
         public CompatibilityConfig Compatibility { get; set; } = new();
+
+        /// <summary>
+        /// If enabled, questionable events are logged (like when temperature data is invalid and creates NaN as a value)
+        /// </summary>
+        [DefaultValue(false)]
+        public bool EnableDebugLogging { get; set; } = false;
     }
 }

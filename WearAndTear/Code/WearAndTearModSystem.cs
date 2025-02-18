@@ -152,6 +152,7 @@ namespace WearAndTear.Code
             api.RegisterBlockEntityBehaviorClass("WearAndTearOptionalProtectivePart", typeof(WearAndTearOptionalProtectivePartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(WearAndTearMoldPartBehavior));
+            api.RegisterBlockEntityBehaviorClass("WearAndTearIngotMold", typeof(WearAndTearIngotMoldPartBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearGenericItemDisplay", typeof(WearAndTearGenericItemDisplayBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
             api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
@@ -210,6 +211,9 @@ namespace WearAndTear.Code
                         AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
                     }
                 }
+
+                var ingotMoldMethod = AccessTools.Method(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.GetBlockInfo));
+                if(ingotMoldMethod != null) AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, ingotMoldMethod);
             }
 
             if (api.Side != EnumAppSide.Server) return;
@@ -219,6 +223,7 @@ namespace WearAndTear.Code
                 //Dynammically add BlockEntityBehaviors server side
                 if (block?.Code == null) continue;
                 BlockPatches.PatchWindmill(block);
+                BlockPatches.PatchIngotMold(block);
                 BlockPatches.PatchHelve(block);
                 BlockPatches.PatchPulverizer(block);
                 BlockPatches.PatchClutch(block);

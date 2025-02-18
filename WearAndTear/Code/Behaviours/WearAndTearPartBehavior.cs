@@ -96,8 +96,21 @@ namespace WearAndTear.Code.Behaviours
 
         public WearAndTearPartProps Props { get; private set; }
 
-        public virtual float Durability { get; set; } = 1;
+        private float _durability = 1;
 
+        public virtual float Durability
+        {
+            get => _durability;
+            set
+            {
+                if (float.IsNaN(value))
+                {
+                    if(WearAndTearModSystem.Config.EnableDebugLogging) Api?.Logger.Warning($"WearAndTear: Invalid Durability assignment at {Pos} for {Props?.Name} (ignoring attempt)");
+                    return;
+                }
+                _durability = value;
+            }
+        }
         public float RepairedDurability { get; set; } = 0;
 
         //HACK mod system is disposed before ToTreeAttributes is called resulting in Config being null...
