@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Config.Props
 {
@@ -53,5 +54,11 @@ namespace WearAndTear.Config.Props
                 Type = "time"
             }
         };
+
+        /// <summary>
+        /// Configuration for rubble that will be left behind when the block breaks
+        /// </summary>
+        [Browsable(false)] //This is auto filled by the Auto Part Registry
+        public WearAndTearRubbleProps Rubble { get; set; }
     }
 }
