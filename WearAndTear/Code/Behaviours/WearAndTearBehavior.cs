@@ -130,16 +130,9 @@ namespace WearAndTear.Code.Behaviours
             //Seperate loop since we want to ensure all durability is updated for block drop modifications
             foreach (var part in Parts)
             {
-                if (part.Durability <= 0)
+                if (part.Durability <= 0 && part.OnBreak())
                 {
-                    if (part.Props.IsCritical)
-                    {
-                        if (part.OnBreak())
-                        {
-                            Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
-                        }
-                        return;
-                    }
+                    Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
                 }
             }
 
@@ -154,7 +147,7 @@ namespace WearAndTear.Code.Behaviours
 
         public void QueueDecalUpdate(int delay = 1)
         {
-            if (Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase)) return;
+            if (Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase) || Blockentity is BlockEntityIngotMold) return;
             Blockentity.RegisterDelayedCallback(_ => UpdateDecal(), delay);
         }
 

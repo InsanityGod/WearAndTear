@@ -56,7 +56,7 @@ namespace WearAndTear.Code.Interfaces
         /// Code that can run/override breaking behavior
         /// </summary>
         /// <returns>true if default behavior should run</returns>
-        public bool OnBreak() => true;
+        public bool OnBreak() => Props.IsCritical;
 
         public float RepairedDurability { get; set; }
     }

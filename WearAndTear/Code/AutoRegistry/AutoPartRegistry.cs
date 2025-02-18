@@ -196,7 +196,7 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 AxleInBlocks.Register(block);
             }
-            else
+            else if(block is not BlockIngotMold) //Ingot molds just have to be very special -_-
             {
                 block.EnsureFrameWearAndTearPart();
                 block.DetectAndAddMetalReinforcements();
