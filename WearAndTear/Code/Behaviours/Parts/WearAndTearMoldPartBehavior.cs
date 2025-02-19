@@ -5,6 +5,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Interfaces;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours.Parts
@@ -48,9 +49,11 @@ namespace WearAndTear.Code.Behaviours.Parts
             return true;
         }
 
-        public void Damage()
+        public void Damage(IPlayer byPlayer)
         {
-            float damage = (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
+            float damage = WearAndTearModSystem.XlibEnabled && SkillsAndAbilities.IsExpertCaster(Api, byPlayer) ?
+                DurabilityProps.MinDurabilityUsage :
+                (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
             foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
             {
@@ -62,7 +65,10 @@ namespace WearAndTear.Code.Behaviours.Parts
                     damage *= protection.DecayMultiplier;
                 }
             }
+
+            if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
             Durability -= damage;
+
             Blockentity.GetBehavior<WearAndTearBehavior>().UpdateDecay(0, false);
         }
 

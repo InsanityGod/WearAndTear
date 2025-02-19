@@ -17,6 +17,7 @@ using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
@@ -29,6 +30,7 @@ namespace WearAndTear.Code
 
         private Harmony harmony;
 
+        public static bool XlibEnabled { get; private set; }
         public static bool HelveAxeModLoaded { get; private set; }
         public static ModConfig Config { get; private set; }
 
@@ -43,6 +45,8 @@ namespace WearAndTear.Code
         {
             AutoPartRegistry.Api = api;
             LoadConfig(api);
+            XlibEnabled = api.ModLoader.IsModEnabled("xlib");
+            if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
         }
 
         public override void StartServerSide(ICoreServerAPI api)
@@ -140,6 +144,7 @@ namespace WearAndTear.Code
             RegisterBehaviours(api);
 
             apiCache = null;
+            if(XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
 
         private static void RegisterBehaviours(ICoreAPI api)
