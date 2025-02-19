@@ -14,6 +14,7 @@ using Vintagestory.Client.NoObf;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours
@@ -220,7 +221,11 @@ namespace WearAndTear.Code.Behaviours
 
                 return false;
             }
+
             var maintenanceStrength = props.Strength;
+            if(byEntity is EntityPlayer player && WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
+            var originalMaintenanceStrength = maintenanceStrength;
+
             var anyPartRequiredMaintenance = false;
             var anyPartMaintenanceLimitReached = false;
             var anyPartActive = false;
@@ -247,7 +252,7 @@ namespace WearAndTear.Code.Behaviours
             }
 
             //If any maintenance was done
-            if (maintenanceStrength < props.Strength)
+            if (maintenanceStrength < originalMaintenanceStrength)
             {
                 slot.TakeOut(1);
                 slot.MarkDirty();
@@ -258,6 +263,7 @@ namespace WearAndTear.Code.Behaviours
                     byEntity.LeftHandItemSlot.Itemstack.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
                 }
 
+                if (byEntity is EntityPlayer player2 && WearAndTearModSystem.XlibEnabled)SkillsAndAbilities.GiveMechanicExp(player2.Api, player2.Player, (originalMaintenanceStrength - maintenanceStrength) * WearAndTearModSystem.Config.Compatibility.DurabilityToXPRatio);
                 return true;
             }
             else if (Api is ICoreClientAPI clientApi2)

@@ -11,8 +11,13 @@
   "failed-maintenance-limit-reached": "Reached the limit for this kind of maintenance",
 
   //skills
-  "wearandtear:ability-carefull-caster": "Carefull Caster",
-  "wearandtear:abilitydesc-carefull-caster": "Reduce durability cost when removing casted items from molds by {0}%",
+  "wearandtear:skill-mechanics": "Mechanics",
+
+  "wearandtear:ability-handyman": "Handyman",
+  "wearandtear:abilitydesc-handyman": "Repair materials are worth {0}% more",
+
+  "wearandtear:ability-careful-caster": "Carefull Caster",
+  "wearandtear:abilitydesc-careful-caster": "Reduce durability cost when removing casted items from molds by {0}%",
   "wearandtear:ability-expert-caster": "Expert Caster",
   "wearandtear:abilitydesc-expert-caster": "An expert caster leaves nothing up to chance. (mold durability loss is always at it's lowest)",
   //Handbook entries
