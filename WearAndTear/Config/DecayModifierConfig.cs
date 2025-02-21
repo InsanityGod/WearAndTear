@@ -11,14 +11,14 @@ namespace WearAndTear.Config
         /// </summary>
         [DefaultValue(1)]
         [Range(0, float.PositiveInfinity)]
-        public float Wind { get; set; } = 1;
+        public float Wind { get; set; } = 1f;
 
         /// <summary>
         /// Multiplier on decay (damage) caused by humidity (rainfall)
         /// </summary>
         [DefaultValue(1)]
         [Range(0, float.PositiveInfinity)]
-        public float Humidity { get; set; } = 1;
+        public float Humidity { get; set; } = 1f;
 
         /// <summary>
         /// Multiplier on decay (damage) caused by the passing of time
@@ -26,6 +26,13 @@ namespace WearAndTear.Config
         /// </summary>
         [DefaultValue(1)]
         [Range(0, float.PositiveInfinity)]
-        public float Time { get; set; } = 1;
+        public float Time { get; set; } = 1f;
+
+        /// <summary>
+        /// Multiplier on decay of molds
+        /// </summary>
+        [DefaultValue(1)]
+        [Range(0, float.PositiveInfinity)]
+        public float Mold { get; set; }
     }
 }

@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Server;
+using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.XLib.Containers;
 using XLib.XLeveling;
 
 namespace WearAndTear.Code.XLib
@@ -61,6 +63,48 @@ namespace WearAndTear.Code.XLib
                 1, 3, new int[] { 15, 25, 30}
             );
             mechanics.AddAbility(handyMan);
+
+            var butterfingers = new Ability(
+                "butterfingers",
+                Lang.GetUnformatted("wearandtear:ability-butterfingers"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-butterfingers"),
+                1, 3, new int[] { 10, 20, 20, 30, 30, 40 }
+            );
+            mechanics.AddAbility(butterfingers);
+
+            if (!WearAndTearModSystem.Config.AllowForInfiniteMaintenance)
+            {
+                var limitBreaker = new Ability(
+                    "limitbreaker",
+                    Lang.GetUnformatted("wearandtear:ability-limitbreaker"),
+                    Lang.GetUnformatted("wearandtear:abilitydesc-limitbreaker"),
+                    1, 4, new int[] { 25, 50, 75, 100 }
+                );
+                mechanics.AddAbility(limitBreaker);
+            }
+
+            var expertAssembler = new Ability(
+                "reinforcer",
+                Lang.GetUnformatted("wearandtear:ability-reinforcer"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-reinforcer"),
+                1, 3, new int[] { 10, 15, 20 }
+            );
+            mechanics.AddAbility(expertAssembler);
+
+            var mechanicsSpecialisation = new Ability(
+                "engineer",
+                Lang.GetUnformatted("wearandtear:ability-engineer"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-engineer"),
+                1, 1, new int[] { 40 }
+            );
+
+            mechanics.SpecialisationID = mechanics.AddAbility(mechanicsSpecialisation);
+
+
+            //TODO maybe things limited to specialization?
+            //TODO implement stuff from idea list:
+
+            //Temporal Tinkerer //I think we'll put this temporal gear right here
         }
 
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)
@@ -85,6 +129,24 @@ namespace WearAndTear.Code.XLib
             var xleveling = api.ModLoader.GetModSystem<XLeveling>();
             var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("metalworking")?.FindAbility("expertcaster");
             return ability != null && ability.Tier > 0;
+        }
+        
+        public static void ApplyButterFingerBonus(PartBonuses partBonuses, ICoreAPI api, IPlayer player)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("butterfingers");
+            if(ability == null) return;
+            
+            partBonuses.ProtectionModifier *= 1 + (ability.Value(0) * 0.01f);
+            partBonuses.DecayModifier *= 1 + (ability.Value(1) * 0.01f);
+        }
+
+        public static float ApplyLimitBreaker(ICoreAPI api, IPlayer player, float maintenanceLimit)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("limitbreaker");
+            if(ability == null) return maintenanceLimit;
+            return maintenanceLimit * (1 + (ability.Value(0) * 0.01f));
         }
 
         public static void GiveMechanicExp(ICoreAPI api, IPlayer player, float exp = 1)

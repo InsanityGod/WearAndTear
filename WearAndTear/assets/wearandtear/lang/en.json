@@ -16,8 +16,23 @@
   "wearandtear:ability-handyman": "Handyman",
   "wearandtear:abilitydesc-handyman": "Repair materials are worth {0}% more",
 
+  "wearandtear:ability-butterfingers": "Butterfingers",
+  "wearandtear:abilitydesc-butterfingers": "Wax is {0}% more effective, but decays {1}% faster",
+
+  "wearandtear:ability-limitbreaker": "Limit Breaker",
+  "wearandtear:abilitydesc-limitbreaker": "Allows you to go over the maintenance limit by {0}%",
+  
+  "wearandtear:ability-reinforcer": "Reinforcer",
+  "wearandtear:abilitydesc-reinforcer": "the reinforcements you build are {0}% more effective",
+  
+  "wearandtear:ability-engineer": "Engineer",
+  "wearandtear:abilitydesc-engineer": "Trust me I'm an engineer!
+You will receive {0}% more experience for the mechanics skill.
+The amount of professions you can learn is limited.",
+
   "wearandtear:ability-careful-caster": "Carefull Caster",
   "wearandtear:abilitydesc-careful-caster": "Reduce durability cost when removing casted items from molds by {0}%",
+  
   "wearandtear:ability-expert-caster": "Expert Caster",
   "wearandtear:abilitydesc-expert-caster": "An expert caster leaves nothing up to chance. (mold durability loss is always at it's lowest)",
   //Handbook entries

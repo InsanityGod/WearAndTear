@@ -15,6 +15,7 @@ using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
+using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours
@@ -208,6 +209,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
         {
+            if(byEntity is not EntityPlayer player) return false;
             if (props.RequiredTool != null && !WildcardUtil.Match(props.RequiredTool, byEntity.LeftHandItemSlot?.Itemstack?.Collectible?.Code.Path ?? string.Empty))
             {
                 if (Api is ICoreClientAPI clientApi)
@@ -223,7 +225,7 @@ namespace WearAndTear.Code.Behaviours
             }
 
             var maintenanceStrength = props.Strength;
-            if(byEntity is EntityPlayer player && WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
+            if(WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
             var originalMaintenanceStrength = maintenanceStrength;
 
             var anyPartRequiredMaintenance = false;
@@ -240,7 +242,8 @@ namespace WearAndTear.Code.Behaviours
                     continue;
                 }
 
-                var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength);
+                var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength, player);
+                if(WearAndTearModSystem.XlibEnabled) part.PartBonuses?.UpdateForRepair(part, Api, player.Player);
 
                 if (!WearAndTearModSystem.Config.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
                 {

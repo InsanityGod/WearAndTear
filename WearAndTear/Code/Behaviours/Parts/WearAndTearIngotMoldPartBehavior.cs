@@ -75,15 +75,13 @@ namespace WearAndTear.Code.Behaviours.Parts
                 DurabilityProps.MinDurabilityUsage :
                 (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
+            damage *= WearAndTearModSystem.Config.DecayModifier.Mold;
+
             foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
             {
                 if (protectivePart is IWearAndTearOptionalPart optionalPart && !optionalPart.IsPresent) continue;
 
-                var protection = Array.Find(protectivePart!.ProtectiveProps.EffectiveFor, target => target.IsEffectiveFor(Props));
-                if (protection != null)
-                {
-                    damage *= protection.DecayMultiplier;
-                }
+                damage *= protectivePart.GetDecayMultiplierFor(Props);
             }
 
             if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
