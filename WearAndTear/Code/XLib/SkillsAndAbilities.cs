@@ -87,7 +87,7 @@ namespace WearAndTear.Code.XLib
                 "reinforcer",
                 Lang.GetUnformatted("wearandtear:ability-reinforcer"),
                 Lang.GetUnformatted("wearandtear:abilitydesc-reinforcer"),
-                1, 3, new int[] { 10, 15, 20 }
+                1, 5, new int[] { 10, 20, 30, 40, 50 }
             );
             mechanics.AddAbility(expertAssembler);
 
@@ -100,11 +100,10 @@ namespace WearAndTear.Code.XLib
 
             mechanics.SpecialisationID = mechanics.AddAbility(mechanicsSpecialisation);
 
-
             //TODO maybe things limited to specialization?
             //TODO implement stuff from idea list:
 
-            //Temporal Tinkerer //I think we'll put this temporal gear right here
+            //TODO (once we have the rubble mechanism setup, so we can refund) Temporal Tinkerer //I think we'll put this temporal gear right here
         }
 
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)
@@ -140,8 +139,17 @@ namespace WearAndTear.Code.XLib
             partBonuses.ProtectionModifier *= 1 + (ability.Value(0) * 0.01f);
             partBonuses.DecayModifier *= 1 + (ability.Value(1) * 0.01f);
         }
+        
+        public static void ApplyReinforcerBonus(PartBonuses partBonuses, ICoreAPI api, IPlayer player)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("reinforcer");
+            if(ability == null) return;
+            
+            partBonuses.ProtectionModifier *= 1 + (ability.Value(0) * 0.01f);
+        }
 
-        public static float ApplyLimitBreaker(ICoreAPI api, IPlayer player, float maintenanceLimit)
+        public static float ApplyLimitBreakerBonus(ICoreAPI api, IPlayer player, float maintenanceLimit)
         {
             var xleveling = api.ModLoader.GetModSystem<XLeveling>();
             var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("limitbreaker");

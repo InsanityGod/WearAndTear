@@ -179,7 +179,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             {
                 var limit = Props.MaintenanceLimit.Value;
 
-                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreaker(player.Api, player.Player, limit);
+                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
 
                 realAllowedMaintenanceStrength = GameMath.Clamp(realMaintenanceStrength, 0, limit - RepairedDurability);
             }

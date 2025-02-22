@@ -23,12 +23,14 @@
   "wearandtear:abilitydesc-limitbreaker": "Allows you to go over the maintenance limit by {0}%",
   
   "wearandtear:ability-reinforcer": "Reinforcer",
-  "wearandtear:abilitydesc-reinforcer": "the reinforcements you build are {0}% more effective",
+  "wearandtear:abilitydesc-reinforcer": "When repairing reinforcements you also improve them, increasing their effectiveness by {0}%
+(only applies once)",
   
   "wearandtear:ability-engineer": "Engineer",
-  "wearandtear:abilitydesc-engineer": "Trust me I'm an engineer!
-You will receive {0}% more experience for the mechanics skill.
-The amount of professions you can learn is limited.",
+  "wearandtear:abilitydesc-engineer": "You will receive {0}% more experience for the mechanics skill.
+The amount of professions you can learn is limited.
+
+Trust me I'm an engineer!",
 
   "wearandtear:ability-careful-caster": "Carefull Caster",
   "wearandtear:abilitydesc-careful-caster": "Reduce durability cost when removing casted items from molds by {0}%",

@@ -40,18 +40,18 @@ namespace WearAndTear.Code.XLib.Containers
 
         public void UpdateForRepair(IWearAndTearPart part, ICoreAPI api, IPlayer player)
         {
+            //Reset values to default
+            DecayModifier = 1f;
+            ProtectionModifier = 1f;
             if(part.Props.Name == "Wax")
             {
-                //Reset values to default
-                DecayModifier = 1f;
-                ProtectionModifier = 1f;
                 SkillsAndAbilities.ApplyButterFingerBonus(this, api, player);
             }
-        }
 
-        public void UpdateForBuild(IWearAndTearPart part, ICoreAPI api, IPlayer player)
-        {
-            //TODO
+            if (part.Props.Name.Contains("reinforcement", StringComparison.OrdinalIgnoreCase))
+            {
+                SkillsAndAbilities.ApplyReinforcerBonus(this, api, player);
+            }
         }
     }
 }
