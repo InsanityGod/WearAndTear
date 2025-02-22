@@ -10,6 +10,11 @@
   "failed-maintenance-active": "Can't do this type of maintenance while object is active",
   "failed-maintenance-limit-reached": "Reached the limit for this kind of maintenance",
 
+  "wearandtear:durability-good": "In excellent condition",
+  "wearandtear:durability-decent": "In fair condition",
+  "wearandtear:durability-bad": "In poor condition",
+  "wearandtear:durability-critical": "On the verge of breaking",
+
   //skills
   "wearandtear:skill-mechanics": "Mechanics",
 
@@ -21,6 +26,9 @@
 
   "wearandtear:ability-limitbreaker": "Limit Breaker",
   "wearandtear:abilitydesc-limitbreaker": "Allows you to go over the maintenance limit by {0}%",
+  
+  "wearandtear:ability-precise-measurements": "Precise Measurements",
+  "wearandtear:abilitydesc-precise-measurements": "Allowes you to see durability as a percentage",
   
   "wearandtear:ability-reinforcer": "Reinforcer",
   "wearandtear:abilitydesc-reinforcer": "When repairing reinforcements you also improve them, increasing their effectiveness by {0}%

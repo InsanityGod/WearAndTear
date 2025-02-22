@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using Vintagestory.API.Common;
+using WearAndTear.Code.Enums;
 
 namespace WearAndTear.Config
 {
@@ -25,5 +26,13 @@ namespace WearAndTear.Config
         [DefaultValue(10f)]
         [DisplayName("Durability to XP ratio")]
         public float DurabilityToXPRatio { get; set; } = 10f;
+
+        /// <summary>
+        /// When enabled you will see rough estimates rather then exact percentages
+        /// (if you have XLib, you need to get a skill to see exact values)
+        /// </summary>
+        [Category("XLib / XSkills")]
+        [DefaultValue(EOptionalWithXLib.OnlyWithXLib)]
+        public EOptionalWithXLib RoughDurabilityEstimate { get; set; } = EOptionalWithXLib.OnlyWithXLib;
     }
 }

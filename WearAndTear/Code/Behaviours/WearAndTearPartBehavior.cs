@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
@@ -7,6 +6,7 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
@@ -78,10 +78,16 @@ namespace WearAndTear.Code.Behaviours
             PartBonuses?.ToTreeAttributes(tree, Props);
         }
 
-        public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
+        public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc) => dsc.AppendLine(GetDurabilityStringForPlayer(forPlayer));
+
+        public string GetDurabilityStringForPlayer(IPlayer player) => $"{Lang.Get(Props.Name)}: {WearAndTearModSystem.Config.Compatibility.RoughDurabilityEstimate.IsRoughEstimateEnabled(Api, player) switch
         {
-            dsc.AppendLine($"{Lang.Get(Props.Name)}: {(int)(Durability * 100)}%");
-        }
+            true when Durability > 0.7 => Lang.Get("wearandtear:durability-good"),
+            true when Durability > 0.4 => Lang.Get("wearandtear:durability-decent"),
+            true when Durability > 0.1 => Lang.Get("wearandtear:durability-bad"),
+            true => Lang.Get("wearandtear:durability-critical"),
+            _ => $"{(int)(Durability * 100)}%"
+        }}";
 
         public virtual void UpdateDecay(double daysPassed)
         {

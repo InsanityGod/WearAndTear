@@ -102,6 +102,7 @@ namespace WearAndTear.Config
         /// <summary>
         /// If enabled, questionable events are logged (like when temperature data is invalid and creates NaN as a value)
         /// </summary>
+        [Category("Debug")]
         [DefaultValue(false)]
         public bool EnableDebugLogging { get; set; } = false;
     }

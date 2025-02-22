@@ -158,7 +158,8 @@ namespace WearAndTear.Code.Behaviours.Parts
         public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
             if (!IsPresent) return;
-            dsc.AppendLine($"{Lang.Get(Props.Name)}{(AreSailsRolledUp ? " (Rolled Up)" : "")}: {(int)(Durability * 100)}%");
+            
+            dsc.AppendLine($"{GetDurabilityStringForPlayer(forPlayer)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
         }
 
         public float? EfficiencyModifier

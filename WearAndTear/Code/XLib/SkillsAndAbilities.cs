@@ -100,6 +100,14 @@ namespace WearAndTear.Code.XLib
 
             mechanics.SpecialisationID = mechanics.AddAbility(mechanicsSpecialisation);
 
+
+            var preciseMeasurements = new Ability(
+                "precisemeasurements",
+                Lang.GetUnformatted("wearandtear:ability-precise-measurements"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-precise-measurements")
+            );
+            preciseMeasurements.AddRequirement(new AbilityRequirement(mechanicsSpecialisation, 1));
+            mechanics.AddAbility(preciseMeasurements);
             //TODO maybe things limited to specialization?
             //TODO implement stuff from idea list:
 
@@ -164,6 +172,14 @@ namespace WearAndTear.Code.XLib
             var skill = xleveling.IXLevelingAPI.GetPlayerSkillSet(player).FindSkill("mechanics");
             if(skill == null) return;
             skill.AddExperience(exp);
+        }
+
+        public static bool HasPreciseMeasurementsSkill(ICoreAPI api, IPlayer player)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("precisemeasurements");
+            if(ability == null) return false;
+            return ability.Tier > 0;
         }
     }
 }
