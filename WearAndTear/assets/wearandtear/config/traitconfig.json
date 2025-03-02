@@ -1,0 +1,23 @@
+[
+  {
+    "code": "wearandtear-engineer",
+    "type": "positive",
+    "attributes": {},
+    "AppendToClasses": [
+      "clockmaker", //Base Game
+      "gearsmith" //The Remnants
+    ],
+    "OnlyWithTraitRequirementEnabled": true
+  },
+  {
+    "code": "wearandtear-precisemeasurements",
+    "type": "positive",
+    "attributes": {},
+    "AppendToClasses": [
+      "clockmaker", //Base Game
+      "gearsmith" //The Remnants
+    ],
+    "OnlyWithTraitRequirementEnabled": false,
+    "XLibPresenceRequirement": "OnlyWithoutXLib"
+  }
+]

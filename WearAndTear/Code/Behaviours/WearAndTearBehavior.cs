@@ -224,6 +224,25 @@ namespace WearAndTear.Code.Behaviours
                 return false;
             }
 
+            if(WearAndTearModSystem.Config.TraitRequirements && props.RequiredTraits != null)
+            {
+                var characterSystem = Api.ModLoader.GetModSystem<CharacterSystem>();
+
+                var missingTraits = props.RequiredTraits.Where(trait => !characterSystem.HasTrait(player.Player, trait)).ToList();
+                if (missingTraits.Any())
+                {
+                    if (Api is ICoreClientAPI clientApi)
+                    {
+                        clientApi.TriggerIngameError(
+                            this,
+                            "wearandtear:failed-maintenance-missing-traits",
+                            Lang.Get("wearandtear:failed-maintenance-missing-traits", string.Join(", ", missingTraits.Select(trait => Lang.Get($"trait-{trait}"))))
+                        );
+                    }
+                    return false;
+                }
+            }
+
             var maintenanceStrength = props.Strength;
             if(WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
             var originalMaintenanceStrength = maintenanceStrength;

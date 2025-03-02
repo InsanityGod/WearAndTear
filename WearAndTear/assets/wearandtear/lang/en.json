@@ -9,11 +9,18 @@
   "failed-maintenance-not-required": "This type of maintenance is not currently required",
   "failed-maintenance-active": "Can't do this type of maintenance while object is active",
   "failed-maintenance-limit-reached": "Reached the limit for this kind of maintenance",
+  "failed-maintenance-missing-traits": "Requires the following traits: {0}",
 
   "wearandtear:durability-good": "In excellent condition",
   "wearandtear:durability-decent": "In fair condition",
   "wearandtear:durability-bad": "In poor condition",
   "wearandtear:durability-critical": "On the verge of breaking",
+
+  "game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Engineer </font>",
+  "game:traitdesc-wearandtear-engineer": "Allowes for mainting mechanical devices",
+
+  "game:trait-wearandtear-precisemeasurements": "<font color=\"#84ff84\">• Precise Measurements </font>",
+  "game:traitdesc-wearandtear-precisemeasurements": "Allowes you to see exact percentage of durability remaining",
 
   //skills
   "wearandtear:skill-mechanics": "Mechanics",

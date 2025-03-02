@@ -80,7 +80,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc) => dsc.AppendLine(GetDurabilityStringForPlayer(forPlayer));
 
-        public string GetDurabilityStringForPlayer(IPlayer player) => $"{Lang.Get(Props.Name)}: {WearAndTearModSystem.Config.Compatibility.RoughDurabilityEstimate.IsRoughEstimateEnabled(Api, player) switch
+        public string GetDurabilityStringForPlayer(IPlayer player) => $"{Lang.Get(Props.Name)}: {WearAndTearModSystem.IsRoughEstimateEnabled(Api, player) switch
         {
             true when Durability > 0.7 => Lang.Get("wearandtear:durability-good"),
             true when Durability > 0.4 => Lang.Get("wearandtear:durability-decent"),

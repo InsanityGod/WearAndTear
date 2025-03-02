@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Vintagestory.API.Common;
+using Vintagestory.GameContent;
 using WearAndTear.Code.Enums;
 using WearAndTear.Code.XLib;
 
@@ -12,12 +13,13 @@ namespace WearAndTear.Code.Extensions
 {
     public static class EnumExtensions
     {
-        public static bool IsRoughEstimateEnabled(this EOptionalWithXLib optional, ICoreAPI api, IPlayer player)
+        public static bool IsFullfilled(this EXLibPrescenceRequirement requirement) => requirement switch
         {
-            var enabled = optional == EOptionalWithXLib.Enabled || (optional == EOptionalWithXLib.OnlyWithXLib && WearAndTearModSystem.XlibEnabled);
-
-            if(enabled && WearAndTearModSystem.XlibEnabled) return !SkillsAndAbilities.HasPreciseMeasurementsSkill(api, player);
-            return enabled;
-        }
+            EXLibPrescenceRequirement.Disabled => false,
+            EXLibPrescenceRequirement.OnlyWithXLib => WearAndTearModSystem.XlibEnabled,
+            EXLibPrescenceRequirement.OnlyWithoutXLib => !WearAndTearModSystem.XlibEnabled,
+            EXLibPrescenceRequirement.Irrelevant => true,
+            _ => false,
+        };
     }
 }

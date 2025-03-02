@@ -29,10 +29,10 @@ namespace WearAndTear.Config
 
         /// <summary>
         /// When enabled you will see rough estimates rather then exact percentages
-        /// (if you have XLib, you need to get a skill to see exact values)
+        /// (if you have XLib, you need to get a skill to see exact values otherwise you will need the "wearandtear-precisemeasurements" trait)
         /// </summary>
         [Category("XLib / XSkills")]
-        [DefaultValue(EOptionalWithXLib.OnlyWithXLib)]
-        public EOptionalWithXLib RoughDurabilityEstimate { get; set; } = EOptionalWithXLib.OnlyWithXLib;
+        [DefaultValue(EXLibPrescenceRequirement.OnlyWithXLib)]
+        public EXLibPrescenceRequirement RoughDurabilityEstimate { get; set; } = EXLibPrescenceRequirement.Irrelevant;
     }
 }

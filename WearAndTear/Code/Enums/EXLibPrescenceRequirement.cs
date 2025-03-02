@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace WearAndTear.Code.Enums
 {
-    public enum EOptionalWithXLib
+    public enum EXLibPrescenceRequirement
     {
         Disabled = 0,
         OnlyWithXLib = 1,
-        Enabled = 2
+        OnlyWithoutXLib = 2,
+        Irrelevant = 3
     }
 }
