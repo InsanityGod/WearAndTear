@@ -18,10 +18,10 @@ namespace WearAndTear.Code.HarmonyPatches
     {
         [HarmonyPatch(typeof(BlockEntityToolMold), "TryTakeContents")]
         [HarmonyPostfix]
-        public static void ConsumeToolMoldDurability(BlockEntityToolMold __instance, ref bool __result)
+        public static void ConsumeToolMoldDurability(BlockEntityToolMold __instance, IPlayer byPlayer, ref bool __result)
         {
             if (!__result) return;
-            __instance.GetBehavior<WearAndTearMoldPartBehavior>()?.Damage();
+            __instance.GetBehavior<WearAndTearMoldPartBehavior>()?.Damage(byPlayer);
         }
 
         [HarmonyPatch(typeof(BlockEntityToolMold), nameof(BlockEntityToolMold.OnPlayerInteract))]

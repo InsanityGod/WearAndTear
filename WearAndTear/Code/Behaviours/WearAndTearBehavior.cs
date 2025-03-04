@@ -14,6 +14,8 @@ using Vintagestory.Client.NoObf;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
+using WearAndTear.Code.XLib;
+using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours
@@ -153,7 +155,6 @@ namespace WearAndTear.Code.Behaviours
 
         public void UpdateDecal()
         {
-            //TODO option to hide this for MechanicalBlocks
             if (Api is not ICoreClientAPI clientApi || Parts == null) return;
 
             if (DecalCreator == null)
@@ -207,6 +208,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
         {
+            if(byEntity is not EntityPlayer player) return false;
             if (props.RequiredTool != null && !WildcardUtil.Match(props.RequiredTool, byEntity.LeftHandItemSlot?.Itemstack?.Collectible?.Code.Path ?? string.Empty))
             {
                 if (Api is ICoreClientAPI clientApi)
@@ -220,7 +222,30 @@ namespace WearAndTear.Code.Behaviours
 
                 return false;
             }
+
+            if(WearAndTearModSystem.Config.TraitRequirements && props.RequiredTraits != null)
+            {
+                var characterSystem = Api.ModLoader.GetModSystem<CharacterSystem>();
+
+                var missingTraits = props.RequiredTraits.Where(trait => !characterSystem.HasTrait(player.Player, trait)).ToList();
+                if (missingTraits.Any())
+                {
+                    if (Api is ICoreClientAPI clientApi)
+                    {
+                        clientApi.TriggerIngameError(
+                            this,
+                            "wearandtear:failed-maintenance-missing-traits",
+                            Lang.Get("wearandtear:failed-maintenance-missing-traits", string.Join(", ", missingTraits.Select(trait => Lang.Get($"trait-{trait}"))))
+                        );
+                    }
+                    return false;
+                }
+            }
+
             var maintenanceStrength = props.Strength;
+            if(WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
+            var originalMaintenanceStrength = maintenanceStrength;
+
             var anyPartRequiredMaintenance = false;
             var anyPartMaintenanceLimitReached = false;
             var anyPartActive = false;
@@ -235,7 +260,8 @@ namespace WearAndTear.Code.Behaviours
                     continue;
                 }
 
-                var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength);
+                var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength, player);
+                if(WearAndTearModSystem.XlibEnabled) part.PartBonuses?.UpdateForRepair(part, Api, player.Player);
 
                 if (!WearAndTearModSystem.Config.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
                 {
@@ -247,7 +273,7 @@ namespace WearAndTear.Code.Behaviours
             }
 
             //If any maintenance was done
-            if (maintenanceStrength < props.Strength)
+            if (maintenanceStrength < originalMaintenanceStrength)
             {
                 slot.TakeOut(1);
                 slot.MarkDirty();
@@ -258,6 +284,7 @@ namespace WearAndTear.Code.Behaviours
                     byEntity.LeftHandItemSlot.Itemstack.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
                 }
 
+                if (byEntity is EntityPlayer player2 && WearAndTearModSystem.XlibEnabled)SkillsAndAbilities.GiveMechanicExp(player2.Api, player2.Player, (originalMaintenanceStrength - maintenanceStrength) * WearAndTearModSystem.Config.Compatibility.DurabilityToXPRatio);
                 return true;
             }
             else if (Api is ICoreClientAPI clientApi2)

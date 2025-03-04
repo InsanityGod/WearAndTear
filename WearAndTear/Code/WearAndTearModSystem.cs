@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -16,9 +18,12 @@ using WearAndTear.Code.BlockEntities;
 using WearAndTear.Code.Blocks;
 using WearAndTear.Code.Commands;
 using WearAndTear.Code.DecayEngines;
+using WearAndTear.Code.Enums;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config;
 using WearAndTear.DynamicPatches;
 using WearAndTear.HarmonyPatches;
@@ -31,8 +36,11 @@ namespace WearAndTear.Code
 
         private Harmony harmony;
 
+        public static bool XlibEnabled { get; private set; }
         public static bool HelveAxeModLoaded { get; private set; }
         public static ModConfig Config { get; private set; }
+
+        public static bool TraitRequirements { get; private set; }
 
         public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
         {
@@ -45,6 +53,20 @@ namespace WearAndTear.Code
         {
             AutoPartRegistry.Api = api;
             LoadConfig(api);
+            
+            //TODO move this over to world config once they actually support language strings
+            if(api.Side == EnumAppSide.Server)
+            {
+                TraitRequirements = Config.TraitRequirements;
+                api.World.Config.SetBool("wearandtear-traitrequirements", Config.TraitRequirements);
+            }
+            else
+            {
+                TraitRequirements = api.World.Config.GetBool("wearandtear-traitrequirements");
+            }
+
+            XlibEnabled = api.ModLoader.IsModEnabled("xlib");
+            if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
         }
 
         public override void StartServerSide(ICoreServerAPI api)
@@ -143,6 +165,7 @@ namespace WearAndTear.Code
             RegisterOther(api);
 
             apiCache = null;
+            if(XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
         private static void RegisterBehaviours(ICoreAPI api)
         {
@@ -233,6 +256,25 @@ namespace WearAndTear.Code
                     AutoPartRegistry.Register(api, block, harmony);
                 }
             }
+        }
+
+        public static bool IsRoughEstimateEnabled(ICoreAPI api, IPlayer player)
+        {
+            if (Config.Compatibility.RoughDurabilityEstimate.IsFullfilled())
+            {
+                if (XlibEnabled)
+                {
+                    //Check xlib
+                    return !SkillsAndAbilities.HasPreciseMeasurementsSkill(api, player);
+                }
+                else
+                {
+                    //Check traits
+                    return !api.ModLoader.GetModSystem<CharacterSystem>().HasTrait(player, "wearandtear-precisemeasurements");
+                }
+            }
+
+            return false;
         }
 
         public override void Dispose()

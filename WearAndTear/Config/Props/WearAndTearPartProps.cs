@@ -11,6 +11,7 @@ namespace WearAndTear.Config.Props
         /// Name of the part
         /// </summary>
         public string Name { get; set; }
+        //TODO migrate to use language strings instead (should probably wait until major update as it will break existing parts)
 
         /// <summary>
         /// The type of repair tool that will be required to repair this part

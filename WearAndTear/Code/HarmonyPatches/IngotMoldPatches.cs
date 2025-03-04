@@ -35,25 +35,27 @@ namespace WearAndTear.Code.HarmonyPatches
                         codes.InsertRange(i + 2, new CodeInstruction[] {
                             new(OpCodes.Ldarg_0),
                             new(OpCodes.Ldc_I4_1),
+                            new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(DoDamageToIngotMold)))
                         });
-                        i += 3;
+                        i += 4;
                     }
                     else if(field == rightField)
                     {
                         codes.InsertRange(i + 2, new CodeInstruction[] {
                             new(OpCodes.Ldarg_0),
                             new(OpCodes.Ldc_I4_2),
+                            new(OpCodes.Ldarg_1),
                             new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(DoDamageToIngotMold)))
                         });
-                        i += 3;
+                        i += 4;
                     }
                 }
             }
             return codes;
         }
 
-        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side) => instance.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().FirstOrDefault(x => x.Side == side)?.Damage();
+        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer) => instance.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
 
         [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeMold")]
         [HarmonyTranspiler]

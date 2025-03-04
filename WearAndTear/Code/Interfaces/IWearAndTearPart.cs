@@ -2,6 +2,8 @@
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using WearAndTear.Code.XLib;
+using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Interfaces
@@ -37,11 +39,17 @@ namespace WearAndTear.Code.Interfaces
         /// </summary>
         /// <param name="maintenanceStrength">How much can be repaired</param>
         /// <returns>How much can still be repaired with this item (on other parts that is)</returns>
-        float DoMaintenanceFor(float maintenanceStrength)
+        float DoMaintenanceFor(float maintenanceStrength, EntityPlayer player)
         {
-            var allowedMaintenanceStrength = HasMaintenanceLimit ?
-                GameMath.Clamp(maintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
-                maintenanceStrength;
+            var allowedMaintenanceStrength = maintenanceStrength;
+            if (HasMaintenanceLimit)
+            {
+                var limit = Props.MaintenanceLimit.Value;
+
+                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+
+                allowedMaintenanceStrength = GameMath.Clamp(maintenanceStrength, 0, limit - RepairedDurability);
+            }
 
             Durability += allowedMaintenanceStrength;
             var leftOverMaintenanceStrength = maintenanceStrength - allowedMaintenanceStrength + Math.Max(Durability - 1, 0);
@@ -49,6 +57,7 @@ namespace WearAndTear.Code.Interfaces
             if (HasMaintenanceLimit) RepairedDurability += allowedMaintenanceStrength - Math.Max(Durability - 1, 0);
 
             Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+
             return Math.Max(leftOverMaintenanceStrength, 0);
         }
 
@@ -59,5 +68,7 @@ namespace WearAndTear.Code.Interfaces
         public bool OnBreak() => Props.IsCritical;
 
         public float RepairedDurability { get; set; }
+
+        PartBonuses PartBonuses { get; }
     }
 }

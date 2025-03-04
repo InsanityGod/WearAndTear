@@ -8,6 +8,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts.Abstract;
 using WearAndTear.Code.Interfaces;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours.Parts
@@ -157,7 +158,8 @@ namespace WearAndTear.Code.Behaviours.Parts
         public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
             if (!IsPresent) return;
-            dsc.AppendLine($"{Lang.Get(Props.Name)}{(AreSailsRolledUp ? " (Rolled Up)" : "")}: {(int)(Durability * 100)}%");
+            
+            dsc.AppendLine($"{GetDurabilityStringForPlayer(forPlayer)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
         }
 
         public float? EfficiencyModifier
@@ -169,13 +171,19 @@ namespace WearAndTear.Code.Behaviours.Parts
             }
         }
 
-        public float DoMaintenanceFor(float MaintenanceStrength)
+        public float DoMaintenanceFor(float maintenanceStrength, EntityPlayer player)
         {
-            var realMaintenanceStrength = MaintenanceStrength * (4f / (SailLength * BladeCount));
+            var realMaintenanceStrength = maintenanceStrength * (4f / (SailLength * BladeCount));
 
-            var realAllowedMaintenanceStrength = HasMaintenanceLimit ?
-                GameMath.Clamp(realMaintenanceStrength, 0, Props.MaintenanceLimit.Value - RepairedDurability) :
-                realMaintenanceStrength;
+            var realAllowedMaintenanceStrength = realMaintenanceStrength;
+            if (HasMaintenanceLimit)
+            {
+                var limit = Props.MaintenanceLimit.Value;
+
+                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+
+                realAllowedMaintenanceStrength = GameMath.Clamp(realMaintenanceStrength, 0, limit - RepairedDurability);
+            }
 
             Durability += realAllowedMaintenanceStrength;
 

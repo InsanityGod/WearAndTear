@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Config.Props
 {
@@ -14,6 +15,14 @@ namespace WearAndTear.Config.Props
         /// The tool you are required to hold in offhand while using this material to repair
         /// </summary>
         public string RequiredTool { get; set; }
+
+        /// <summary>
+        /// The trait required to use this for maintenance
+        /// </summary>
+        public string[] RequiredTraits { get; set; } = new string[]
+        {
+            "wearandtear-engineer"
+        };
 
         /// <summary>
         /// How much durability the tool loses on repair

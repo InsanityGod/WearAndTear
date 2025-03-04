@@ -13,7 +13,7 @@
       <Private>false</Private>
 	</Reference>
 	  <Reference Include="InDappledGroves">
-		  <HintPath>..\..\Dep\InDappledGroves-1.20-v2.0.1\InDappledGroves.dll</HintPath>
+		  <HintPath>..\..\Dep\InDappledGroves\InDappledGroves.dll</HintPath>
 		  <Private>False</Private>
 	  </Reference>
 	  <Reference Include="MechanicalWoodSplitter">
@@ -59,6 +59,10 @@
     <Reference Include="Microsoft.Data.Sqlite">
       <HintPath>$(VINTAGE_STORY)/Lib/Microsoft.Data.Sqlite.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="xlib">
+      <HintPath>..\..\Dep\xlib_v0.8.13\xlib.dll</HintPath>
+		<Private>False</Private>
     </Reference>
   </ItemGroup>
 
