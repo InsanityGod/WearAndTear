@@ -60,7 +60,7 @@ namespace WearAndTear.Code
             }
             else
             {
-                TraitRequirements = api.World.Config.GetBool("wearandtear-traitrequirements"); //TODO test on server
+                TraitRequirements = api.World.Config.GetBool("wearandtear-traitrequirements");
             }
 
             XlibEnabled = api.ModLoader.IsModEnabled("xlib");

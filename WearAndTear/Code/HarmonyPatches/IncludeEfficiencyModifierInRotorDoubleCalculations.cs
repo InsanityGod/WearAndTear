@@ -27,7 +27,6 @@ namespace WearAndTear.HarmonyPatches
 
             foreach (var type in derivedTypes)
             {
-                //TODO see if this needs to be negative when compleetly 0
                 var property = type.GetProperty("AccelerationFactor", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (property?.GetMethod != null)
                 {

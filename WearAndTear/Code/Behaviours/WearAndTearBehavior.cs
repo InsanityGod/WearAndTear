@@ -155,7 +155,6 @@ namespace WearAndTear.Code.Behaviours
 
         public void UpdateDecal()
         {
-            //TODO option to hide this for MechanicalBlocks
             if (Api is not ICoreClientAPI clientApi || Parts == null) return;
 
             if (DecalCreator == null)
