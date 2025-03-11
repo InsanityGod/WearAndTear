@@ -131,6 +131,7 @@ namespace WearAndTear.Code
 
                 TryPatchCompatibility(api, "indappledgroves");
                 TryPatchCompatibility(api, "linearpower");
+                TryPatchCompatibility(api, "immersivewoodsawing");
 
                 //TODO: revamp to use patch category
                 var millwright = api.ModLoader.GetMod("millwright");
