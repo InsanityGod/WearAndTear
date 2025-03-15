@@ -171,7 +171,7 @@ namespace WearAndTear.Code.Behaviours
                 DecalCache = Traverse.Create(decalSystem).Field("decals");
             }
 
-            var criticalparts = Parts.Where(part => part.Props.IsCritical).ToArray();
+            var criticalparts = Parts.Where(part => part.Props != null && part.Props.IsCritical).ToArray();
             var durability = criticalparts.Length > 0 ? criticalparts.Min(part => part.Durability) : 1;
 
             if (durability > WearAndTearModSystem.Config.VisualTearingMinDurability)
