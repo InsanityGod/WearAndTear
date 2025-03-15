@@ -32,14 +32,14 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
             {
                 if (!ShoulDamageHelveAxe(anvil)) return;
             }
-            else if (!WearAndTearModSystem.Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null) return;
+            else if (!WearAndTearModSystem.Config.SpecialParts.HelveHammer || (!WearAndTearModSystem.Config.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null)) return;
 
             base.DamageItem(amount);
         }
 
         public bool IsHelveAxe => ItemStack?.Collectible is HelveAxe;
 
-        public bool ShoulDamageHelveAxe(object anvil) => anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.ChoppingBlock?.recipecomplete ?? false);
+        public bool ShoulDamageHelveAxe(object anvil) => WearAndTearModSystem.Config.SpecialParts.HelveAxe && anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.ChoppingBlock?.recipecomplete ?? false);
 
         public void ManualDamageIem(int amount = 1) => base.DamageItem(amount);
     }
