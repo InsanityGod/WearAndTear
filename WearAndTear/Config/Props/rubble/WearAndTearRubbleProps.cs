@@ -1,15 +1,20 @@
-﻿using Vintagestory.API.Common;
+﻿using System.ComponentModel;
+using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
 
 namespace WearAndTear.Config.Props.rubble
 {
     public class WearAndTearRubbleProps
     {
-        //TODO something for durability to drop ratio
-        public BlockDropItemStack[] Drops { get; set; }
+        public const string Key = "rubble";
 
-        //TODO see if we can merge shapes somehow
-        //TODO see about providing the original block texture codes (from blocktype)
+        public bool Unstable { get; set; } = true;
+
         public AssetLocation Shape { get; set; }
+
+        public Cuboidf[] CollisionSelectionBoxes { get; set; }
+
+        public bool DamageOnTouch { get; set; }
 
     }
 }

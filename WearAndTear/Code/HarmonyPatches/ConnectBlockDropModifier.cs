@@ -11,12 +11,12 @@ namespace WearAndTear.HarmonyPatches
     [HarmonyPatch]
     public static class ConnectBlockDropModifier
     {
-        public static void Postfix(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, ref ItemStack[] __result)
+        public static void Postfix(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, ref ItemStack[] __result)
         {
             var wearAndTear = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<IWearAndTear>();
             if (wearAndTear != null)
             {
-                __result = wearAndTear.ModifyDroppedItemStacks(__result, world, pos, byPlayer);
+                __result = wearAndTear.ModifyDroppedItemStacks(__result, world, pos, byPlayer, dropQuantityMultiplier);
             }
         }
 

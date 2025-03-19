@@ -7,9 +7,9 @@ namespace WearAndTear.Config.Props
     public class WearAndTearProtectiveTargetProps
     {
         /// <summary>
-        /// Parts with this name will gain this protection
+        /// Parts with this code will gain this protection
         /// </summary>
-        public string Name { get; set; }
+        public string Code { get; set; }
 
         /// <summary>
         /// Parts of this repair type will gain this protection
@@ -23,6 +23,11 @@ namespace WearAndTear.Config.Props
         [Range(0, 1)]
         public float DecayMultiplier { get; set; } = .5f;
 
-        public bool IsEffectiveFor(WearAndTearPartProps props) => props.Name == Name || props.RepairType == RepairType;
+        public bool IsEffectiveFor(WearAndTearPartProps props)
+        {
+            if(Code != null && props.Code != Code) return false;
+            if(RepairType != null && RepairType != props.RepairType) return false;
+            return true;
+        }
     }
 }

@@ -1,0 +1,68 @@
+{
+  "code": "metalscrap",
+  "maxstacksize": 64,
+  "variantgroups": [
+    {
+      "code": "metal",
+      "loadFromProperties": "game:block/metal"
+    }
+  ],
+  "behaviors": [
+    {
+      "name": "WearAndTearMaterialName"
+    }
+  ],
+  "textures": {
+    "metal": { "base": "game:block/metal/ingot/{metal}" }
+  },
+  //TODO maybe allow for forging scrap metal directly by heating it up (for metals that are not smeltable)
+  "shape": { "base": "wearandtear:scrap/metal" },
+  "creativeinventory": {
+    "general": [ "*" ],
+    "items": [ "*" ]
+  },
+  "tpHandTransform": {
+    "translation": {
+      "x": -0.6,
+      "y": -0.4,
+      "z": -0.75
+    },
+    "rotation": {
+      "x": 0,
+      "y": -55,
+      "z": 0
+    },
+    "scale": 0.63
+  },
+  "guiTransform": {
+    "translation": {
+      "x": -2,
+      "y": 7,
+      "z": 0
+    },
+    "rotation": {
+      "x": -42,
+      "y": 12,
+      "z": 0
+    },
+    "scale": 1.8
+  },
+  "groundTransform": {
+    "translation": {
+      "x": 0,
+      "y": 0.29,
+      "z": 0
+    },
+    "rotation": {
+      "x": 1,
+      "y": -61,
+      "z": 0
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.53
+    },
+    "scale": 3
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "code": "woodscrap",
+  "maxstacksize": 64,
+  "variantgroups": [
+    {
+      "code": "wood",
+      "states": [ "aged" ],
+      "loadFromProperties": "game:block/wood"
+    }
+  ],
+  "behaviors": [
+    {
+      "name": "WearAndTearMaterialName"
+    }
+  ],
+  "textures": {
+    "wood": { "base": "game:block/wood/planks/{wood}1" }
+  },
+  "shape": { "base": "wearandtear:scrap/wood" },
+  "creativeinventory": {
+    "general": [ "*" ],
+    "items": [ "*" ]
+  },
+  "tpHandTransform": {
+    "translation": {
+      "x": -0.6,
+      "y": -0.4,
+      "z": -0.9
+    },
+    "rotation": {
+      "x": 2,
+      "y": 46,
+      "z": 0
+    },
+    "scale": 0.63
+  },
+  "groundTransform": {
+    "translation": {
+      "x": 0,
+      "y": 0.35,
+      "z": 0
+    },
+    "rotation": {
+      "x": -180,
+      "y": -80,
+      "z": 180
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.5299
+    },
+    "scale": 3.6
+  },
+  "guiTransform": {
+    "translation": {
+      "x": 5,
+      "y": 0,
+      "z": 0
+    },
+    "rotation": {
+      "x": -48,
+      "y": -4,
+      "z": 0
+    },
+    "scale": 1.8
+  }
+}

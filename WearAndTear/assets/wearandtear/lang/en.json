@@ -1,21 +1,58 @@
 {
   "durability": "durability",
-  "item-sawdust": "Sawdust",
-  "itemdesc-sawdust": "Byproduct created when sawing wood",
-  "item-woodfiller": "Wood Filler",
-  "itemdesc-woodfiller": "Usefull for repairing damage to wood",
   "maintenance": "Do maintenance",
   "repaired": "repaired",
+  "optional": "Optional",
   "failed-maintenance-not-required": "This type of maintenance is not currently required",
   "failed-maintenance-active": "Can't do this type of maintenance while object is active",
   "failed-maintenance-limit-reached": "Reached the limit for this kind of maintenance",
   "failed-maintenance-missing-traits": "Requires the following traits: {0}",
 
+  //Rough estimates
   "wearandtear:durability-good": "In excellent condition",
   "wearandtear:durability-decent": "In fair condition",
   "wearandtear:durability-bad": "In poor condition",
-  "wearandtear:durability-critical": "On the verge of breaking",
+  "wearandtear:durability-critical": "On the verge of breaking", //TODO fix mold parts
 
+  //Decay
+  "wearandtear:decay-wind": "Wind Decay",
+  "wearandtear:decay-humidity": "Humidity Decay",
+  "wearandtear:decay-time": "Time Decay",
+  "wearandtear:decay-usage": "Usage Decay",
+
+  //items
+
+  "item-sawdust": "Sawdust",
+  "itemdesc-sawdust": "Byproduct created when sawing wood",
+  "item-woodfiller": "Wood Filler",
+  "itemdesc-woodfiller": "Usefull for repairing damage to wood",
+
+  "item-metalscrap-*": "Metal Scrap",
+  "itemdesc-metalscrap-*": "Leftovers from something that used to be functional",
+  "item-woodscrap-*": "Wood Scrap",
+  "itemdesc-woodscrap-*": "Leftovers from something that used to be functional",
+  //Parts
+  "wearandtear:partname-frame": "Frame ({0})",
+  "wearandtear:partname-mechanism-encased": "Encased Mechanism ({0})",
+  "wearandtear:partname-wax": "Wax", //TODO protective info
+  "wearandtear:partname-reinforcement": "Reinforcement ({0})",
+
+  "wearandtear:partname-mold": "Mold", //TODO statistics?
+  "wearandtear:partname-ingotmold-left": "Ingot Mold (Left)",
+  "wearandtear:partname-ingotmold-right": "Ingot Mold (Right)",
+
+  "wearandtear:partname-sail": "Sail", //TODO extra info?
+
+  //Materials
+  "game:material-unknown": "Unknown",
+  "wearandtear:material-wood": "Wood",
+  "wearandtear:material-ceramic": "Ceramic",
+
+  //blocks
+  "wearandtear:block-rubble-unstable": "Rubble (unstable)",
+  "wearandtear:block-rubble-stable": "Rubble (stable)",
+
+  //traits
   "game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Engineer </font>",
   "game:traitdesc-wearandtear-engineer": "Allowes for mainting mechanical devices",
 
@@ -33,14 +70,14 @@
 
   "wearandtear:ability-limitbreaker": "Limit Breaker",
   "wearandtear:abilitydesc-limitbreaker": "Allows you to go over the maintenance limit by {0}%",
-  
+
   "wearandtear:ability-precise-measurements": "Precise Measurements",
   "wearandtear:abilitydesc-precise-measurements": "Allowes you to see durability as a percentage",
-  
+
   "wearandtear:ability-reinforcer": "Reinforcer",
   "wearandtear:abilitydesc-reinforcer": "When repairing reinforcements you also improve them, increasing their effectiveness by {0}%
 (only applies once)",
-  
+
   "wearandtear:ability-engineer": "Engineer",
   "wearandtear:abilitydesc-engineer": "You will receive {0}% more experience for the mechanics skill.
 The amount of professions you can learn is limited.
@@ -49,9 +86,16 @@ Trust me I'm an engineer!",
 
   "wearandtear:ability-careful-caster": "Carefull Caster",
   "wearandtear:abilitydesc-careful-caster": "Reduce durability cost when removing casted items from molds by {0}%",
-  
+
   "wearandtear:ability-expert-caster": "Expert Caster",
   "wearandtear:abilitydesc-expert-caster": "An expert caster leaves nothing up to chance. (mold durability loss is always at it's lowest)",
+  //Handbook appending
+
+  "wearandtear:handbook-heading": "Wear And Tear",
+  "wearandtear:handbook-lifespan": "Average (unsheltered) lifespan of {0} years",
+  "wearandtear:handbook-critical": "This part is critical for mainting the structural integrity of the block",
+  "wearandtear:handbook-decay": "This part is susceptible to: {0}",
+  "wearandtear:handbook-scrap": "Leftover Scrap",
   //Handbook entries
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",
@@ -90,5 +134,5 @@ Metal parts can be repaired using matching <a href=\"handbook://item-metalnailsa
 
 <font weight='bold' align='center'>Troubleshooting</font>
 if you can't repair something and you're not getting an error message try doing it while crouching and in the case of multiblocks try out the different blocks. On the Fruit Press for instance you need to crouch and aim at the bottom block. In the case of Metal Parts make sure your repair material matches the metal type (so Black bronze nails and strips for a Black bronze reinforcement)
-"
+  "
 }

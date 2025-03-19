@@ -2,7 +2,40 @@
   "code": "rubble",
   "class": "WearAndTear.RubbleBlock",
   "entityClass": "WearAndTear.RubbleBlockEntity",
+  "shape": { "base": "wearandtear:rubble" },
+  "textures": {
+    "metal": { "base": "game:block/metal/ingot/tinbronze" },
+    "wood": { "base": "game:block/wood/planks/oak1" }
+  },
   "lightAbsorption": 0,
+  "variantgroups": [
+    {
+      "code": "stability",
+      "states": [ "stable", "unstable" ]
+    }
+  ],
+  "behaviorsByType": {
+    "*-unstable": [
+      {
+        "name": "UnstableFalling",
+        "properties": {
+          "fallSound": "game:effect/rockslide", //TODO maybe a custom sound effect
+          "dustIntensity": 0,
+          "fallSidewaysChance": 0
+        }
+      }
+    ]
+  },
+  "resistance": 0.5,
+  "attributes": {},
+  "collisionbox": {
+    "x1": 0.0625,
+    "y1": 0,
+    "z1": 0.0625,
+    "x2": 0.9375,
+    "y2": 0.125,
+    "z2": 0.9375
+  },
   "sideAo": { "all": false },
   "sidesolid": {
     "all": false

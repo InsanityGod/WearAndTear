@@ -3,6 +3,7 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Code.Interfaces
 {
@@ -14,7 +15,7 @@ namespace WearAndTear.Code.Interfaces
 
         public bool IsSheltered => false;
 
-        public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer);
+        public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f);
 
         bool IsRepairableWith(WearAndTearRepairItemProps props) => Parts.Exists(part => part.CanDoMaintenanceWith(props));
 

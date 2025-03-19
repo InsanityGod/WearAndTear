@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Client;
@@ -17,6 +18,7 @@ using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Code.Behaviours
 {
@@ -28,10 +30,11 @@ namespace WearAndTear.Code.Behaviours
 
         private RoomRegistry RoomRegistry;
 
-        public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer)
+        public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
         {
             string blockCode = Block.Code.Path.Split('-')[0];
             var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
+            bool isBlockDestroyed = false;
             if (normalItem != null)
             {
                 ITreeAttribute tree = new TreeAttribute();
@@ -42,30 +45,41 @@ namespace WearAndTear.Code.Behaviours
                 {
                     if (part.Props.IsCritical && part.Durability <= 0)
                     {
-                        return itemStacks.Remove(normalItem);
+                        itemStacks = itemStacks.Remove(normalItem);
+                        normalItem = null;
+                        isBlockDestroyed = true;
+                        break;
                     }
 
                     if (part is IWearAndTearOptionalPart optionalPart)
                     {
-                        if (!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Name);
+                        if (!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Code);
                         continue;
                     }
 
-                    if (part.Durability > WearAndTearModSystem.Config.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Name);
+                    if (part.Durability > WearAndTearModSystem.Config.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Code);
                 }
 
-                //Remove all unnecary variables
-                foreach (var item in tree.Where(item => item.Key.EndsWith("_Repaired") && (float)item.Value.GetValue() == 0).ToList())
+                if(normalItem != null)
                 {
-                    tree.RemoveAttribute(item.Key);
-                }
+                    //Remove all unnecary variables
+                    foreach (var item in tree.Where(item => item.Key.EndsWith("_Repaired") && (float)item.Value.GetValue() == 0).ToList())
+                    {
+                        tree.RemoveAttribute(item.Key);
+                    }
 
-                if (tree.Count > 0)
-                {
-                    normalItem.Attributes
-                        .GetOrAddTreeAttribute("WearAndTear-Durability")
-                        .MergeTree(tree);
+                    if (tree.Count > 0)
+                    {
+                        normalItem.Attributes
+                            .GetOrAddTreeAttribute("WearAndTear-Durability")
+                            .MergeTree(tree);
+                    }
                 }
+            }
+
+            foreach(var part in Parts)
+            {
+                itemStacks = part.ModifyDroppedItemStacks(itemStacks, world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
             }
 
             return itemStacks;
@@ -84,7 +98,8 @@ namespace WearAndTear.Code.Behaviours
             if (api.Side == EnumAppSide.Client) QueueDecalUpdate();
             if (api.Side != EnumAppSide.Server) return;
             if (!Parts.Exists(part => part.RequiresUpdateDecay)) return;
-            //TODO maybe create a manager for this to reduce the ammount of GameTickListeners
+
+            //TODO maybe create a manager for this to reduce the ammount of GameTickListeners (and allow for more gradual ticking)
             Blockentity.RegisterGameTickListener(_ => UpdateDecay(Api.World.Calendar.TotalDays - LastDecayUpdate.Value), WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs, Api.World.Rand.Next(0, WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs));
         }
 
@@ -134,11 +149,64 @@ namespace WearAndTear.Code.Behaviours
             {
                 if (part.Durability <= 0 && part.OnBreak())
                 {
-                    Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
+                    if(WearAndTearModSystem.Config.Rubble.RubbleBlock)
+                    {
+                        GenerateRubbleBlock();
+                    }
+                    else Api.World.BlockAccessor.BreakBlock(Pos, null, 0);
                 }
             }
 
             Blockentity.MarkDirty();
+        }
+
+        public void GenerateRubbleBlock()
+        {
+            var stabilityVariant = Block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Unstable)].AsBool(true) ? "unstable" : "stable";
+
+            var rubbleBlock = Api.World.GetBlock($"wearandtear:rubble-{stabilityVariant}");
+            if (rubbleBlock == null)
+            {
+                Api.Logger.Error("[WearAndTear] failed to generate rubble (block not found)");
+                return;
+            }
+
+            var stack = new ItemStack(Block);
+            foreach(var part in Parts)
+            {
+                (part as BlockEntityBehavior)?.ToTreeAttributes(stack.Attributes);
+            }
+            ToTreeAttributes(stack.Attributes);
+
+            try
+            {
+                var drops = Block.GetDrops(Api.World, Pos, null);
+
+                //TODO Container drops (helve hammer)
+                //TODO Making sure we atleast see something when none of the drops actually provide textures
+
+                if(drops.Length == 0)
+                {
+                    //No point in creating rubble if it doesn't contain anything
+                    Api.World.BlockAccessor.BreakBlock(Pos, null);
+                    return;
+                }
+
+                var normalDropsTree = stack.Attributes.GetOrAddTreeAttribute("rubble-normal-drops");
+                
+                for(var i = 0; i < drops.Length; i++)
+                {
+                    normalDropsTree.SetItemstack(i.ToString(), drops[i]);
+                }
+            }
+            catch(Exception ex)
+            {
+                Api.Logger.Error("[WearAndTear] Failed to get normal drops for rubble: {0}", ex);
+            }
+
+            Block.OnBlockBroken(Api.World, Pos, null, 0);
+
+            Api.World.BlockAccessor.SetBlock(rubbleBlock.BlockId, Pos, stack);
         }
 
         private object decal;

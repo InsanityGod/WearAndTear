@@ -47,6 +47,14 @@ namespace WearAndTear.Config
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinimalMetalCompositionPercentage { get; set; } = .8f;
+        
+        /// <summary>
+        /// The minimal percentage the composition of wood ingredients is required for that wood to be the primary wood type
+        /// </summary>
+        [Range(0, 1)]
+        [DefaultValue(.8f)]
+        [DisplayFormat(DataFormatString = "P")]
+        public float MinimalWoodCompositionPercentage { get; set; } = .8f;
 
         /// <summary>
         /// Wether all recipes have to contain metal for it to apply metal reinforcement
@@ -63,11 +71,13 @@ namespace WearAndTear.Config
                 EnumBlockMaterial.Wood,
                 new()
                 {
-                    Name = "Frame (Wood)",
+                    Code = "wearandtear:frame",
+                    MaterialVariant = "wearandtear:wood",
                     AvgLifeSpanInYears = 1,
                     RepairType = "wood",
                     IsCritical = true,
                     MaintenanceLimit = .4f,
+                    ScrapCode = "wearandtear:woodscrap-*",
                     Decay = new WearAndTearDecayProps[]
                     {
                         new()
@@ -85,11 +95,13 @@ namespace WearAndTear.Config
                 EnumBlockMaterial.Ceramic,
                 new()
                 {
-                    Name = "Frame (Ceramic)",
+                    Code = "wearandtear:frame",
+                    MaterialVariant = "wearandtear:ceramic",
                     AvgLifeSpanInYears = 1,
                     RepairType = "ceramic",
                     IsCritical = true,
                     MaintenanceLimit = .4f,
+                    ScrapCode = "wearandtear:woodscrap-*",
                     Decay = new WearAndTearDecayProps[]
                     {
                         new()
@@ -114,7 +126,7 @@ namespace WearAndTear.Config
                     {
                         PartProps = new()
                         {
-                            Name = "Wax",
+                            Code = "wearandtear:wax",
                             AvgLifeSpanInYears = 1,
                             RepairType = "wax",
                             Decay = new WearAndTearDecayProps[]
@@ -149,14 +161,14 @@ namespace WearAndTear.Config
         /// </summary>
         public WearAndTearProtectivePartConfig MetalReinforcementTemplate { get; set; } = new()
         {
-            //TODO implement scrap materials that will drop on destruction due to other parts failing (scrap metal, scrap wood, etc)
             PartProps = new()
             {
-                Name = "Metal Reinforcement (*)",
+                Code = "wearandtear:reinforcement",
                 AvgLifeSpanInYears = 4,
                 IsCritical = true,
-                RepairType = "metal-*",
+                RepairType = "metal",
                 MaintenanceLimit = .2f,
+                ScrapCode = "wearandtear:metalscrap-*",
                 Decay = new WearAndTearDecayProps[]
                 {
                     new()

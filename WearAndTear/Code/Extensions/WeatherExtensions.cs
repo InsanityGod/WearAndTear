@@ -25,7 +25,7 @@ namespace WearAndTear.Code.Extensions
                 }
                 else if(WearAndTearModSystem.Config.EnableDebugLogging)
                 {
-                    world.Logger.Warning($"WearAndTear: Invalid climate data at {pos} for totalDays {now - timePassed} (skipping poll)");
+                    world.Logger.Warning($"[WearAndTear] Invalid climate data at {pos} for totalDays {now - timePassed} (skipping poll)");
                 }
                 
                 timePassed -= pollInterval;
@@ -33,7 +33,7 @@ namespace WearAndTear.Code.Extensions
 
             if (pollCount == 0)
             {
-                if(WearAndTearModSystem.Config.EnableDebugLogging) world.Logger.Warning("WearAndTear: totally failed to poll climate data (returning default template)");
+                if(WearAndTearModSystem.Config.EnableDebugLogging) world.Logger.Warning("[WearAndTear] totally failed to poll climate data (returning default template)");
 
                 return new ClimateCondition
                 {

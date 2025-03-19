@@ -1,8 +1,9 @@
 ﻿using HarmonyLib;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
@@ -118,23 +119,24 @@ namespace WearAndTear.Code.Behaviours.Parts
             base.UpdateDecay(daysPassed);
         }
 
-        public void DropSails()
+        public override ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed)
         {
-            if (!IsPresent) return;
+            if (!IsPresent) return itemStacks;
+            var sailItems = new List<ItemStack>();
 
             if (Durability > WearAndTearModSystem.Config.DurabilityLeeway) Durability = 1;
             var item = SailAssetLocation;
             var sailCount = BladeCount;
             var sailLength = SailLength;
 
-            var sailItemCount = sailLength * sailCount * Durability;
+            var sailItemCount = sailLength * sailCount * Durability * dropQuantityMultiplier;
 
             while (sailItemCount >= 1)
             {
                 var stackSize = (int)Math.Min(sailItemCount, sailCount);
                 sailItemCount -= stackSize;
 
-                Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation(item)), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
+                sailItems.Add(new ItemStack(world.GetItem(new AssetLocation(item)), stackSize));
             }
 
             if (sailItemCount > 0)
@@ -147,8 +149,19 @@ namespace WearAndTear.Code.Behaviours.Parts
                 var stackSize = (int)Math.Min(sailItemCount, 32);
                 sailItemCount -= stackSize;
 
-                Api.World.SpawnItemEntity(new ItemStack(Api.World.GetItem(new AssetLocation("flaxtwine")), stackSize), Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
+                sailItems.Add(new ItemStack(world.GetItem(new AssetLocation("flaxtwine")), stackSize));
             }
+
+            return base.ModifyDroppedItemStacks(itemStacks.Concat(sailItems).ToArray(), world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
+        }
+
+        public void DropSails()
+        {
+            if (!IsPresent) return;
+
+            var items = ModifyDroppedItemStacks(Array.Empty<ItemStack>(), Api.World, Pos, null, 1, false);
+
+            foreach(var item in items) Api.World.SpawnItemEntity(item, Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
 
             SailLength = 0;
             Durability = 1;

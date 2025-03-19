@@ -23,7 +23,7 @@ namespace WearAndTear.Code.XLib.Containers
             //Skip if default configuration
             if(ProtectionModifier == 1f && DecayModifier == 1f) return;
 
-            var bonusTree = tree.GetOrAddTreeAttribute("WearAndTear-Bonuses").GetOrAddTreeAttribute(props.Name);
+            var bonusTree = tree.GetOrAddTreeAttribute("WearAndTear-Bonuses").GetOrAddTreeAttribute(props.Code);
             
             bonusTree.SetFloat(nameof(DecayModifier), DecayModifier);
             bonusTree.SetFloat(nameof(ProtectionModifier), ProtectionModifier);
@@ -31,7 +31,7 @@ namespace WearAndTear.Code.XLib.Containers
 
         public void FromTreeAttributes(ITreeAttribute tree, WearAndTearPartProps props)
         {
-            var bonusTree = tree.GetTreeAttribute("WearAndTear-Bonuses")?.GetTreeAttribute(props.Name);
+            var bonusTree = tree.GetTreeAttribute("WearAndTear-Bonuses")?.GetTreeAttribute(props.Code);
             if(bonusTree == null) return;
             
             DecayModifier = bonusTree.GetFloat(nameof(DecayModifier), DecayModifier);
@@ -43,12 +43,12 @@ namespace WearAndTear.Code.XLib.Containers
             //Reset values to default
             DecayModifier = 1f;
             ProtectionModifier = 1f;
-            if(part.Props.Name == "Wax")
+            if(part.Props.Code == "wearandtear:wax")
             {
                 SkillsAndAbilities.ApplyButterFingerBonus(this, api, player);
             }
 
-            if (part.Props.Name.Contains("reinforcement", StringComparison.OrdinalIgnoreCase))
+            if (part.Props.Code == "wearandtear:reinforcement")
             {
                 SkillsAndAbilities.ApplyReinforcerBonus(this, api, player);
             }

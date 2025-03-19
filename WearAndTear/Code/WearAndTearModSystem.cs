@@ -3,10 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
-using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -14,11 +12,11 @@ using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.Behaviours.Parts.Item;
 using WearAndTear.Code.Behaviours.Parts.Protective;
+using WearAndTear.Code.Behaviours.Util;
 using WearAndTear.Code.BlockEntities;
 using WearAndTear.Code.Blocks;
 using WearAndTear.Code.Commands;
 using WearAndTear.Code.DecayEngines;
-using WearAndTear.Code.Enums;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
@@ -72,7 +70,7 @@ namespace WearAndTear.Code
         public override void StartServerSide(ICoreServerAPI api)
         {
             base.StartServerSide(api);
-            SetDurabilityCommand.Register(api);
+            Commands.Commands.Register(api);
         }
 
         #region HarmonyWorkAround
@@ -93,7 +91,7 @@ namespace WearAndTear.Code
             {
                 try
                 {
-                    apiCache.Logger.Warning($"Could not get types from assembly '{assembly.FullName}', WearAndTear Harmony Patches might not have applied propperly for this mod");
+                    apiCache.Logger.Warning($"[WearAndTear] Could not get types from assembly '{assembly.FullName}', WearAndTear Harmony Patches might not have applied propperly for this mod");
                 }
                 catch { }
                 return Enumerable.Empty<Type>();
@@ -114,7 +112,7 @@ namespace WearAndTear.Code
                 catch (Exception ex)
                 {
                     api.Logger.Error(ex);
-                    api.Logger.Warning($"Failed to do compatibility patches between WearAndTear and {mod.Info.Name}");
+                    api.Logger.Warning($"[WearAndTear] Failed to do compatibility patches between WearAndTear and {mod.Info.Name}");
                 }
             }
         }
@@ -151,7 +149,7 @@ namespace WearAndTear.Code
                     catch (Exception ex)
                     {
                         api.Logger.Error(ex);
-                        api.Logger.Warning("Failed to do compatibility patches between WearAndTear and Millwright");
+                        api.Logger.Warning("[WearAndTear] Failed to do compatibility patches between WearAndTear and Millwright");
                     }
                 }
 
@@ -182,6 +180,7 @@ namespace WearAndTear.Code
             api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
 
             api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
+            api.RegisterCollectibleBehaviorClass("WearAndTearMaterialName", typeof(WearAndTearMaterialName));
         }
 
         private static void RegisterOther(ICoreAPI api)
@@ -201,7 +200,7 @@ namespace WearAndTear.Code
             catch (Exception ex)
             {
                 api.Logger.Error(ex);
-                api.Logger.Warning("Failed to load config, using default values instead");
+                api.Logger.Warning("[WearAndTear] Failed to load config, using default values instead");
                 Config = new();
             }
             LoadFeatureFlags(api);
@@ -239,7 +238,8 @@ namespace WearAndTear.Code
                 var ingotMoldMethod = AccessTools.Method(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.GetBlockInfo));
                 if(ingotMoldMethod != null) AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, ingotMoldMethod);
             }
-
+            
+            FinalizeScrap(api);
             if (api.Side != EnumAppSide.Server) return;
 
             foreach (var block in api.World.Blocks)
@@ -254,8 +254,45 @@ namespace WearAndTear.Code
 
                 if (Config.AutoPartRegistry.Enabled)
                 {
-                    AutoPartRegistry.Register(api, block, harmony);
+                    AutoPartRegistry.Register(block);
                 }
+            }
+
+            AutoPartRegistry.ClearAnalyzerCache();
+        }
+
+        public void FinalizeScrap(ICoreAPI api)
+        {
+            foreach(var woodscrap in api.World.Items.Where(item => item.FirstCodePart() == "woodscrap"))
+            {
+                var woodVariant = woodscrap.Variant["wood"];
+                var plank = api.World.GetItem($"game:plank-{woodVariant}");
+                if(plank == null)
+                {
+                    api.Logger.Error("[WearAndTear] No plank for {0} variant and this is required for wearandtear:woodscrap to function propperly", woodVariant);
+                    continue;
+                }
+
+                woodscrap.MaterialDensity = plank.MaterialDensity;
+                //woodscrap.Textures = plank.Textures.ToDictionary(item => item.Key, item => item.Value);
+                woodscrap.CombustibleProps = plank.CombustibleProps.Clone();
+            }
+
+            foreach(var metalscrap in api.World.Items.Where(item => item.FirstCodePart() == "metalscrap"))
+            {
+                var metalVariant = metalscrap.Variant["metal"];
+                var ingot = api.World.GetItem($"game:ingot-{metalVariant}");
+                if(ingot == null)
+                {
+                    api.Logger.Error("[WearAndTear] No ingot for {0} variant and this is required for wearandtear:metalscrap to function propperly", metalVariant);
+                    continue;
+                }
+
+                metalscrap.MaterialDensity = ingot.MaterialDensity;
+                //metalscrap.Textures = ingot.Textures.ToDictionary(item => item.Key, item => item.Value); //TODO copy correct texture only
+                metalscrap.CombustibleProps = ingot.CombustibleProps?.Clone();
+                if(metalscrap.CombustibleProps == null) continue;
+                metalscrap.CombustibleProps.SmeltedRatio = 4;
             }
         }
 

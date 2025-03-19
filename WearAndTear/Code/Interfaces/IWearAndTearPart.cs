@@ -20,7 +20,11 @@ namespace WearAndTear.Code.Interfaces
             //empty default
         }
 
-        public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props) => props.RepairType == Props.RepairType;
+        public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props)
+        {
+            if(props.RequiredMaterialVariant != null && props.RequiredMaterialVariant != Props.MaterialVariant) return false;
+            return props.RepairType == Props.RepairType;
+        }
 
         public float? EfficiencyModifier => Props.DurabilityEfficiencyRatio == 0 ? null : 1 - (1f - Durability) * Props.DurabilityEfficiencyRatio;
 
@@ -66,9 +70,11 @@ namespace WearAndTear.Code.Interfaces
         /// </summary>
         /// <returns>true if default behavior should run</returns>
         public bool OnBreak() => Props.IsCritical;
+        public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed) => itemStacks;
+        public string GetDisplayName();
 
         public float RepairedDurability { get; set; }
 
-        PartBonuses PartBonuses { get; }
+        public PartBonuses PartBonuses { get; }
     }
 }

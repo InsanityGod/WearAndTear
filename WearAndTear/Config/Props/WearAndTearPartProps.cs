@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Vintagestory.API.Common;
+using Vintagestory.API.Config;
 using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Config.Props
@@ -8,10 +10,30 @@ namespace WearAndTear.Config.Props
     public class WearAndTearPartProps
     {
         /// <summary>
+        /// The code of the part (for making certain kinds of parts)
+        /// </summary>
+        public AssetLocation Code { get; set; }
+
+        /// <summary>
+        /// The variant of the material
+        /// </summary>
+        public AssetLocation MaterialVariant { get; set; }
+
+        /// <summary>
         /// Name of the part
         /// </summary>
-        public string Name { get; set; }
-        //TODO migrate to use language strings instead (should probably wait until major update as it will break existing parts)
+        [Obsolete("Should use Code from now on")]
+        public string Name { get; set; } //TODO check migration
+
+        /// <summary>
+        /// How much content this part has (affects the ammount of scrap generated)
+        /// </summary>
+        public float ContentLevel { get; set; }
+        
+        /// <summary>
+        /// What kind of scrap will be produced when this part is destroyed
+        /// </summary>
+        public AssetLocation ScrapCode { get; set; }
 
         /// <summary>
         /// The type of repair tool that will be required to repair this part
@@ -56,10 +78,11 @@ namespace WearAndTear.Config.Props
             }
         };
 
-        /// <summary>
-        /// Configuration for rubble that will be left behind when the block breaks
-        /// </summary>
-        [Browsable(false)] //This is auto filled by the Auto Part Registry
-        public WearAndTearRubbleProps Rubble { get; set; }
+        public object[] GetDisplayNameParams() => new object[]
+        {
+            MaterialVariant == null ? string.Empty : Lang.Get($"{MaterialVariant.Domain}:material-{MaterialVariant.Path}")
+        };
+
+        public string GetDisplayName() => Lang.Get($"{Code.Domain}:partname-{Code.Path}", GetDisplayNameParams());
     }
 }

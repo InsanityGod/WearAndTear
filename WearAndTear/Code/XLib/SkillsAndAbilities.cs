@@ -109,7 +109,6 @@ namespace WearAndTear.Code.XLib
             preciseMeasurements.AddRequirement(new AbilityRequirement(mechanicsSpecialisation, 1));
             mechanics.AddAbility(preciseMeasurements);
             //TODO maybe things limited to specialization?
-            //TODO implement stuff from idea list:
 
             //TODO (once we have the rubble mechanism setup, so we can refund) Temporal Tinkerer //I think we'll put this temporal gear right here
         }

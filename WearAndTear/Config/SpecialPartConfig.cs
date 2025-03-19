@@ -48,7 +48,7 @@ namespace WearAndTear.Config
         /// </summary>
         public WearAndTearPartProps WindmillSails { get; set; } = new()
         {
-            Name = "Sail",
+            Code = "wearandtear:sail",
             RepairType = "cloth",
             DurabilityEfficiencyRatio = 1,
             Decay = new WearAndTearDecayProps[]

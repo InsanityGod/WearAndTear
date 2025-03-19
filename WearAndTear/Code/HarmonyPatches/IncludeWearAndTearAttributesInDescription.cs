@@ -6,8 +6,10 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using static HarmonyLib.Code;
 
 namespace WearAndTear.HarmonyPatches
 {

@@ -14,12 +14,12 @@ namespace WearAndTear.DynamicPatches
         //TODO Molds should live outside AutoPartRegistry scope as well
         public static WearAndTearPartProps DefaultHelveItemPartProps => new()
         {
-            Name = "HelveItem"
+            Code = "helveitem"
         };
 
         public static WearAndTearPartProps DefaultPulverizerItemPartProps => new()
         {
-            Name = "PulverizerItem"
+            Code = "pulverizeritem"
         };
 
         public static void PatchClutch(Block block)
@@ -50,16 +50,16 @@ namespace WearAndTear.DynamicPatches
 
         public static void PatchIngotMold(Block block)
         {
-            if(!WearAndTearModSystem.Config.SpecialParts.Molds || block is not BlockIngotMold) return; //TODO maybe check for entity as well
+            if(!WearAndTearModSystem.Config.SpecialParts.Molds || block is not BlockIngotMold) return;
 
             block.EnsureBaseWearAndTear(true);
             var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             var frame = JToken.FromObject(frameProps);
             
-            frame["Name"] = "Ingot Mold (Left)";
+            frame["Code"] = "wearandtear:ingotmold-left";
             block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame.DeepClone());
             
-            frame["Name"] = "Ingot Mold (Right)";
+            frame["Code"] = "wearandtear:ingotmold-right";
             block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame);
         }
 

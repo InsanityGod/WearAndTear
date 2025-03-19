@@ -1,0 +1,91 @@
+{
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {
+	},
+	"textures": {
+		"metal": "game:block/metal/ingot/copper"
+	},
+	"elements": [
+		{
+			"name": "origin",
+			"from": [ 8.0, 0.0, 8.0 ],
+			"to": [ 8.0, 0.0, 8.0 ],
+			"rotationOrigin": [ 8.0, 0.0, 8.0 ],
+			"faces": {
+			},
+			"children": [
+				{
+					"name": "wood1",
+					"from": [ -8.0, 0.0, -1.5 ],
+					"to": [ 8.0, 1.0, 1.5 ],
+					"rotationOrigin": [ 0.0, 0.0, 0.0 ],
+					"rotationY": 45.0,
+					"faces": {
+						"north": { "texture": "#metal", "uv": [ 0.0, 6.0, 16.0, 7.0 ] },
+						"east": { "texture": "#metal", "uv": [ 3.0, 5.5, 6.0, 6.5 ] },
+						"south": { "texture": "#metal", "uv": [ 0.0, 3.0, 16.0, 4.0 ] },
+						"west": { "texture": "#metal", "uv": [ 1.5, 3.0, 4.5, 4.0 ] },
+						"up": { "texture": "#metal", "uv": [ 0.0, 7.0, 16.0, 10.0 ] },
+						"down": { "texture": "#metal", "uv": [ 0.0, 7.0, 16.0, 10.0 ] }
+					},
+					"children": [
+						{
+							"name": "chunk1",
+							"from": [ -2.0, 0.0, 1.5 ],
+							"to": [ 0.0, 1.0, 2.5 ],
+							"rotationOrigin": [ -1.0, 0.0, 1.5 ],
+							"faces": {
+								"north": { "texture": "#metal", "uv": [ 7.5, 11.0, 9.5, 12.0 ] },
+								"south": { "texture": "#metal", "uv": [ 8.0, 5.5, 10.0, 6.5 ] },
+								"west": { "texture": "#metal", "uv": [ 13.0, 1.0, 14.0, 2.0 ] },
+								"up": { "texture": "#metal", "uv": [ 1.5, 11.0, 3.5, 12.0 ] },
+								"down": { "texture": "#metal", "uv": [ 4.5, 6.0, 6.5, 7.0 ] }
+							}
+						},
+						{
+							"name": "chunk2",
+							"from": [ -1.0, 0.0, 0.5 ],
+							"to": [ 0.0, 1.0, 1.5 ],
+							"rotationOrigin": [ 0.0, 0.0, 0.5 ],
+							"faces": {
+								"north": { "texture": "#metal", "uv": [ 10.0, 3.0, 11.0, 4.0 ] },
+								"west": { "texture": "#metal", "uv": [ 13.5, 6.5, 14.5, 7.5 ] },
+								"up": { "texture": "#metal", "uv": [ 6.5, 8.0, 7.5, 9.0 ] },
+								"down": { "texture": "#metal", "uv": [ 0.5, 11.5, 1.5, 12.5 ] }
+							}
+						},
+						{
+							"name": "chunk3",
+							"from": [ 16.0, 0.0, 0.0 ],
+							"to": [ 18.0, 1.0, 1.0 ],
+							"rotationOrigin": [ 16.0, 0.0, 0.0 ],
+							"faces": {
+								"north": { "texture": "#metal", "uv": [ 8.5, 2.5, 10.5, 3.5 ] },
+								"east": { "texture": "#metal", "uv": [ 7.5, 6.0, 8.5, 7.0 ] },
+								"south": { "texture": "#metal", "uv": [ 7.5, 7.5, 9.5, 8.5 ] },
+								"up": { "texture": "#metal", "uv": [ 10.0, 8.0, 12.0, 9.0 ] },
+								"down": { "texture": "#metal", "uv": [ 0.0, 12.0, 2.0, 13.0 ] }
+							}
+						},
+						{
+							"name": "chunk4",
+							"from": [ 16.0, 0.0, 1.0 ],
+							"to": [ 17.0, 1.0, 2.0 ],
+							"rotationOrigin": [ 16.0, 0.0, 1.0 ],
+							"faces": {
+								"east": { "texture": "#metal", "uv": [ 5.0, 1.5, 6.0, 2.5 ] },
+								"south": { "texture": "#metal", "uv": [ 5.0, 14.0, 6.0, 15.0 ] },
+								"up": { "texture": "#metal", "uv": [ 5.0, 5.0, 6.0, 6.0 ] },
+								"down": { "texture": "#metal", "uv": [ 10.0, 12.0, 11.0, 13.0 ] }
+							}
+						}
+					]
+				}
+			]
+		}
+	]}
