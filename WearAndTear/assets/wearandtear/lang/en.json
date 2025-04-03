@@ -12,7 +12,7 @@
   "wearandtear:durability-good": "In excellent condition",
   "wearandtear:durability-decent": "In fair condition",
   "wearandtear:durability-bad": "In poor condition",
-  "wearandtear:durability-critical": "On the verge of breaking", //TODO fix mold parts
+  "wearandtear:durability-critical": "On the verge of breaking",
 
   //Decay
   "wearandtear:decay-wind": "Wind Decay",
@@ -32,20 +32,30 @@
   "item-woodscrap-*": "Wood Scrap",
   "itemdesc-woodscrap-*": "Leftovers from something that used to be functional",
   //Parts
+  //TODO maybe add a durability bar system
   "wearandtear:partname-frame": "Frame ({0})",
   "wearandtear:partname-mechanism-encased": "Encased Mechanism ({0})",
-  "wearandtear:partname-wax": "Wax", //TODO protective info
+  "wearandtear:partname-wax": "Wax",
   "wearandtear:partname-reinforcement": "Reinforcement ({0})",
-
-  "wearandtear:partname-mold": "Mold", //TODO statistics?
+  //TODO rope part (specifically for hydrate or diedrate winch)
+  "wearandtear:partname-mold": "Mold", //TODO usage statistics?
   "wearandtear:partname-ingotmold-left": "Ingot Mold (Left)",
   "wearandtear:partname-ingotmold-right": "Ingot Mold (Right)",
+  "wearandtear:partname-helveitem": "Helve Item",
+  "wearandtear:partname-pulverizeritem": "Pounder Caps",
 
-  "wearandtear:partname-sail": "Sail", //TODO extra info?
+  "wearandtear:partname-sail": "Sail", //TODO extra info? (maybe even info on how to repair)
+  //RepairType
+  //"wearandtear:repairtype-wood": "Wood",
+  //"wearandtear:repairtype-wax": "Wax",
+  //"wearandtear:repairtype-ceramic": "Ceramic",
+  //"wearandtear:repairtype-cloth": "Cloth",
+  //"wearandtear:repairtype-metal": "Metal",
 
   //Materials
   "game:material-unknown": "Unknown",
   "wearandtear:material-wood": "Wood",
+  "wearandtear:material-stone": "Stone",
   "wearandtear:material-ceramic": "Ceramic",
 
   //blocks
@@ -95,7 +105,10 @@ Trust me I'm an engineer!",
   "wearandtear:handbook-lifespan": "Average (unsheltered) lifespan of {0} years",
   "wearandtear:handbook-critical": "This part is critical for mainting the structural integrity of the block",
   "wearandtear:handbook-decay": "This part is susceptible to: {0}",
+  "wearandtear:handbook-usage-limit": "This part will lose {0} durability per use",
+  "wearandtear:handbook-usage-limit-random": "This part will lose {0} to {1} durability per use",
   "wearandtear:handbook-scrap": "Leftover Scrap",
+  "wearandtear:hanbook-protection": "This part reduces decay speed by {0} (multaplicative) on: {1}",
   //Handbook entries
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",

@@ -13,6 +13,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.Client.NoObf;
 using Vintagestory.GameContent;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Config.Props.rubble;
 
@@ -80,8 +81,13 @@ namespace WearAndTear.Code.BlockEntities
         {
             var primaryContent = PrimaryContent;
             if(primaryContent == null || (primaryContent.Block == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
+            
+            var block = PrimaryContent.Block?.GetActualPlacementBlock(Api);
+            var cache = ObjectCacheUtil.GetOrCreate(Api, CacheKey, () => new Dictionary<string, MeshData>());
 
-            if(primaryContent?.Block?.Attributes == null) return false; //TODO see if this will cause issues
+            var cacheKey = block.Code.ToString();
+
+            if(primaryContent?.Block?.Attributes == null) return false;
             if(mesh == null)
             {
                 var loc = primaryContent.Block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Shape)].AsString();
@@ -90,7 +96,8 @@ namespace WearAndTear.Code.BlockEntities
                 if (customShape)
                 {
                     var assetLocation = new AssetLocation(loc);
-                    shape = Shape.TryGet(Api, $"{assetLocation.Domain}:shapes/{assetLocation.Path}.json"); //TODO we can cache these
+                    //TODO BEFORE_RELEASE improve caching
+                    shape = Shape.TryGet(Api, $"{assetLocation.Domain}:shapes/{assetLocation.Path}.json");
                 }
                 else shape = Shape.TryGet(Api, defaultShape);
                 

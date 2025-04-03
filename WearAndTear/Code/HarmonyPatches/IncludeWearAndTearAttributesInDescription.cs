@@ -5,10 +5,13 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using WearAndTear.Code.Extensions;
+using WearAndTear.Config.Props;
 using static HarmonyLib.Code;
 
 namespace WearAndTear.HarmonyPatches
@@ -19,11 +22,6 @@ namespace WearAndTear.HarmonyPatches
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             bool found = false;
-            var appendWearAndTearInfo = AccessTools.Method(
-                typeof(IncludeWearAndTearAttributesInDescription),
-                nameof(AppendWearAndTearInfo),
-                new Type[] { typeof(ItemSlot), typeof(StringBuilder) }
-            );
 
             foreach (var instruction in instructions)
             {
@@ -33,9 +31,10 @@ namespace WearAndTear.HarmonyPatches
                     method.Name == nameof(CollectibleObject.GetMaxDurability))
                 {
                     // Inject the call to AppendWearAndTearInfo before GetMaxDurability
+                    yield return new CodeInstruction(OpCodes.Ldarg_3); // Load `world` (arg 3 of GetHeldItemInfo)
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // Load `ItemSlot` (arg 1 of GetHeldItemInfo)
                     yield return new CodeInstruction(OpCodes.Ldarg_2); // Load `StringBuilder` (arg 2 of GetHeldItemInfo)
-                    yield return new CodeInstruction(OpCodes.Call, appendWearAndTearInfo); // Call AppendWearAndTearInfo
+                    yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(IncludeWearAndTearAttributesInDescription), nameof(AppendWearAndTearInfo))); // Call AppendWearAndTearInfo
 
                     found = true;
                 }
@@ -47,22 +46,23 @@ namespace WearAndTear.HarmonyPatches
                 throw new InvalidOperationException("Transpiler failed to find GetMaxDurability call to inject code before.");
         }
 
-        public static void AppendWearAndTearInfo(ItemSlot inSlot, StringBuilder dsc)
+        public static void AppendWearAndTearInfo(IWorldAccessor world, ItemSlot inSlot, StringBuilder dsc)
         {
+            if(world.Api is not ICoreClientAPI api) return;
             ITreeAttribute tree = inSlot.Itemstack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
-            if (tree != null)
+            if (tree == null) return;
+            
+            var entityBehaviors = inSlot.Itemstack.Block?.GetActualPlacementBlock(world.Api)?.BlockEntityBehaviors;
+            if(entityBehaviors == null) return;
+
+            dsc.AppendLine();
+            foreach (var attr in tree.Where(attr => !attr.Key.EndsWith("_Repaired")))
             {
-                dsc.AppendLine();
-                foreach (var attr in tree.Where(attr => !attr.Key.Contains('_')))
-                {
-                    var str = $"{Lang.Get(attr.Key)}: {(int)((float)attr.Value.GetValue() * 100)}%";
-                    var repaired = tree.TryGetFloat($"{attr.Key}_Repaired");
-                    if (repaired != null)
-                    {
-                        str = $"{str} ({Lang.Get("wearandtear:repaired")}: {(int)((float)repaired * 100)}%)";
-                    }
-                    dsc.AppendLine(str);
-                }
+                var beh = Array.Find(entityBehaviors, item => item.properties != null && item.properties[nameof(WearAndTearPartProps.Code)].AsString() == attr.Key);
+                if(beh == null) continue;
+                
+                var props = beh.properties.AsObject<WearAndTearPartProps>();
+                dsc.AppendLine(props.GetDurabilityStringForPlayer(api, api.World.Player, (float)attr.Value.GetValue()));
             }
         }
     }

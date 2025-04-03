@@ -5,7 +5,6 @@ namespace WearAndTear.Code.Commands
 {
     public static class Commands
     {
-        //TODO command for cleaning durability off item
         public static void Register(ICoreServerAPI api) => api.ChatCommands
             .Create("WearAndTear")
                 .WithDescription("Main Command prefix for WearAndTear")

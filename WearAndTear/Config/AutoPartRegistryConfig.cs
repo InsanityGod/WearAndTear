@@ -57,6 +57,14 @@ namespace WearAndTear.Config
         public float MinimalWoodCompositionPercentage { get; set; } = .8f;
 
         /// <summary>
+        /// The minimal percentage the composition of rock ingredients is required for that rock to be the primary rock type
+        /// </summary>
+        [Range(0, 1)]
+        [DefaultValue(.8f)]
+        [DisplayFormat(DataFormatString = "P")]
+        public float MinimalRockCompositionPercentage { get; set; } = .8f;
+
+        /// <summary>
         /// Wether all recipes have to contain metal for it to apply metal reinforcement
         /// </summary>
         [DefaultValue(false)]
@@ -84,6 +92,26 @@ namespace WearAndTear.Config
                         {
                             Type = "humidity"
                         },
+                        new()
+                        {
+                            Type = "time"
+                        }
+                    }
+                }
+            },
+            {
+                EnumBlockMaterial.Stone,
+                new()
+                {
+                    Code = "wearandtear:frame",
+                    MaterialVariant = "wearandtear:stone",
+                    AvgLifeSpanInYears = 4,
+                    RepairType = "stone",
+                    IsCritical = true,
+                    MaintenanceLimit = .4f,
+                    ScrapCode = "game:stone-*",
+                    Decay = new WearAndTearDecayProps[]
+                    {
                         new()
                         {
                             Type = "time"

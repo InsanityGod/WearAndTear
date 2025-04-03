@@ -108,9 +108,12 @@ namespace WearAndTear.Code.XLib
             );
             preciseMeasurements.AddRequirement(new AbilityRequirement(mechanicsSpecialisation, 1));
             mechanics.AddAbility(preciseMeasurements);
+
+            //TODO BEFORE_RELEASE scrap related traits/skills
+
             //TODO maybe things limited to specialization?
 
-            //TODO (once we have the rubble mechanism setup, so we can refund) Temporal Tinkerer //I think we'll put this temporal gear right here
+            //TODO Temporal Tinkerer //I think we'll put this temporal gear right here
         }
 
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)

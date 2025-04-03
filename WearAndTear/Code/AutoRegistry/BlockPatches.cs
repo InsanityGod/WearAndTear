@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
@@ -14,12 +15,14 @@ namespace WearAndTear.DynamicPatches
         //TODO Molds should live outside AutoPartRegistry scope as well
         public static WearAndTearPartProps DefaultHelveItemPartProps => new()
         {
-            Code = "helveitem"
+            Code = "wearandtear:helveitem",
+            Decay = Array.Empty<WearAndTearDecayProps>()
         };
 
         public static WearAndTearPartProps DefaultPulverizerItemPartProps => new()
         {
-            Code = "pulverizeritem"
+            Code = "wearandtear:pulverizeritem",
+            Decay = Array.Empty<WearAndTearDecayProps>()
         };
 
         public static void PatchClutch(Block block)
@@ -55,6 +58,8 @@ namespace WearAndTear.DynamicPatches
             block.EnsureBaseWearAndTear(true);
             var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             var frame = JToken.FromObject(frameProps);
+            frame[nameof(WearAndTearPartProps.Decay)] = JToken.FromObject(Array.Empty<WearAndTearDecayProps>());
+            ((JContainer)frame).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
             
             frame["Code"] = "wearandtear:ingotmold-left";
             block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame.DeepClone());

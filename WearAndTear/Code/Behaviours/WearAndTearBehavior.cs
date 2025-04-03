@@ -14,6 +14,7 @@ using Vintagestory.API.Util;
 using Vintagestory.Client.NoObf;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Code.XLib.Containers;
@@ -32,7 +33,9 @@ namespace WearAndTear.Code.Behaviours
 
         public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
         {
-            string blockCode = Block.Code.Path.Split('-')[0];
+            var block = Block.GetActualPlacementItem(world.Api);
+
+            string blockCode = block.Code.Path.Split('-')[0];
             var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
             bool isBlockDestroyed = false;
             if (normalItem != null)
@@ -183,7 +186,6 @@ namespace WearAndTear.Code.Behaviours
                 var drops = Block.GetDrops(Api.World, Pos, null);
 
                 //TODO Container drops (helve hammer)
-                //TODO Making sure we atleast see something when none of the drops actually provide textures
 
                 if(drops.Length == 0)
                 {

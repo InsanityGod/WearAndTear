@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.Commands
@@ -13,8 +14,8 @@ namespace WearAndTear.Code.Commands
                 .RequiresPrivilege(Privilege.controlserver)
                 .RequiresPlayer()
                 .WithArgs(
-                    new WordArgParser("PartCode", true, new string[] { "frame", "reinforcement", "wax", "mechanism-encased" }), //TODO maybe collect all part codes and dump them into this array
-                    new FloatArgParser("Durability", 0, 1, true) //TODO maybe a percentage parser as well
+                    new WordArgParser("PartCode", true, new string[] { "frame", "reinforcement", "wax" }),
+                    new FloatArgParser("Durability", 0, 1, true)
                 ).HandleWith(SetDurability)
             .EndSubCommand()
             .BeginSubCommand("SetDurabilityByIndex")
@@ -40,7 +41,7 @@ namespace WearAndTear.Code.Commands
             var part = wearAndTear.Parts[partIndex - 1];
             part.Durability = (float)args.Parsers[1].GetValue();
             entity.MarkDirty();
-            return TextCommandResult.Success($"Set durability of '{part.GetDisplayName()}' to {part.Durability}");
+            return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability.ToPercentageString()}");
         }
 
         private static TextCommandResult SetDurability(TextCommandCallingArgs args)
@@ -65,7 +66,7 @@ namespace WearAndTear.Code.Commands
 
             part.Durability = (float)args.Parsers[1].GetValue();
             entity.MarkDirty();
-            return TextCommandResult.Success($"Set durability of '{part.GetDisplayName()}' to {part.Durability}");
+            return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability.ToPercentageString()}");
         }
     }
 }

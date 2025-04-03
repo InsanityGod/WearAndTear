@@ -49,7 +49,7 @@
         "name": "WearAndTearRepairItem",
         "properties": {
           "RepairType": "metal",
-          "RequiredMaterialVariant": "{metal}",
+          "RequiredMaterialVariant": "{metal}", //TODO test
           "RequiredTool": "hammer-*",
           "MissingToolLangCode": "game:Requires a hammer in the off hand",
           "Strength": 0.2

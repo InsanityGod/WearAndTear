@@ -92,7 +92,7 @@ namespace WearAndTear.Code.Blocks
             var rubbleEntity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
             if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && player.ServerControls.Sprint && entity.ServerPos.Motion.LengthSq() > 0.001 && world.Rand.NextDouble() > 0.05)
             {
-                //TODO XSkill
+                //TODO BEFORE_RELEASE XSkill
                 entity.ReceiveDamage(new DamageSource
                 {
                     Source = EnumDamageSource.Block,
@@ -110,7 +110,7 @@ namespace WearAndTear.Code.Blocks
             var rubbleEntity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
 			if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && isImpact && Math.Abs(collideSpeed.Y * 30.0) >= 0.25)
 			{
-                //TODO XSkill
+                //TODO BEFORE_RELEASE XSkill
 				entity.ReceiveDamage(new DamageSource
 				{
 					Source = EnumDamageSource.Block,

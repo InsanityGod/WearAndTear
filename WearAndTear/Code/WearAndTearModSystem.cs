@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.Server;
@@ -130,6 +132,7 @@ namespace WearAndTear.Code
                 TryPatchCompatibility(api, "indappledgroves");
                 TryPatchCompatibility(api, "linearpower");
                 TryPatchCompatibility(api, "immersivewoodsawing");
+                TryPatchCompatibility(api, "millwright");
 
                 //TODO: revamp to use patch category
                 var millwright = api.ModLoader.GetMod("millwright");
@@ -194,14 +197,35 @@ namespace WearAndTear.Code
         {
             try
             {
-                Config = api.LoadModConfig<ModConfig>(ConfigName) ?? new();
+                Config = api.LoadModConfig<ModConfig>(ConfigName) ?? new()
+                {
+                    ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
+                };
+
+                if(Config.ConfigCompatibilityVersion != ModConfig.LatestConfigCompatibilityVersion)
+                {
+                    //TODO test this and see about part remapping
+                    api.Logger.Warning("[WearAndTear] Config version mismatch, attempting auto merge with default config");
+                    var newConfig = (JContainer) JToken.FromObject(new ModConfig
+                    {
+                        ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
+                    });
+                    newConfig.Merge(JToken.FromObject(Config));
+
+                    Config = newConfig.ToObject<ModConfig>();
+                    Config.ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion;
+                }
+
                 api.StoreModConfig(Config, ConfigName);
             }
             catch (Exception ex)
             {
                 api.Logger.Error(ex);
                 api.Logger.Warning("[WearAndTear] Failed to load config, using default values instead");
-                Config = new();
+                Config = new()
+                {
+                    ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
+                };
             }
             LoadFeatureFlags(api);
         }

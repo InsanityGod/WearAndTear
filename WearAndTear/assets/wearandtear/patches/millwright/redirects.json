@@ -1,0 +1,20 @@
+[
+  {
+    "file": "millwright:blocktypes/mechanics/axlepassthroughfull.json",
+    "op": "addmerge",
+    "path": "/attributes",
+    "value": {
+      "WearAndTear_ActualBlockRedirect": "millwright:woodenaxlepassthrough-ud"
+    },
+    "dependsOn": [ { "modid": "millwright" } ]
+  },
+  {
+    "file": "millwright:blocktypes/mechanics/axlepassthrough.json",
+    "op": "addmerge",
+    "path": "/attributes",
+    "value": {
+      "WearAndTear_PlacementItemRedirect": "millwright:woodenaxlepassthroughfull"
+    },
+    "dependsOn": [ { "modid": "millwright" } ]
+  }
+]

@@ -3,15 +3,14 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Server;
+using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
+using Vintagestory.Common;
 using Vintagestory.GameContent;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -24,27 +23,39 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyPostfix]
         public static void Append(CollectibleBehaviorHandbookTextAndExtraInfo __instance, ItemSlot inSlot, ICoreClientAPI capi, ItemStack[] allStacks, ActionConsumable<string> openDetailPageFor, ref RichTextComponentBase[] __result)
         {
-            if(inSlot.Itemstack?.Block == null || inSlot.Itemstack.Block.BlockEntityBehaviors == null) return;
-            var wearandtear = Array.Find(inSlot.Itemstack.Block.BlockEntityBehaviors, beh => beh.Name == "WearAndTear");
+            var block = inSlot.Itemstack?.Block?.GetActualPlacementBlock(capi);
+
+            if(block == null || block.BlockEntityBehaviors == null) return;
+            var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "WearAndTear");
             if(wearandtear == null) return;
 
             var components = new List<RichTextComponentBase>();
             AddHeading(components, capi, "wearandtear:handbook-heading", true);
             List<AssetLocation> ScrapCodes = new();
             bool hasParts = false;
-            foreach (var beh in inSlot.Itemstack.Block.BlockEntityBehaviors)
-            {
-                var behType = capi.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name);
-                if(!typeof(IWearAndTearPart).IsAssignableFrom(behType)) continue;
 
-                var props = beh.properties.AsObject<WearAndTearPartProps>();
+            var parts = block.BlockEntityBehaviors
+                .Select(beh =>
+                {
+                    var behType = capi.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name);
+                    if (typeof(IWearAndTearPart).IsAssignableFrom(behType))
+                    {
+                        var props = beh.properties.AsObject<WearAndTearPartProps>();
+                        return (behType, beh, props);
+                    }
+                    return (behType, beh, null);
+                }).Where( beh => beh.props != null)
+                .ToList();
+
+            foreach ((var behType, var beh, var props) in parts)
+            {
                 if (hasParts)
                 {
                     components.Add(new ClearFloatTextComponent(capi, 8f));
                 } else hasParts = true;
                 var header = props.GetDisplayName();
                 if(typeof(IWearAndTearOptionalPart).IsAssignableFrom(behType)) header += $" ({Lang.Get("wearandtear:optional")})";
-                AddSubHeading(components, capi, openDetailPageFor, header); //TODO maybe props.DetailsPage for extra info per part?
+                AddSubHeading(components, capi, openDetailPageFor, header);
                 
                 if(props.Decay != null && props.Decay.Length > 0)
                 {
@@ -64,12 +75,56 @@ namespace WearAndTear.Code.HarmonyPatches
                 }
                 else
                 {
-                    components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", Lang.Get($"wearandtear:decay-usage")) + "\n", new CairoFont 
+                    var minDurabilityUsage = beh.properties[nameof(WearAndTearDurabilityPartProps.MinDurabilityUsage)].AsFloat();
+                    var maxDurabilityUsage = beh.properties[nameof(WearAndTearDurabilityPartProps.MaxDurabilityUsage)].AsFloat();
+                    if (minDurabilityUsage != 0 && maxDurabilityUsage != 0)
+                    {
+                        var str = minDurabilityUsage == maxDurabilityUsage ?
+                            Lang.Get("wearandtear:handbook-usage-limit", minDurabilityUsage.ToPercentageString()) :
+                            Lang.Get("wearandtear:handbook-usage-limit-random", minDurabilityUsage.ToPercentageString(), maxDurabilityUsage.ToPercentageString());
+                        components.Add(new RichTextComponent(capi, str + "\n", new CairoFont 
+                        { 
+                            Color = (double[])GuiStyle.WarningTextColor.Clone(), 
+                            Fontname = GuiStyle.StandardFontName, 
+                            UnscaledFontsize = GuiStyle.SmallFontSize 
+                        }));
+                    }
+                    else components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", Lang.Get($"wearandtear:decay-usage")) + "\n", new CairoFont 
                     { 
                         Color = (double[])GuiStyle.WarningTextColor.Clone(), 
                         Fontname = GuiStyle.StandardFontName, 
                         UnscaledFontsize = GuiStyle.SmallFontSize 
                     }));
+                }
+
+                if (typeof(IWearAndTearProtectivePart).IsAssignableFrom(behType))
+                {
+                    var protectiveProps = beh.properties.AsObject<WearAndTearProtectivePartProps>();
+                    if(protectiveProps != null)
+                    {
+                        var protectiveStrings = protectiveProps.EffectiveFor
+                            .GroupBy(effect => (1 - effect.DecayMultiplier).ToPercentageString())
+                            .SelectMany(effectGroup => effectGroup.Select(
+                                effect =>
+                                {
+                                    var applicableParts = parts.Where(part => effect.IsEffectiveFor(part.props))
+                                        .Select(part => part.props.GetDisplayName())
+                                        .ToList();
+                                    if(applicableParts.Count == 0) return null;
+                                    return Lang.Get("wearandtear:hanbook-protection", effectGroup.Key, string.Join(", ", applicableParts));
+                                })
+                            ).Where(str => str != null);
+
+                        foreach(var str in protectiveStrings)
+                        {
+                            components.Add(new RichTextComponent(capi, str + "\n", new CairoFont
+                            {
+                                Color = (double[])GuiStyle.SuccessTextColor.Clone(),
+                                Fontname = GuiStyle.StandardFontName,
+                                UnscaledFontsize = GuiStyle.SmallFontSize
+                            }));
+                        }
+                    }
                 }
 
                 //Protective properties
@@ -86,7 +141,8 @@ namespace WearAndTear.Code.HarmonyPatches
                 if(props.ScrapCode != null && !ScrapCodes.Contains(props.ScrapCode)) ScrapCodes.Add(props.ScrapCode);
             }
 
-            if (ScrapCodes.Any())
+            //TODO come up with a cleaner way to hide these scrap items (maybe even do this during autoregistry instead)
+            if (block is not BlockIngotMold && block is not BlockToolMold && ScrapCodes.Any())
             {
                 var items = new List<ItemStack>();
                 foreach (var scrapCode in ScrapCodes)
@@ -115,7 +171,7 @@ namespace WearAndTear.Code.HarmonyPatches
                 }
                 
             }
-
+            //TODO maybe display some of the xskills bonuses
             __result = __result.AddRangeToArray(components.ToArray());
         }
 

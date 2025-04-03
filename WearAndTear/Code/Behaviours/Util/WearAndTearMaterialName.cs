@@ -22,7 +22,8 @@ namespace WearAndTear.Code.Behaviours.Util
                 var material = Lang.Get(str);
                 if(material != str)
                 {
-                    sb.Append($" ({material})"); return;
+                    sb.Append($" ({material})"); 
+                    return;
                 }
             }
         }

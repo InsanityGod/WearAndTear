@@ -3,6 +3,8 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using WearAndTear.Code;
+using WearAndTear.Code.Extensions;
 using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Config.Props
@@ -23,7 +25,7 @@ namespace WearAndTear.Config.Props
         /// Name of the part
         /// </summary>
         [Obsolete("Should use Code from now on")]
-        public string Name { get; set; } //TODO check migration
+        public string Name { get; set; } //TODO BEFORE_RELEASE check migration
 
         /// <summary>
         /// How much content this part has (affects the ammount of scrap generated)
@@ -78,11 +80,33 @@ namespace WearAndTear.Config.Props
             }
         };
 
-        public object[] GetDisplayNameParams() => new object[]
+        public object[] GetDisplayNameParams()
         {
-            MaterialVariant == null ? string.Empty : Lang.Get($"{MaterialVariant.Domain}:material-{MaterialVariant.Path}")
-        };
+            if(MaterialVariant == null) return Array.Empty<object>();
+
+            var key = $"{MaterialVariant.Domain}:material-{MaterialVariant.Path}";
+            var str = Lang.Get(key);
+            if(str == key)
+            {
+                //TODO maybe a way to configure a list of prefixes
+                str = Lang.Get($"{MaterialVariant.Domain}:rock-{MaterialVariant.Path}");
+            }
+
+            return new object[]
+            {
+                str
+            };
+        }
 
         public string GetDisplayName() => Lang.Get($"{Code.Domain}:partname-{Code.Path}", GetDisplayNameParams());
+
+        public string GetDurabilityStringForPlayer(ICoreAPI api, IPlayer player, float durability) => $"{GetDisplayName()}: {WearAndTearModSystem.IsRoughEstimateEnabled(api, player) switch
+        {
+            true when durability > 0.7 => Lang.Get("wearandtear:durability-good"),
+            true when durability > 0.4 => Lang.Get("wearandtear:durability-decent"),
+            true when durability > 0.1 => Lang.Get("wearandtear:durability-bad"),
+            true => Lang.Get("wearandtear:durability-critical"),
+            _ => durability.ToPercentageString()
+        }}";
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -14,41 +15,23 @@ namespace WearAndTear.Code.Rendering
 		{
 			get
 			{
-                var source = textureCode switch
-                {
-                    "metal" => MetalSource,
-                    "wood" => WoodSource,
-                    _ => null
-                };
-                TextureAtlasPosition pos = null;
-                if(source != null)
-                {
-                    pos = source["up"];
-                }
+                var source = Sources[textureCode];
+                if(source == null) return atlasMgr.UnknownTexturePos;
 
-                return pos ?? atlasMgr.UnknownTexturePosition;
+                return source[textureCode] ?? source["all"] ?? source["up"] ?? atlasMgr.UnknownTexturePos;
 			}
 		}
 
-        public string[] GetSelectiveElements()
-        {
-            var selective = new List<string>();
-
-            if (MetalSource != null) selective.Add("metal*");
-            if (WoodSource != null) selective.Add("wood*");
-
-            return selective.ToArray();
-        }
+        public string[] GetSelectiveElements() => Sources.Keys.Select(key => key + "*").ToArray();
 
         public Size2i AtlasSize => atlasSize;
 
-        public RubbleTextureSource(ClientMain game,ITesselatorAPI tesselator , Block block)
+        public RubbleTextureSource(ClientMain game, ITesselatorAPI tesselator , Block block)
 		{
             atlasSize = game.BlockAtlasManager.Size;
 			atlasMgr = game.BlockAtlasManager;
 			try
 			{
-                textureCodeToIdMapping = new MiniDictionary(3);
                 foreach (var behavior in block.BlockEntityBehaviors)
                 {
                     if(behavior.properties == null) continue;
@@ -65,7 +48,7 @@ namespace WearAndTear.Code.Rendering
                         {
                             
                             var metalBlock = game.Api.World.GetBlock($"game:metalsheet-{metal}-down");
-                            if(metalBlock != null) MetalSource ??= tesselator.GetTextureSource(metalBlock);
+                            if(metalBlock != null) Sources["metal"] = tesselator.GetTextureSource(metalBlock);
                         }
 
                         var wood = scrapItem.Variant["wood"];
@@ -73,7 +56,14 @@ namespace WearAndTear.Code.Rendering
                         {
                             
                             var woodBlock = game.Api.World.GetBlock($"game:planks-{wood}-ud");
-                            if(woodBlock != null) WoodSource ??= tesselator.GetTextureSource(woodBlock);
+                            if(woodBlock != null) Sources["wood"] = tesselator.GetTextureSource(woodBlock, returnNullWhenMissing: true);
+                        }
+
+                        var rock = scrapItem.Variant["rock"];
+                        if(rock != null)
+                        {
+                            var rockBlock = game.Api.World.GetBlock($"game:rock-{rock}");
+                            if(rockBlock != null) Sources["rock"] = tesselator.GetTextureSource(rockBlock, returnNullWhenMissing: true);
                         }
                     }
                     catch
@@ -81,8 +71,6 @@ namespace WearAndTear.Code.Rendering
                         // Ignore
                     }
                 }
-                
-                textureCodeToIdMapping["all"] = game.BlockAtlasManager.UnknownTexturePos.atlasTextureId;
             }
 			catch (Exception)
 			{
@@ -91,15 +79,12 @@ namespace WearAndTear.Code.Rendering
 			}
 		}
 
+        private readonly BlockTextureAtlasManager atlasMgr;
+
 		private readonly Size2i atlasSize;
 
-		private readonly MiniDictionary textureCodeToIdMapping;
+        private Dictionary<string, ITexPositionSource> Sources { get; set; } = new();
 
-        private readonly ITexPositionSource WoodSource;
-
-        private readonly ITexPositionSource MetalSource;
-
-        private readonly BlockTextureAtlasManager atlasMgr;
     }
 
 }

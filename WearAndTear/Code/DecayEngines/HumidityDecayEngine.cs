@@ -7,8 +7,6 @@ namespace WearAndTear.Code.DecayEngines
 {
     public class HumidityDecayEngine : IDecayEngine
     {
-        //TODO wood having issues with low humidity?
-        //TODO look at changing humidity
         public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed)
         {
             var climate = api.World.GetPastAverageClimateCondition(part.Pos, daysPassed, WearAndTearModSystem.Config.PollIntervalInDays);

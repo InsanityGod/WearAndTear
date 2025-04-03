@@ -172,7 +172,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             if (!IsPresent) return;
             
-            dsc.AppendLine($"{GetDurabilityStringForPlayer(forPlayer)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
+            dsc.AppendLine($"{Props.GetDurabilityStringForPlayer(Api, forPlayer, Durability)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
         }
 
         public float? EfficiencyModifier

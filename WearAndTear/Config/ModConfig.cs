@@ -5,6 +5,8 @@ namespace WearAndTear.Config
 {
     public class ModConfig
     {
+        public const int LatestConfigCompatibilityVersion = 1;
+
         /// <summary>
         /// If enabled certain actions will require class traits
         /// </summary>
@@ -122,5 +124,13 @@ namespace WearAndTear.Config
         [Category("Debug")]
         [DefaultValue(false)]
         public bool EnableDebugLogging { get; set; } = false;
+
+        /// <summary>
+        /// This is number is used to check if the config is still valid 
+        /// (I update this when creating major config breaking updates, so I can ensure people update their configs)
+        /// </summary>
+        [ReadOnly(true)]
+        [Browsable(false)]
+        public int ConfigCompatibilityVersion { get; set; }
     }
 }

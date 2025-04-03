@@ -80,18 +80,7 @@ namespace WearAndTear.Code.Behaviours
             PartBonuses?.ToTreeAttributes(tree, Props);
         }
 
-        public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc) => dsc.AppendLine(GetDurabilityStringForPlayer(forPlayer));
-
-        public virtual string GetDisplayName() => Props.GetDisplayName();
-
-        public string GetDurabilityStringForPlayer(IPlayer player) => $"{GetDisplayName()}: {WearAndTearModSystem.IsRoughEstimateEnabled(Api, player) switch
-        {
-            true when Durability > 0.7 => Lang.Get("wearandtear:durability-good"),
-            true when Durability > 0.4 => Lang.Get("wearandtear:durability-decent"),
-            true when Durability > 0.1 => Lang.Get("wearandtear:durability-bad"),
-            true => Lang.Get("wearandtear:durability-critical"),
-            _ => $"{(int)(Durability * 100)}%"
-        }}";
+        public virtual void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc) => dsc.AppendLine(Props.GetDurabilityStringForPlayer(Api, forPlayer, Durability));
 
         public virtual void UpdateDecay(double daysPassed)
         {

@@ -5,6 +5,7 @@ using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Enums;
+using WearAndTear.Code.Extensions;
 
 namespace WearAndTear.Code.AutoRegistry
 {
@@ -13,16 +14,23 @@ namespace WearAndTear.Code.AutoRegistry
         public static Dictionary<string, ContentAnalyzer> Lookup { get; set; } = new();
 
         public CollectibleObject Collectible { get; set; }
+        public ICoreAPI Api { get; set; }
 
-        public static ContentAnalyzer GetOrCreate(CollectibleObject collectible)
+        public static ContentAnalyzer GetOrCreate(ICoreAPI api, CollectibleObject collectible)
         {
+            collectible = collectible.GetActualPlacementItem(api);
             if(Lookup.TryGetValue(collectible.Code, out var result)) return result;
-            return Lookup[collectible.Code] = new ContentAnalyzer(collectible);
+            return Lookup[collectible.Code] = new ContentAnalyzer(api, collectible);
         }
-        private ContentAnalyzer(CollectibleObject collectible) => Collectible = collectible;
+        private ContentAnalyzer(ICoreAPI api, CollectibleObject collectible)
+        {
+            Api = api;
+            Collectible = collectible;
+        }
 
         public Dictionary<string, float> MetalContent { get; set; } = new();
         public Dictionary<string, float> WoodContent { get; set; } = new();
+        public Dictionary<string, float> RockContent { get; set; } = new();
 
         private void AnalyzeTextures()
         {
@@ -62,15 +70,16 @@ namespace WearAndTear.Code.AutoRegistry
             var recipeContent = craftedBy.Select(recipe =>
             {
                 var outputAmmount = recipe.Output.ResolvedItemstack.StackSize;
-
+                //TODO see if we can resolve wildcard to some degree
                 var validIngredients = recipe.resolvedIngredients
                 .Where(item => item?.ResolvedItemstack != null && !item.IsTool)
-                .Select(ingredient => (ingredient.ResolvedItemstack.Collectible, ingredient.ResolvedItemstack.StackSize / outputAmmount))
+                .Select(ingredient => (ingredient.ResolvedItemstack.Collectible, (float)ingredient.ResolvedItemstack.StackSize / (float)outputAmmount))
                 .GroupBy(item => item.Collectible)
                 .ToDictionary(item => item.Key, item => item.Sum(a => a.Item2));
-
+                //TODO see if we can ignore stuff that is returned like buckets
                 var woodContent = new Dictionary<string, float>();
                 var metalContent = new Dictionary<string, float>();
+                var rockContent = new Dictionary<string, float>();
 
                 foreach ((var ingredient, var amount) in validIngredients)
                 {
@@ -91,15 +100,16 @@ namespace WearAndTear.Code.AutoRegistry
                         metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
                         continue;
                     }
+                    
                     //TODO other means of getting metal (like smithing recipes from ingot)
-
+                    //TODO make amore generic and extensible scrap system
                     if (ingredient.FirstCodePart() == "log")
                     {
                         var woodType = ingredient.Variant["wood"];
                         if (!string.IsNullOrEmpty(woodType))
                         {
-                            var woodAmmount = 12 * amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmmount : woodAmmount;
+                            var woodAmount = 12 * amount;
+                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
                             continue;
                         }
                     }
@@ -109,8 +119,8 @@ namespace WearAndTear.Code.AutoRegistry
                         var woodType = ingredient.Variant["wood"];
                         if (!string.IsNullOrEmpty(woodType))
                         {
-                            var woodAmmount = 4 * amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmmount : woodAmmount;
+                            var woodAmount = 4 * amount;
+                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
                             continue;
                         }
                     }
@@ -120,28 +130,58 @@ namespace WearAndTear.Code.AutoRegistry
                         var woodType = ingredient.Variant["wood"];
                         if (!string.IsNullOrEmpty(woodType))
                         {
-                            var woodAmmount = amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmmount : woodAmmount;
+                            var woodAmount = amount;
+                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
                             continue;
                         }
                     }
 
-                    var analyzer = GetOrCreate(ingredient);
+                    if(ingredient.FirstCodePart() == "rock")
+                    {
+                        var rockType = ingredient.Variant["rock"];
+                        if (!string.IsNullOrEmpty(rockType))
+                        {
+                            var rockAmount = amount;
+                            rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
+                            continue;
+                        }
+                    }
+
+                    if(ingredient.FirstCodePart() == "stone")
+                    {
+                        var rockType = ingredient.Variant["rock"];
+                        if (!string.IsNullOrEmpty(rockType))
+                        {
+                            var rockAmount = 4 * amount;
+                            rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
+                            continue;
+                        }
+                    }
+
+                    var analyzer = GetOrCreate(Api, ingredient);
                     if(analyzer.State == EAnalyzeState.Analyzing) continue; //Skipping recursive recipes
                     analyzer.Analyze(api);
                     
                     foreach((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
                     {
-                        woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + AnalyzedAmount : AnalyzedAmount;
+                        var woodAmount = AnalyzedAmount * amount;
+                        woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + woodAmount : woodAmount;
                     }
 
                     foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.MetalContent)
                     {
-                        metalContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + AnalyzedAmount : AnalyzedAmount;
+                        var metalAmount = AnalyzedAmount * amount;
+                        metalContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + metalAmount : metalAmount;
                     }
+
+                    foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.RockContent)
+                    {
+                        var rockAmount = AnalyzedAmount * amount;
+                        rockContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + rockAmount : rockAmount;
+                    } 
                 }
 
-                return (woodContent, metalContent);
+                return (woodContent, metalContent, rockContent);
             }).ToList();
 
             WoodContent = recipeContent
@@ -153,6 +193,11 @@ namespace WearAndTear.Code.AutoRegistry
 
             MetalContent = recipeContent
                 .SelectMany(item => item.metalContent)
+                .GroupBy(item => item.Key)
+                .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
+            
+            RockContent = recipeContent
+                .SelectMany(item => item.rockContent)
                 .GroupBy(item => item.Key)
                 .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
 
@@ -195,6 +240,18 @@ namespace WearAndTear.Code.AutoRegistry
             var woodWithHighestCompositionRate = WoodContent.OrderByDescending(wood => wood.Value).First();
 
             if (woodWithHighestCompositionRate.Value / totalWoodCount > WearAndTearModSystem.Config.AutoPartRegistry.MinimalWoodCompositionPercentage) return (woodWithHighestCompositionRate.Key, woodWithHighestCompositionRate.Value);
+
+            return null; //no specific wood type
+        }
+
+        public (string Rock, float ContentLevel)? FindFrameRock()
+        {
+            if (RockContent.Count == 0) return null; //Doesn't contain wood
+
+            var totalRockCount = RockContent.Sum(wood => wood.Value);
+            var rockWithHighestCompositionRate = RockContent.OrderByDescending(rock => rock.Value).First();
+
+            if (rockWithHighestCompositionRate.Value / totalRockCount > WearAndTearModSystem.Config.AutoPartRegistry.MinimalRockCompositionPercentage) return (rockWithHighestCompositionRate.Key, rockWithHighestCompositionRate.Value);
 
             return null; //no specific wood type
         }

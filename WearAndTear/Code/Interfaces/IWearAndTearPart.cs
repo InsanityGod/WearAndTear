@@ -70,8 +70,8 @@ namespace WearAndTear.Code.Interfaces
         /// </summary>
         /// <returns>true if default behavior should run</returns>
         public bool OnBreak() => Props.IsCritical;
+
         public ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed) => itemStacks;
-        public string GetDisplayName();
 
         public float RepairedDurability { get; set; }
 

@@ -62,7 +62,6 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 if (item.Name != behaviorName) return false;
                 if (item.properties != null && item.properties["Code"].AsString() != null && item.properties["Code"].AsString() != properties["Code"].Value<string>()) return false;
-                //TODO maybe compare material variant as well
                 
                 return true;
             }) : null;
@@ -135,11 +134,12 @@ namespace WearAndTear.Code.AutoRegistry
                 behaviorName = "WearAndTearMold";
                 behaviorProperties[nameof(WearAndTearPartProps.Code)] = "wearandtear:mold";
                 behaviorProperties[nameof(WearAndTearPartProps.Decay)] = JToken.FromObject(Array.Empty<WearAndTearDecayProps>());
+                ((JContainer)behaviorProperties).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
             }
 
             if(block.BlockMaterial == EnumBlockMaterial.Wood)
             {
-                var analyzer = ContentAnalyzer.GetOrCreate(block);
+                var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
                 analyzer.Analyze(Api);
 
                 var frameWood = analyzer.FindFrameWood();
@@ -148,6 +148,20 @@ namespace WearAndTear.Code.AutoRegistry
                     behaviorProperties["MaterialVariant"] = frameWood.Value.Wood;
                     behaviorProperties["ContentLevel"] = frameWood.Value.ContentLevel;
                     behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", frameWood.Value.Wood);
+                }
+            }
+
+            if(block.BlockMaterial == EnumBlockMaterial.Stone)
+            {
+                var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
+                analyzer.Analyze(Api);
+                
+                var frameRock = analyzer.FindFrameRock();
+                if(frameRock != null)
+                {
+                    behaviorProperties["MaterialVariant"] = frameRock.Value.Rock;
+                    behaviorProperties["ContentLevel"] = frameRock.Value.ContentLevel;
+                    behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", frameRock.Value.Rock);
                 }
             }
 
@@ -252,7 +266,7 @@ namespace WearAndTear.Code.AutoRegistry
         {
             if (block.BlockMaterial == EnumBlockMaterial.Metal) return; //Otherwise all metal objects would end up being metal reinforced :p
 
-            var analyzer = ContentAnalyzer.GetOrCreate(block);
+            var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
             analyzer.Analyze(Api);
 
             var reinforcementMetal = analyzer.FindReinforcementMetal();
