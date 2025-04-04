@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Client;
@@ -17,7 +16,6 @@ using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
-using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
 using WearAndTear.Config.Props.rubble;
 

@@ -16,6 +16,10 @@
 		  <HintPath>..\..\Dep\InDappledGroves\InDappledGroves.dll</HintPath>
 		  <Private>False</Private>
 	  </Reference>
+	  <Reference Include="InsanityLib">
+	    <HintPath>..\..\InsanityLib\InsanityLib\bin\Debug\Mods\mod\InsanityLib.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
 	  <Reference Include="MechanicalWoodSplitter">
 	    <HintPath>..\..\MechanicalWoodSplitter\MechanicalWoodSplitter\bin\Debug\Mods\mod\MechanicalWoodSplitter.dll</HintPath>
 	    <Private>False</Private>

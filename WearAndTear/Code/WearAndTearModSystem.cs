@@ -69,12 +69,6 @@ namespace WearAndTear.Code
             if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
         }
 
-        public override void StartServerSide(ICoreServerAPI api)
-        {
-            base.StartServerSide(api);
-            Commands.Commands.Register(api);
-        }
-
         #region HarmonyWorkAround
 
         private static ICoreAPI apiCache;
