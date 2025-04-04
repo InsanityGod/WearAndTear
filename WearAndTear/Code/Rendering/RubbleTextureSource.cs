@@ -18,7 +18,7 @@ namespace WearAndTear.Code.Rendering
                 var source = Sources[textureCode];
                 if(source == null) return atlasMgr.UnknownTexturePos;
 
-                return source[textureCode] ?? source["all"] ?? source["up"] ?? atlasMgr.UnknownTexturePos;
+                return source[textureCode] ?? source["up"] ?? source["all"] ?? atlasMgr.UnknownTexturePos;
 			}
 		}
 
@@ -48,7 +48,7 @@ namespace WearAndTear.Code.Rendering
                         {
                             
                             var metalBlock = game.Api.World.GetBlock($"game:metalsheet-{metal}-down");
-                            if(metalBlock != null) Sources["metal"] = tesselator.GetTextureSource(metalBlock);
+                            if(metalBlock != null) Sources["metal"] = tesselator.GetTextureSource(metalBlock, returnNullWhenMissing: true);
                         }
 
                         var wood = scrapItem.Variant["wood"];

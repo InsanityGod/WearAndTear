@@ -1,20 +1,14 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
-using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.Client.NoObf;
-using Vintagestory.GameContent;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Rendering;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Code.BlockEntities
@@ -43,14 +37,15 @@ namespace WearAndTear.Code.BlockEntities
 
             base.OnBlockPlaced(byItemStack);
             MarkDirty(true); //This fixes annoying issue where stack is not yet ready when rendering on client
-
-            var unstable = Block.GetBehavior<BlockBehaviorUnstableFalling>();
-            if(unstable != null) //Trigger falling code
-            {
-                Traverse.Create(unstable)
-                    .Method("TryFalling", paramTypes: new Type[] { typeof(IWorldAccessor), typeof(BlockPos), typeof(EnumHandHandling).MakeByRefType(), typeof(string).MakeByRefType() })
-                    .GetValue(Api.World, Pos, EnumHandling.PassThrough, "WearAndTearRubble");
-            }
+            //Have block be saved in falling entity
+            //TODO FIX THIS BEFORE_RELEASE TEST
+            //var unstable = Block.GetBehavior<BlockBehaviorUnstableFalling>();
+            //if(unstable != null) //Trigger falling code
+            //{
+            //    Traverse.Create(unstable)
+            //        .Method("TryFalling", paramTypes: new Type[] { typeof(IWorldAccessor), typeof(BlockPos), typeof(EnumHandHandling).MakeByRefType() })
+            //        .GetValue(Api.World, Pos, EnumHandling.PassThrough, "WearAndTearRubble");
+            //}
         }
 
         public ItemStack[] GetDrops(IWorldAccessor world, IPlayer byPlayer, float dropQuantityMultiplier)
@@ -63,7 +58,13 @@ namespace WearAndTear.Code.BlockEntities
                 var normalDrops = content.value.Attributes.GetTreeAttribute("rubble-normal-drops");
                 foreach (var drop in normalDrops.Values.OfType<ItemstackAttribute>())
                 {
-                    items.Add(drop.value.Clone());
+                    var item = drop.value.Clone();
+                    if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)))
+                    {
+                        item.StackSize = SkillsAndAbilities.ApplyScrapperBonus(world.Api, byPlayer, item.StackSize);
+                    }
+
+                    items.Add(item);
                 }
             }
 
@@ -96,7 +97,7 @@ namespace WearAndTear.Code.BlockEntities
                 if (customShape)
                 {
                     var assetLocation = new AssetLocation(loc);
-                    //TODO BEFORE_RELEASE improve caching
+                    //TODO improve caching
                     shape = Shape.TryGet(Api, $"{assetLocation.Domain}:shapes/{assetLocation.Path}.json");
                 }
                 else shape = Shape.TryGet(Api, defaultShape);

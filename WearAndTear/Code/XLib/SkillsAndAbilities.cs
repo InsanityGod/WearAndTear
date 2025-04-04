@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.API.Server;
-using Vintagestory.GameContent.Mechanics;
+using Vintagestory.API.MathTools;
 using WearAndTear.Code.XLib.Containers;
 using XLib.XLeveling;
 
@@ -56,6 +50,24 @@ namespace WearAndTear.Code.XLib
 
             var mechanics = leveling.GetSkill("mechanics");
             
+            var mechanicsSpecialisation = new Ability(
+                "engineer",
+                Lang.GetUnformatted("wearandtear:ability-engineer"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-engineer"),
+                1, 1, new int[] { 40 }
+            );
+
+            mechanics.SpecialisationID = mechanics.AddAbility(mechanicsSpecialisation);
+            var specialiationRequirement = new AbilityRequirement(mechanicsSpecialisation, 1);
+
+            var preciseMeasurements = new Ability(
+                "precisemeasurements",
+                Lang.GetUnformatted("wearandtear:ability-precise-measurements"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-precise-measurements")
+            );
+            preciseMeasurements.AddRequirement(specialiationRequirement);
+            mechanics.AddAbility(preciseMeasurements);
+
             var handyMan = new Ability(
                 "handyman",
                 Lang.GetUnformatted("wearandtear:ability-handyman"),
@@ -80,6 +92,7 @@ namespace WearAndTear.Code.XLib
                     Lang.GetUnformatted("wearandtear:abilitydesc-limitbreaker"),
                     1, 4, new int[] { 25, 50, 75, 100 }
                 );
+                limitBreaker.AddRequirement(specialiationRequirement);
                 mechanics.AddAbility(limitBreaker);
             }
 
@@ -90,30 +103,26 @@ namespace WearAndTear.Code.XLib
                 1, 5, new int[] { 10, 20, 30, 40, 50 }
             );
             mechanics.AddAbility(expertAssembler);
-
-            var mechanicsSpecialisation = new Ability(
-                "engineer",
-                Lang.GetUnformatted("wearandtear:ability-engineer"),
-                Lang.GetUnformatted("wearandtear:abilitydesc-engineer"),
-                1, 1, new int[] { 40 }
+            
+            var strongFeet = new Ability(
+                "strongfeet",
+                Lang.GetUnformatted("wearandtear:ability-strong-feet"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-strong-feet"),
+                1, 3, new int[] { 25, 50, 100 }
             );
+            mechanics.AddAbility(strongFeet);
 
-            mechanics.SpecialisationID = mechanics.AddAbility(mechanicsSpecialisation);
 
-
-            var preciseMeasurements = new Ability(
-                "precisemeasurements",
-                Lang.GetUnformatted("wearandtear:ability-precise-measurements"),
-                Lang.GetUnformatted("wearandtear:abilitydesc-precise-measurements")
+            var scrapper = new Ability(
+                "scrapper",
+                Lang.GetUnformatted("wearandtear:ability-scrapper"),
+                Lang.GetUnformatted("wearandtear:abilitydesc-scrapper"),
+                1, 3, new int[] { 10, 20, 25 }
             );
-            preciseMeasurements.AddRequirement(new AbilityRequirement(mechanicsSpecialisation, 1));
-            mechanics.AddAbility(preciseMeasurements);
+            mechanics.AddAbility(scrapper);
 
-            //TODO BEFORE_RELEASE scrap related traits/skills
-
-            //TODO maybe things limited to specialization?
-
-            //TODO Temporal Tinkerer //I think we'll put this temporal gear right here
+            //TODO maybe more things limited to specialization?
+            //TODO Temporal Tinkerer
         }
 
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)
@@ -131,6 +140,22 @@ namespace WearAndTear.Code.XLib
             var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("metalworking")?.FindAbility("carefulcaster");
             if(ability == null) return durabilityCost;
             return durabilityCost * (1 - (ability.Value(0) * 0.01f));
+        }
+
+        public static float ApplyStrongFeetBonus(ICoreAPI api, IPlayer player, float damage)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("strongfeet");
+            if(ability == null) return damage;
+            return damage * (1 - (ability.Value(0) * 0.01f));
+        }
+         //TODO BEFORE_RELEASE compacted sawdust
+        public static int ApplyScrapperBonus(ICoreAPI api, IPlayer player, int amount)
+        {
+            var xleveling = api.ModLoader.GetModSystem<XLeveling>();
+            var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("scrapper");
+            if(ability == null) return amount;
+            return GameMath.RoundRandom(api.World.Rand, amount * (1 + (ability.Value(0) * 0.01f)));
         }
 
         public static bool IsExpertCaster(ICoreAPI api, IPlayer player)

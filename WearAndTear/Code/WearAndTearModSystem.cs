@@ -210,7 +210,10 @@ namespace WearAndTear.Code
                     {
                         ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
                     });
-                    newConfig.Merge(JToken.FromObject(Config));
+                    newConfig.Merge(JToken.FromObject(Config), new JsonMergeSettings
+                    {
+                        MergeArrayHandling = MergeArrayHandling.Merge,
+                    });
 
                     Config = newConfig.ToObject<ModConfig>();
                     Config.ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion;

@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 using WearAndTear.Code.BlockEntities;
+using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Code.Blocks
@@ -92,15 +87,19 @@ namespace WearAndTear.Code.Blocks
             var rubbleEntity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
             if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && player.ServerControls.Sprint && entity.ServerPos.Motion.LengthSq() > 0.001 && world.Rand.NextDouble() > 0.05)
             {
-                //TODO BEFORE_RELEASE XSkill
-                entity.ReceiveDamage(new DamageSource
+                var damage = sprintIntoDamage;
+                if(WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyStrongFeetBonus(api, player.Player, damage);
+                if (damage > 0)
                 {
-                    Source = EnumDamageSource.Block,
-                    SourceBlock = this,
-                    Type = EnumDamageType.PiercingAttack,
-                    SourcePos = pos.ToVec3d()
-                }, this.sprintIntoDamage);
-                entity.ServerPos.Motion.Set(0.0, 0.0, 0.0);
+                    entity.ReceiveDamage(new DamageSource
+                    {
+                        Source = EnumDamageSource.Block,
+                        SourceBlock = this,
+                        Type = EnumDamageType.PiercingAttack,
+                        SourcePos = pos.ToVec3d()
+                    }, damage);
+                    entity.ServerPos.Motion.Set(0.0, 0.0, 0.0);
+                }
             }
             base.OnEntityInside(world, entity, pos);
 		}
@@ -110,14 +109,17 @@ namespace WearAndTear.Code.Blocks
             var rubbleEntity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
 			if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && isImpact && Math.Abs(collideSpeed.Y * 30.0) >= 0.25)
 			{
-                //TODO BEFORE_RELEASE XSkill
+                var damage = (float)Math.Abs(collideSpeed.Y * (double)fallIntoDamageMul);
+                if(WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyStrongFeetBonus(api, player.Player, damage);
+                if (damage < 0) return;
+
 				entity.ReceiveDamage(new DamageSource
 				{
 					Source = EnumDamageSource.Block,
 					SourceBlock = this,
 					Type = EnumDamageType.PiercingAttack,
 					SourcePos = pos.ToVec3d()
-				}, (float)Math.Abs(collideSpeed.Y * (double)fallIntoDamageMul));
+				}, damage);
 			}
 		}
 

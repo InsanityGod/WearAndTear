@@ -45,11 +45,12 @@ namespace WearAndTear.Code.Behaviours
         {
             base.OnBlockPlaced(byItemStack);
 
-            var tree = byItemStack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
-            if (tree != null)
+            var durabilityTree = byItemStack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
+            if (durabilityTree != null)
             {
-                Durability = tree.GetFloat(Props.Code, Durability);
-                RepairedDurability = tree.GetFloat(Props.Code + "_Repaired", RepairedDurability);
+                if(WearAndTearModSystem.Config.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
+                Durability = durabilityTree.GetFloat(Props.Code, Durability);
+                RepairedDurability = durabilityTree.GetFloat(Props.Code + "_Repaired", RepairedDurability);
             }
         }
 
@@ -64,10 +65,28 @@ namespace WearAndTear.Code.Behaviours
             if (Props == null) return;
             
             var durabilityTree = tree.GetOrAddTreeAttribute("WearAndTear-Durability");
+            if(WearAndTearModSystem.Config.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
             Durability = durabilityTree.GetFloat(Props.Code, Durability);
             if (HasMaintenanceLimit) RepairedDurability = durabilityTree.GetFloat(Props.Code + "_Repaired", RepairedDurability);
 
             PartBonuses?.FromTreeAttributes(tree, Props);
+        }
+
+        private void FixLegacySaveData(ITreeAttribute durabilityTree)
+        {
+            if (durabilityTree[Props.Code] != null) return;
+            var parts = Props.Code.Path.Split('-');
+            var key = durabilityTree.Select(pair => pair.Key).FirstOrDefault(key => Array.TrueForAll(parts, part => key.ToLower().Replace(" ", string.Empty).Contains(part)));
+            if(key != null)
+            {
+                var durability = durabilityTree.GetFloat(key, Durability);
+                durabilityTree.RemoveAttribute(key);
+                durabilityTree.SetFloat(Props.Code, durability);
+
+                var durability_repaired = durabilityTree.GetFloat(key + "_Repaired", RepairedDurability);
+                durabilityTree.RemoveAttribute(key + "_Repaired");
+                durabilityTree.SetFloat(Props.Code + "_Repaired", durability_repaired);
+            }
         }
 
         public override void ToTreeAttributes(ITreeAttribute tree)
@@ -147,7 +166,6 @@ namespace WearAndTear.Code.Behaviours
                         StackSize = (int)(GameMath.Clamp(Props.ContentLevel * factor, 0, Props.ContentLevel) * dropQuantityMultiplier)
                     };
 
-                    //TODO XSkills
                     if(item.StackSize > 0) itemStacks = itemStacks.Append(item);
                 }
             }

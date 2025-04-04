@@ -46,11 +46,6 @@
 
   "wearandtear:partname-sail": "Sail", //TODO extra info? (maybe even info on how to repair)
   //RepairType
-  //"wearandtear:repairtype-wood": "Wood",
-  //"wearandtear:repairtype-wax": "Wax",
-  //"wearandtear:repairtype-ceramic": "Ceramic",
-  //"wearandtear:repairtype-cloth": "Cloth",
-  //"wearandtear:repairtype-metal": "Metal",
 
   //Materials
   "game:material-unknown": "Unknown",
@@ -83,6 +78,12 @@
 
   "wearandtear:ability-precise-measurements": "Precise Measurements",
   "wearandtear:abilitydesc-precise-measurements": "Allowes you to see durability as a percentage",
+  
+  "wearandtear:ability-strong-feet": "Strong Feet",
+  "wearandtear:abilitydesc-strong-feet": "Reduce damage taken from stepping on rubble by {0}%",
+  
+  "wearandtear:ability-scrapper": "scrapper",
+  "wearandtear:abilitydesc-scrapper": "Increase found scrap by {0}%",
 
   "wearandtear:ability-reinforcer": "Reinforcer",
   "wearandtear:abilitydesc-reinforcer": "When repairing reinforcements you also improve them, increasing their effectiveness by {0}%
