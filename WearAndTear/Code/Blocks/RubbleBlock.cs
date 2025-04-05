@@ -65,11 +65,7 @@ namespace WearAndTear.Code.Blocks
         {
             //redirect to entity
             var entity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
-            if(entity == null)
-            {
-                api.Logger.Error("[WearAndTear] RubbleBlock does not have RubbleBlockEntity");
-                return Array.Empty<ItemStack>();
-            }
+            if(entity == null) return Array.Empty<ItemStack>();
 
             var results = entity.GetDrops(world, byPlayer, dropQuantityMultiplier);
 

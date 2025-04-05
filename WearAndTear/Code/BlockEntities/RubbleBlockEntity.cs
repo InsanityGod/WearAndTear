@@ -6,6 +6,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
 using Vintagestory.Client.NoObf;
+using WearAndTear.Code.Behaviours.Rubble;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Code.XLib;
@@ -37,15 +38,7 @@ namespace WearAndTear.Code.BlockEntities
 
             base.OnBlockPlaced(byItemStack);
             MarkDirty(true); //This fixes annoying issue where stack is not yet ready when rendering on client
-            //Have block be saved in falling entity
-            //TODO FIX THIS BEFORE_RELEASE TEST
-            //var unstable = Block.GetBehavior<BlockBehaviorUnstableFalling>();
-            //if(unstable != null) //Trigger falling code
-            //{
-            //    Traverse.Create(unstable)
-            //        .Method("TryFalling", paramTypes: new Type[] { typeof(IWorldAccessor), typeof(BlockPos), typeof(EnumHandHandling).MakeByRefType() })
-            //        .GetValue(Api.World, Pos, EnumHandling.PassThrough, "WearAndTearRubble");
-            //}
+            Block.GetBehavior<RubbleBehavior>()?.DelayedOnBlockPlaced(Api.World, Pos); //This is to deal with rubbble trying to fall before the entity is created
         }
 
         public ItemStack[] GetDrops(IWorldAccessor world, IPlayer byPlayer, float dropQuantityMultiplier)

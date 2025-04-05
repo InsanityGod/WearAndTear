@@ -14,6 +14,7 @@ using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.Behaviours.Parts.Item;
 using WearAndTear.Code.Behaviours.Parts.Protective;
+using WearAndTear.Code.Behaviours.Rubble;
 using WearAndTear.Code.Behaviours.Util;
 using WearAndTear.Code.BlockEntities;
 using WearAndTear.Code.Blocks;
@@ -184,6 +185,8 @@ namespace WearAndTear.Code
 
             api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
             api.RegisterCollectibleBehaviorClass("WearAndTearMaterialName", typeof(WearAndTearMaterialName));
+
+            api.RegisterBlockBehaviorClass("WearAndTearRubble", typeof(RubbleBehavior));
         }
 
         private static void RegisterOther(ICoreAPI api)

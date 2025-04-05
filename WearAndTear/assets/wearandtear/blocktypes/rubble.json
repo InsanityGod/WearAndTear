@@ -17,7 +17,7 @@
   "behaviorsByType": {
     "*-unstable": [
       {
-        "name": "UnstableFalling",
+        "name": "WearAndTearRubble",
         "properties": {
           "fallSound": "game:effect/rockslide", //TODO maybe a custom sound effect
           "dustIntensity": 0,
