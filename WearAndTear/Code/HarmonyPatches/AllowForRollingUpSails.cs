@@ -1,4 +1,7 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -7,9 +10,11 @@ using WearAndTear.Code.Behaviours.Parts;
 
 namespace WearAndTear.HarmonyPatches
 {
-    [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "OnInteract")]
+    [HarmonyPatch]
     public static class AllowForRollingUpSails
     {
+
+        [HarmonyPrefix]
         public static bool Prefix(BlockEntityBehavior __instance, IPlayer byPlayer, ref bool __result)
         {
             if (byPlayer.InventoryManager.ActiveHotbarSlot.Empty && byPlayer.Entity.Controls.ShiftKey)
@@ -31,6 +36,21 @@ namespace WearAndTear.HarmonyPatches
             }
 
             return true;
+        }
+
+        [HarmonyTargetMethods]
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+            var baseType = typeof(BEBehaviorMPRotor);
+            var derivedTypes = AccessTools.AllTypes().Where(type => type != baseType && baseType.IsAssignableFrom(type) && type.Name.StartsWith(nameof(BEBehaviorWindmillRotor)));
+            foreach (var type in derivedTypes)
+            {
+                var method = type.GetMethod("OnInteract", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (method != null)
+                {
+                    yield return method;
+                }
+            }
         }
     }
 }

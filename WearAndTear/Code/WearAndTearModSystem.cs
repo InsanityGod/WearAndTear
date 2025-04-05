@@ -1,12 +1,11 @@
 ﻿using HarmonyLib;
+using InsanityLib.Attributes.Auto;
+using InsanityLib.Util;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Json;
-using System.Reflection;
 using Vintagestory.API.Common;
-using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -18,7 +17,6 @@ using WearAndTear.Code.Behaviours.Rubble;
 using WearAndTear.Code.Behaviours.Util;
 using WearAndTear.Code.BlockEntities;
 using WearAndTear.Code.Blocks;
-using WearAndTear.Code.Commands;
 using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
@@ -27,18 +25,20 @@ using WearAndTear.Code.Rendering;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config;
 using WearAndTear.DynamicPatches;
-using WearAndTear.HarmonyPatches;
+using InsanityLib.Attributes.Auto.Harmony;
 
+[assembly:AutoPatcher("wearandtear")]
 namespace WearAndTear.Code
 {
     public class WearAndTearModSystem : ModSystem
     {
         private const string ConfigName = "WearAndTearConfig.json";
 
-        private Harmony harmony;
-
         public static bool XlibEnabled { get; private set; }
         public static bool HelveAxeModLoaded { get; private set; }
+
+        //TODO: auto loading as well
+        [AutoDefaultValue]
         public static ModConfig Config { get; private set; }
 
         public static bool TraitRequirements { get; private set; }
@@ -70,98 +70,13 @@ namespace WearAndTear.Code
             if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
         }
 
-        #region HarmonyWorkAround
-
-        private static ICoreAPI apiCache;
-
-        public static IEnumerable<Assembly> ModAssembliesForHarmonyScan => apiCache.ModLoader.Mods.Select(mod => mod.Systems.FirstOrDefault())
-            .Where(modSystem => modSystem != null)
-            .Select(modSystem => modSystem.GetType().Assembly);
-
-        public static IEnumerable<Type> ModTypesForHarmonyScan => ModAssembliesForHarmonyScan.SelectMany(assembly =>
-        {
-            try
-            {
-                return assembly.GetTypes();
-            }
-            catch
-            {
-                try
-                {
-                    apiCache.Logger.Warning($"[WearAndTear] Could not get types from assembly '{assembly.FullName}', WearAndTear Harmony Patches might not have applied propperly for this mod");
-                }
-                catch { }
-                return Enumerable.Empty<Type>();
-            }
-        });
-
-        #endregion HarmonyWorkAround
-
-        public void TryPatchCompatibility(ICoreAPI api, string modId)
-        {
-            var mod = api.ModLoader.GetMod(modId);
-            if (mod != null)
-            {
-                try
-                {
-                    harmony.PatchCategory(modId);
-                }
-                catch (Exception ex)
-                {
-                    api.Logger.Error(ex);
-                    api.Logger.Warning($"[WearAndTear] Failed to do compatibility patches between WearAndTear and {mod.Info.Name}");
-                }
-            }
-        }
-
         public override void Start(ICoreAPI api)
         {
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
-            apiCache = api;
-
-            if (!Harmony.HasAnyPatches(Mod.Info.ModID))
-            {
-                harmony = new Harmony(Mod.Info.ModID);
-                harmony.PatchAllUncategorized();
-
-                TryPatchCompatibility(api, "indappledgroves");
-                TryPatchCompatibility(api, "linearpower");
-                TryPatchCompatibility(api, "immersivewoodsawing");
-                TryPatchCompatibility(api, "millwright");
-
-                //TODO: revamp to use patch category
-                var millwright = api.ModLoader.GetMod("millwright");
-                if (millwright != null)
-                {
-                    try
-                    {
-                        var sys = millwright.Systems.First();
-                        var beh = AccessTools.GetTypesFromAssembly(sys.GetType().Assembly).First(type => type.Name == "BEBehaviorWindmillRotorEnhanced");
-
-                        harmony.Patch(AccessTools.Method(beh, "Obstructed", new Type[] { typeof(int) }), postfix: new HarmonyMethod(typeof(FixObstructedItemDrop).GetMethod(nameof(FixObstructedItemDrop.Postfix))));
-                        harmony.Patch(AccessTools.Method(beh, "OnBlockBroken", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(FixSailItemDrops).GetMethod(nameof(FixSailItemDrops.Prefix))));
-                        harmony.Patch(AccessTools.Method(beh, "OnInteract", new Type[] { typeof(IPlayer) }), prefix: new HarmonyMethod(typeof(AllowForRollingUpSails).GetMethod(nameof(AllowForRollingUpSails.Prefix))));
-
-                        harmony.Patch(AccessTools.Method(beh, "updateShape", new Type[] { typeof(IWorldAccessor) }), postfix: new HarmonyMethod(typeof(FixWindmillShape).GetMethod(nameof(FixWindmillShape.Postfix))));
-                    }
-                    catch (Exception ex)
-                    {
-                        api.Logger.Error(ex);
-                        api.Logger.Warning("[WearAndTear] Failed to do compatibility patches between WearAndTear and Millwright");
-                    }
-                }
-
-                if (api.ModLoader.IsModEnabled("immersiveorecrush"))
-                {
-                    harmony.PatchCategory("immersiveorecrush");
-                }
-            }
-
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
             RegisterOther(api);
 
-            apiCache = null;
             if(XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
         private static void RegisterBehaviours(ICoreAPI api)
@@ -241,8 +156,10 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            if (harmony != null)
+            if (!ReflectionUtil.SideLoaded(EnumAppSide.Server) || api.Side == EnumAppSide.Server)
             {
+                //TODO find beter solution for this
+                var harmony = new Harmony(Mod.Info.ModID);
                 foreach (var block in api.World.Blocks.Where(block => block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic))
                 {
                     var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : api.ClassRegistry.GetBlockEntity(block.EntityClass);
@@ -342,9 +259,6 @@ namespace WearAndTear.Code
         public override void Dispose()
         {
             MechNetworkRenderer.RendererByCode.Remove("wearandtear:windmillrotor");
-            harmony?.UnpatchAll(Mod.Info.ModID);
-            AutoPartRegistry.Api = null;
-            Config = null;
         }
     }
 }

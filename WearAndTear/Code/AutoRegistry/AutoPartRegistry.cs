@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib.Attributes.Auto;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace WearAndTear.Code.AutoRegistry
 {
     public static class AutoPartRegistry
     {
-
+        [AutoDefaultValue]
         internal static ICoreAPI Api { get; set; }
 
         public static bool HasWearAndTearBehavior(this Block block) => Array.Exists(

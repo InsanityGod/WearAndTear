@@ -23,7 +23,7 @@ namespace WearAndTear.HarmonyPatches
             var baseType = typeof(BEBehaviorMPRotor);
 
             // Find all derived classes, including the base class itself
-            var derivedTypes = WearAndTearModSystem.ModTypesForHarmonyScan.Where(type => type != baseType && baseType.IsAssignableFrom(type));
+            var derivedTypes = AccessTools.AllTypes().Where(type => type != baseType && baseType.IsAssignableFrom(type));
 
             foreach (var type in derivedTypes)
             {
