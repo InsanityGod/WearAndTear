@@ -12,6 +12,12 @@
       "name": "WearAndTearMaterialName"
     }
   ],
+  "dimensions": {
+    "width": 0.1,
+    "height": 0.2,
+    "length": 0.1
+  },
+  "storageFlags": 5,
   "textures": {
     "metal": { "base": "game:block/metal/ingot/{metal}" }
   },

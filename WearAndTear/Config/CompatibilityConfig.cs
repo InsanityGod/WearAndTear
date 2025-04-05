@@ -34,5 +34,13 @@ namespace WearAndTear.Config
         [Category("XLib / XSkills")]
         [DefaultValue(EXLibPrescenceRequirement.OnlyWithXLib)]
         public EXLibPrescenceRequirement RoughDurabilityEstimate { get; set; } = EXLibPrescenceRequirement.Irrelevant;
+
+        /// <summary>
+        /// Enables/Disabled extra code for handling old WearAndTear save data
+        /// 
+        /// Disabling this will potentially increase performance but at the cost of causing old save data to be ignored
+        /// </summary>
+        [DefaultValue(true)]
+        public bool LegacyCompatibility { get; set; } = true;
     }
 }

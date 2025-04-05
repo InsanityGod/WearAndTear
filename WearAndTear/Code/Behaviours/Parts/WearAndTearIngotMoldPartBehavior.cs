@@ -96,6 +96,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         }
 
 
+        //TODO Refactor this
         public override void OnBlockPlaced(ItemStack byItemStack = null)
         {
             base.OnBlockPlaced(byItemStack);

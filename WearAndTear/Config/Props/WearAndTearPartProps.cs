@@ -22,12 +22,6 @@ namespace WearAndTear.Config.Props
         public AssetLocation MaterialVariant { get; set; }
 
         /// <summary>
-        /// Name of the part
-        /// </summary>
-        [Obsolete("Should use Code from now on")]
-        public string Name { get; set; } //TODO BEFORE_RELEASE check migration
-
-        /// <summary>
         /// How much content this part has (affects the ammount of scrap generated)
         /// </summary>
         public float ContentLevel { get; set; }
@@ -100,7 +94,9 @@ namespace WearAndTear.Config.Props
 
         public string GetDisplayName() => Lang.Get($"{Code.Domain}:partname-{Code.Path}", GetDisplayNameParams());
 
-        public string GetDurabilityStringForPlayer(ICoreAPI api, IPlayer player, float durability) => $"{GetDisplayName()}: {WearAndTearModSystem.IsRoughEstimateEnabled(api, player) switch
+        public string GetDurabilityStringForPlayer(ICoreAPI api, IPlayer player, float durability) => GetDurabilityStringForPlayer(api, player, GetDisplayName(), durability);
+
+        public static string GetDurabilityStringForPlayer(ICoreAPI api, IPlayer player, string name, float durability) => $"{name}: {WearAndTearModSystem.IsRoughEstimateEnabled(api, player) switch
         {
             true when durability > 0.7 => Lang.Get("wearandtear:durability-good"),
             true when durability > 0.4 => Lang.Get("wearandtear:durability-decent"),

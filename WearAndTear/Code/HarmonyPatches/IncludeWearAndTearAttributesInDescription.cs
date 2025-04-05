@@ -59,10 +59,8 @@ namespace WearAndTear.HarmonyPatches
             foreach (var attr in tree.Where(attr => !attr.Key.EndsWith("_Repaired")))
             {
                 var beh = Array.Find(entityBehaviors, item => item.properties != null && item.properties[nameof(WearAndTearPartProps.Code)].AsString() == attr.Key);
-                if(beh == null) continue;
                 
-                var props = beh.properties.AsObject<WearAndTearPartProps>();
-                dsc.AppendLine(props.GetDurabilityStringForPlayer(api, api.World.Player, (float)attr.Value.GetValue()));
+                dsc.AppendLine(WearAndTearPartProps.GetDurabilityStringForPlayer(api, api.World.Player, beh?.properties.AsObject<WearAndTearPartProps>().GetDisplayName() ?? attr.Key, (float)attr.Value.GetValue()));
             }
         }
     }

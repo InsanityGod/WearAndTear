@@ -8,6 +8,6 @@ namespace WearAndTear.Code.Extensions
 {
     public static class NumberExtensions
     {
-        public static string ToPercentageString(this float percentage) => $"{(int)(percentage * 100)}%";
+        public static string ToPercentageString(this float percentage) => $"{(int)(Math.Round(percentage, 2) * 100)}%";
     }
 }

@@ -38,7 +38,7 @@ namespace WearAndTear.Config
         /// (Drop = ContentLevel * ((Durability * DurabilityDropPercentage) + FixedDropPercentage)
         /// </summary>
         [DefaultValue(.8f)]
-        public float DurabilityDropPercentage { get; set;} = .8f;
+        public float DurabilityDropPercentage { get; set;} = .6f;
         
         /// <summary>
         /// How much damage you take from sprinting into rubble
