@@ -208,6 +208,7 @@ namespace WearAndTear.Code
             {
                 var woodVariant = woodscrap.Variant["wood"];
                 var plank = api.World.GetItem($"game:plank-{woodVariant}");
+                plank ??= api.World.GetItem($"wildcrafttree:plank-{woodVariant}");
                 if(plank == null)
                 {
                     api.Logger.Error("[WearAndTear] No plank for {0} variant and this is required for wearandtear:woodscrap to function propperly", woodVariant);
@@ -216,7 +217,7 @@ namespace WearAndTear.Code
 
                 woodscrap.MaterialDensity = plank.MaterialDensity;
                 //woodscrap.Textures = plank.Textures.ToDictionary(item => item.Key, item => item.Value);
-                woodscrap.CombustibleProps = plank.CombustibleProps.Clone();
+                woodscrap.CombustibleProps = plank.CombustibleProps?.Clone();
             }
 
             foreach(var metalscrap in api.World.Items.Where(item => item.FirstCodePart() == "metalscrap"))

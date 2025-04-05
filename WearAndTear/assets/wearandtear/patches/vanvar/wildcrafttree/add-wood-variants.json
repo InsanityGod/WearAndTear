@@ -1,0 +1,11 @@
+[
+  {
+    "file": "wearandtear:itemtypes/resource/woodscrap.json",
+    "op": "addmerge",
+    "path": "/variantgroups/0/LoadFromPropertiesCombine/-",
+    "value": "wildcrafttree:block/wood",
+    "dependsOn": [
+      { "modid": "wildcrafttree" }
+    ]
+  }
+]

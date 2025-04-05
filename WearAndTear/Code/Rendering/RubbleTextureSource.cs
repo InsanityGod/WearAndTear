@@ -56,6 +56,7 @@ namespace WearAndTear.Code.Rendering
                         {
                             
                             var woodBlock = game.Api.World.GetBlock($"game:planks-{wood}-ud");
+                            woodBlock ??= game.Api.World.GetBlock($"wildcrafttree:planks-{wood}-ud");
                             if(woodBlock != null) Sources["wood"] = tesselator.GetTextureSource(woodBlock, returnNullWhenMissing: true);
                         }
 

@@ -5,7 +5,9 @@
     {
       "code": "wood",
       "states": [ "aged" ],
-      "loadFromProperties": "game:block/wood"
+      "LoadFromPropertiesCombine": [
+        "game:block/wood"
+      ]
     }
   ],
   "behaviors": [
