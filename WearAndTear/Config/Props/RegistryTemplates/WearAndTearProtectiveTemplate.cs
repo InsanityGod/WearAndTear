@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json.Linq;
 
-namespace WearAndTear.Config.Props
+namespace WearAndTear.Config.Props.RegistryTemplates
 {
-    public class WearAndTearProtectivePartConfig
+    public class WearAndTearProtectiveTemplate
     {
         /// <summary>
         /// The general part properties

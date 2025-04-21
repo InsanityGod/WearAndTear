@@ -1,11 +1,10 @@
 ﻿using HarmonyLib;
-using InsanityLib.Attributes.Auto;
+using InsanityLib.Attributes.Auto.Harmony;
 using InsanityLib.Util;
-using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
+using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -23,25 +22,17 @@ using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Code.XLib;
-using WearAndTear.Config;
+using WearAndTear.Config.Server;
 using WearAndTear.DynamicPatches;
-using InsanityLib.Attributes.Auto.Harmony;
-using InsanityLib.Attributes.Auto.Config;
 
-[assembly:AutoPatcher("wearandtear")]
+[assembly: AutoPatcher("wearandtear")]
+
 namespace WearAndTear.Code
 {
     public class WearAndTearModSystem : ModSystem
     {
-        private const string ConfigName = "WearAndTearConfig.json";
-
         public static bool XlibEnabled { get; private set; }
         public static bool HelveAxeModLoaded { get; private set; }
-
-        [AutoConfig(ConfigName)]
-        public static ModConfig Config { get; private set; }
-
-        public static bool TraitRequirements { get; private set; }
 
         public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
         {
@@ -55,28 +46,24 @@ namespace WearAndTear.Code
             AutoPartRegistry.Api = api;
 
             XlibEnabled = api.ModLoader.IsModEnabled("xlib");
-            if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
+            if (XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
         }
 
         public override void Start(ICoreAPI api)
         {
-            if(api.Side == EnumAppSide.Server)
-            {
-                TraitRequirements = Config.TraitRequirements;
-                api.World.Config.SetBool("wearandtear-traitrequirements", Config.TraitRequirements);
-            }
-            else
-            {
-                TraitRequirements = api.World.Config.GetBool("wearandtear-traitrequirements");
-            }
-
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
             RegisterOther(api);
 
-            if(XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
+            if (XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
+
+        public override void StartServerSide(ICoreServerAPI api)
+        {
+            LoadFeatureFlags(api);
+        }
+
         private static void RegisterBehaviours(ICoreAPI api)
         {
             api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
@@ -106,7 +93,7 @@ namespace WearAndTear.Code
         {
             foreach (var prop in typeof(SpecialPartConfig).GetProperties())
             {
-                var obj = prop.GetValue(Config.SpecialParts);
+                var obj = prop.GetValue(WearAndTearServerConfig.Instance.SpecialParts);
                 api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", obj is bool turned_on ? turned_on : obj != null);
             }
         }
@@ -134,9 +121,9 @@ namespace WearAndTear.Code
                 }
 
                 var ingotMoldMethod = AccessTools.Method(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.GetBlockInfo));
-                if(ingotMoldMethod != null) AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, ingotMoldMethod);
+                if (ingotMoldMethod != null) AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, ingotMoldMethod);
             }
-            
+
             FinalizeScrap(api);
             if (api.Side != EnumAppSide.Server) return;
 
@@ -150,7 +137,7 @@ namespace WearAndTear.Code
                 BlockPatches.PatchPulverizer(block);
                 BlockPatches.PatchClutch(block);
 
-                if (Config.AutoPartRegistry.Enabled)
+                if (WearAndTearServerConfig.Instance.AutoPartRegistry.Enabled)
                 {
                     AutoPartRegistry.Register(block);
                 }
@@ -161,12 +148,12 @@ namespace WearAndTear.Code
 
         public void FinalizeScrap(ICoreAPI api)
         {
-            foreach(var woodscrap in api.World.Items.Where(item => item.FirstCodePart() == "woodscrap"))
+            foreach (var woodscrap in api.World.Items.Where(item => item.FirstCodePart() == "woodscrap"))
             {
                 var woodVariant = woodscrap.Variant["wood"];
                 var plank = api.World.GetItem($"game:plank-{woodVariant}");
                 plank ??= api.World.GetItem($"wildcrafttree:plank-{woodVariant}");
-                if(plank == null)
+                if (plank == null)
                 {
                     api.Logger.Error("[WearAndTear] No plank for {0} variant and this is required for wearandtear:woodscrap to function propperly", woodVariant);
                     continue;
@@ -177,11 +164,11 @@ namespace WearAndTear.Code
                 woodscrap.CombustibleProps = plank.CombustibleProps?.Clone();
             }
 
-            foreach(var metalscrap in api.World.Items.Where(item => item.FirstCodePart() == "metalscrap"))
+            foreach (var metalscrap in api.World.Items.Where(item => item.FirstCodePart() == "metalscrap"))
             {
                 var metalVariant = metalscrap.Variant["metal"];
                 var ingot = api.World.GetItem($"game:ingot-{metalVariant}");
-                if(ingot == null)
+                if (ingot == null)
                 {
                     api.Logger.Error("[WearAndTear] No ingot for {0} variant and this is required for wearandtear:metalscrap to function propperly", metalVariant);
                     continue;
@@ -190,14 +177,14 @@ namespace WearAndTear.Code
                 metalscrap.MaterialDensity = ingot.MaterialDensity;
                 //metalscrap.Textures = ingot.Textures.ToDictionary(item => item.Key, item => item.Value); //TODO copy correct texture only
                 metalscrap.CombustibleProps = ingot.CombustibleProps?.Clone();
-                if(metalscrap.CombustibleProps == null) continue;
+                if (metalscrap.CombustibleProps == null) continue;
                 metalscrap.CombustibleProps.SmeltedRatio = 4;
             }
         }
 
         public static bool IsRoughEstimateEnabled(ICoreAPI api, IPlayer player)
         {
-            if (Config.Compatibility.RoughDurabilityEstimate.IsFullfilled())
+            if (WearAndTearServerConfig.Instance.Compatibility.RoughDurabilityEstimate.IsFullfilled())
             {
                 if (XlibEnabled)
                 {

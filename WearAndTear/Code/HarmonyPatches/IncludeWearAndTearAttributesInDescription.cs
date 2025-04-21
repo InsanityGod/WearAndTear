@@ -7,12 +7,9 @@ using System.Reflection.Emit;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Config.Props;
-using static HarmonyLib.Code;
 
 namespace WearAndTear.HarmonyPatches
 {
@@ -48,18 +45,18 @@ namespace WearAndTear.HarmonyPatches
 
         public static void AppendWearAndTearInfo(IWorldAccessor world, ItemSlot inSlot, StringBuilder dsc)
         {
-            if(world.Api is not ICoreClientAPI api) return;
+            if (world.Api is not ICoreClientAPI api) return;
             ITreeAttribute tree = inSlot.Itemstack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
             if (tree == null) return;
-            
+
             var entityBehaviors = inSlot.Itemstack.Block?.GetActualPlacementBlock(world.Api)?.BlockEntityBehaviors;
-            if(entityBehaviors == null) return;
+            if (entityBehaviors == null) return;
 
             dsc.AppendLine();
             foreach (var attr in tree.Where(attr => !attr.Key.EndsWith("_Repaired")))
             {
                 var beh = Array.Find(entityBehaviors, item => item.properties != null && item.properties[nameof(WearAndTearPartProps.Code)].AsString() == attr.Key);
-                
+
                 dsc.AppendLine(WearAndTearPartProps.GetDurabilityStringForPlayer(api, api.World.Player, beh?.properties.AsObject<WearAndTearPartProps>().GetDisplayName() ?? attr.Key, (float)attr.Value.GetValue()));
             }
         }

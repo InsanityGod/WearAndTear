@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Code;
 using WearAndTear.Code.AutoRegistry;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.DynamicPatches
 {
@@ -27,19 +27,19 @@ namespace WearAndTear.DynamicPatches
 
         public static void PatchClutch(Block block)
         {
-            if (WearAndTearModSystem.Config.SpecialParts.Clutch == null || block is not BlockClutch) return;
+            if (WearAndTearServerConfig.Instance.SpecialParts.Clutch == null || block is not BlockClutch) return;
             block.EnsureBaseWearAndTear(true);
             //TODO special part
         }
 
         public static void PatchWindmill(Block block)
         {
-            if (WearAndTearModSystem.Config.SpecialParts.WindmillSails == null) return;
+            if (WearAndTearServerConfig.Instance.SpecialParts.WindmillSails == null) return;
 
             if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced")
             {
                 block.EnsureBaseWearAndTear(true);
-                block.MergeOrAddBehavior("WearAndTearSail", (JContainer)JToken.FromObject(WearAndTearModSystem.Config.SpecialParts.WindmillSails));
+                block.MergeOrAddBehavior("WearAndTearSail", (JContainer)JToken.FromObject(WearAndTearServerConfig.Instance.SpecialParts.WindmillSails));
 
                 ((JContainer)block.Attributes.Token).Merge(JToken.FromObject(new
                 {
@@ -53,17 +53,17 @@ namespace WearAndTear.DynamicPatches
 
         public static void PatchIngotMold(Block block)
         {
-            if(!WearAndTearModSystem.Config.SpecialParts.Molds || block is not BlockIngotMold) return;
+            if (!WearAndTearServerConfig.Instance.SpecialParts.Molds || block is not BlockIngotMold) return;
 
             block.EnsureBaseWearAndTear(true);
-            var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
+            var frameProps = WearAndTearServerConfig.Instance.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             var frame = JToken.FromObject(frameProps);
             frame[nameof(WearAndTearPartProps.Decay)] = JToken.FromObject(Array.Empty<WearAndTearDecayProps>());
             ((JContainer)frame).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
-            
+
             frame["Code"] = "wearandtear:ingotmold-left";
             block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame.DeepClone());
-            
+
             frame["Code"] = "wearandtear:ingotmold-right";
             block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame);
         }

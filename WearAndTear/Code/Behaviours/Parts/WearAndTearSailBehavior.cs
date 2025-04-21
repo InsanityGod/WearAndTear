@@ -11,6 +11,7 @@ using WearAndTear.Code.Behaviours.Parts.Abstract;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
@@ -124,7 +125,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             if (!IsPresent) return itemStacks;
             var sailItems = new List<ItemStack>();
 
-            if (Durability > WearAndTearModSystem.Config.DurabilityLeeway) Durability = 1;
+            if (Durability > WearAndTearServerConfig.Instance.DurabilityLeeway) Durability = 1;
             var item = SailAssetLocation;
             var sailCount = BladeCount;
             var sailLength = SailLength;
@@ -161,7 +162,7 @@ namespace WearAndTear.Code.Behaviours.Parts
 
             var items = ModifyDroppedItemStacks(Array.Empty<ItemStack>(), Api.World, Pos, null, 1, false);
 
-            foreach(var item in items) Api.World.SpawnItemEntity(item, Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
+            foreach (var item in items) Api.World.SpawnItemEntity(item, Pos.ToVec3d().Add(0.5, 0.5, 0.5), null);
 
             SailLength = 0;
             Durability = 1;
@@ -171,7 +172,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {
             if (!IsPresent) return;
-            
+
             dsc.AppendLine($"{Props.GetDurabilityStringForPlayer(Api, forPlayer, Durability)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
         }
 
@@ -193,7 +194,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             {
                 var limit = Props.MaintenanceLimit.Value;
 
-                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+                if (WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
 
                 realAllowedMaintenanceStrength = GameMath.Clamp(realMaintenanceStrength, 0, limit - RepairedDurability);
             }
@@ -204,7 +205,7 @@ namespace WearAndTear.Code.Behaviours.Parts
 
             if (HasMaintenanceLimit) RepairedDurability += realAllowedMaintenanceStrength - Math.Max(Durability - 1, 0);
 
-            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+            Durability = GameMath.Clamp(Durability, WearAndTearServerConfig.Instance.MinDurability, 1);
 
             return Math.Max(realLeftOverMaintenanceStrength * SailLength * BladeCount / 4f, 0);
         }

@@ -1,6 +1,4 @@
-﻿using Vintagestory.API.MathTools;
-
-namespace WearAndTear.Config.Props
+﻿namespace WearAndTear.Config.Props
 {
     public class WearAndTearDurabilityPartProps
     {

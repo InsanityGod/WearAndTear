@@ -2,6 +2,7 @@
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.DecayEngines
 {
@@ -9,7 +10,7 @@ namespace WearAndTear.Code.DecayEngines
     {
         public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed)
         {
-            var climate = api.World.GetPastAverageClimateCondition(part.Pos, daysPassed, WearAndTearModSystem.Config.PollIntervalInDays);
+            var climate = api.World.GetPastAverageClimateCondition(part.Pos, daysPassed, WearAndTearServerConfig.Instance.PollIntervalInDays);
 
             //Relative to the average AvgLifeSpanInYears expects
             var degradationFactor = climate.Rainfall / .25;
@@ -19,7 +20,7 @@ namespace WearAndTear.Code.DecayEngines
 
             if (part.WearAndTear.IsSheltered) degradationRate *= .5;
 
-            return (float)(degradationRate * daysPassed) * WearAndTearModSystem.Config.DecayModifier.Humidity;
+            return (float)(degradationRate * daysPassed) * WearAndTearServerConfig.Instance.DecayModifier.Humidity;
         }
     }
 }

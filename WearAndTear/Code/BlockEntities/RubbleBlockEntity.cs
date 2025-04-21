@@ -34,7 +34,7 @@ namespace WearAndTear.Code.BlockEntities
 
         public override void OnBlockPlaced(ItemStack byItemStack = null)
         {
-            if(byItemStack != null) Contents.SetItemstack("0", byItemStack);
+            if (byItemStack != null) Contents.SetItemstack("0", byItemStack);
 
             base.OnBlockPlaced(byItemStack);
             MarkDirty(true); //This fixes annoying issue where stack is not yet ready when rendering on client
@@ -44,8 +44,8 @@ namespace WearAndTear.Code.BlockEntities
         public ItemStack[] GetDrops(IWorldAccessor world, IPlayer byPlayer, float dropQuantityMultiplier)
         {
             var items = new List<ItemStack>();
-            
-            foreach(var content in Contents.Values.OfType<ItemstackAttribute>())
+
+            foreach (var content in Contents.Values.OfType<ItemstackAttribute>())
             {
                 //normal drops
                 var normalDrops = content.value.Attributes.GetTreeAttribute("rubble-normal-drops");
@@ -63,7 +63,7 @@ namespace WearAndTear.Code.BlockEntities
 
             return items.ToArray();
         }
-        
+
         public const string CacheKey = "WearAndTearRubbleMeshes";
         public const string defaultShape = "wearandtear:shapes/rubble.json";
 
@@ -74,15 +74,15 @@ namespace WearAndTear.Code.BlockEntities
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
             var primaryContent = PrimaryContent;
-            if(primaryContent == null || (primaryContent.Block == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
-            
+            if (primaryContent == null || (primaryContent.Block == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
+
             var block = PrimaryContent.Block?.GetActualPlacementBlock(Api);
             var cache = ObjectCacheUtil.GetOrCreate(Api, CacheKey, () => new Dictionary<string, MeshData>());
 
             var cacheKey = block.Code.ToString();
 
-            if(primaryContent?.Block?.Attributes == null) return false;
-            if(mesh == null)
+            if (primaryContent?.Block?.Attributes == null) return false;
+            if (mesh == null)
             {
                 var loc = primaryContent.Block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Shape)].AsString();
                 bool customShape = loc != null;
@@ -94,8 +94,8 @@ namespace WearAndTear.Code.BlockEntities
                     shape = Shape.TryGet(Api, $"{assetLocation.Domain}:shapes/{assetLocation.Path}.json");
                 }
                 else shape = Shape.TryGet(Api, defaultShape);
-                
-                if(shape == null && customShape)
+
+                if (shape == null && customShape)
                 {
                     Api.Logger.Error("[WearAndTear] Could not find custom rubble shape at '{0}' for block '{1}', using default shape", loc, primaryContent.Block.Code);
                     shape = Shape.TryGet(Api, defaultShape);
@@ -112,7 +112,7 @@ namespace WearAndTear.Code.BlockEntities
                     tessThreadTesselator.TesselateShape("rubble", shape, out mesh, texSource, selectiveElements: texSource.GetSelectiveElements());
                 }
             }
-            if(mesh != null)
+            if (mesh != null)
             {
                 mesher.AddMeshData(mesh);
                 return true;
@@ -130,11 +130,10 @@ namespace WearAndTear.Code.BlockEntities
         {
             //TODO we should probably look at all content at some point
             var content = PrimaryContent;
-            if(content == null) return false;
-            if(content.Collectible == null) content.ResolveBlockOrItem(Api.World);
-            if(content.Collectible?.Attributes == null) return true;
+            if (content == null) return false;
+            if (content.Collectible == null) content.ResolveBlockOrItem(Api.World);
+            if (content.Collectible?.Attributes == null) return true;
             return content.Collectible.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.DamageOnTouch)].AsBool(true);
-
         }
     }
 }

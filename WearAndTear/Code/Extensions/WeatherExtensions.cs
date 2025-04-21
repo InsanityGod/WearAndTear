@@ -1,5 +1,6 @@
 ﻿using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
+using WearAndTear.Config.Client;
 
 namespace WearAndTear.Code.Extensions
 {
@@ -17,23 +18,23 @@ namespace WearAndTear.Code.Extensions
             {
                 var poll = world.BlockAccessor.GetClimateAt(pos, EnumGetClimateMode.ForSuppliedDate_TemperatureRainfallOnly, now - timePassed);
 
-                if(!float.IsNaN(poll.Rainfall) && !float.IsNaN(poll.Temperature))
+                if (!float.IsNaN(poll.Rainfall) && !float.IsNaN(poll.Temperature))
                 {
                     totalRainfall += poll.Rainfall;
                     totalTemperature += poll.Temperature;
                     pollCount++;
                 }
-                else if(WearAndTearModSystem.Config.EnableDebugLogging)
+                else if (WearAndTearClientConfig.Instance.EnableDebugLogging)
                 {
                     world.Logger.Warning($"[WearAndTear] Invalid climate data at {pos} for totalDays {now - timePassed} (skipping poll)");
                 }
-                
+
                 timePassed -= pollInterval;
             }
 
             if (pollCount == 0)
             {
-                if(WearAndTearModSystem.Config.EnableDebugLogging) world.Logger.Warning("[WearAndTear] totally failed to poll climate data (returning default template)");
+                if (WearAndTearClientConfig.Instance.EnableDebugLogging) world.Logger.Warning("[WearAndTear] totally failed to poll climate data (returning default template)");
 
                 return new ClimateCondition
                 {

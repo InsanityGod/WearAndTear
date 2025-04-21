@@ -1,11 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
-using Vintagestory.API.Common;
 using WearAndTear.Code.Enums;
 
-namespace WearAndTear.Config
+namespace WearAndTear.Config.Server
 {
     public class CompatibilityConfig
     {
@@ -37,7 +35,7 @@ namespace WearAndTear.Config
 
         /// <summary>
         /// Enables/Disabled extra code for handling old WearAndTear save data
-        /// 
+        ///
         /// Disabling this will potentially increase performance but at the cost of causing old save data to be ignored
         /// </summary>
         [DefaultValue(true)]

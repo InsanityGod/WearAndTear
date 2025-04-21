@@ -13,7 +13,6 @@ namespace WearAndTear.HarmonyPatches
     [HarmonyPatch]
     public static class AllowForRollingUpSails
     {
-
         [HarmonyPrefix]
         public static bool Prefix(BlockEntityBehavior __instance, IPlayer byPlayer, ref bool __result)
         {

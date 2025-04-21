@@ -25,8 +25,8 @@ namespace WearAndTear.Config.Props
 
         public bool IsEffectiveFor(WearAndTearPartProps props)
         {
-            if(Code != null && props.Code != Code) return false;
-            if(RepairType != null && RepairType != props.RepairType) return false;
+            if (Code != null && props.Code != Code) return false;
+            if (RepairType != null && RepairType != props.RepairType) return false;
             return true;
         }
     }

@@ -5,6 +5,7 @@ using Vintagestory.API.MathTools;
 using WearAndTear.Code.XLib;
 using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Interfaces
 {
@@ -22,7 +23,7 @@ namespace WearAndTear.Code.Interfaces
 
         public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props)
         {
-            if(props.RequiredMaterialVariant != null && props.RequiredMaterialVariant != Props.MaterialVariant) return false;
+            if (props.RequiredMaterialVariant != null && props.RequiredMaterialVariant != Props.MaterialVariant) return false;
             return props.RepairType == Props.RepairType;
         }
 
@@ -36,7 +37,7 @@ namespace WearAndTear.Code.Interfaces
 
         bool IsActive { get; }
 
-        bool HasMaintenanceLimit => !WearAndTearModSystem.Config.AllowForInfiniteMaintenance && Props.MaintenanceLimit != null;
+        bool HasMaintenanceLimit => !WearAndTearServerConfig.Instance.AllowForInfiniteMaintenance && Props.MaintenanceLimit != null;
 
         /// <summary>
         /// Repairs item and returns remaining repair strength
@@ -50,7 +51,7 @@ namespace WearAndTear.Code.Interfaces
             {
                 var limit = Props.MaintenanceLimit.Value;
 
-                if(WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+                if (WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
 
                 allowedMaintenanceStrength = GameMath.Clamp(maintenanceStrength, 0, limit - RepairedDurability);
             }
@@ -60,7 +61,7 @@ namespace WearAndTear.Code.Interfaces
 
             if (HasMaintenanceLimit) RepairedDurability += allowedMaintenanceStrength - Math.Max(Durability - 1, 0);
 
-            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+            Durability = GameMath.Clamp(Durability, WearAndTearServerConfig.Instance.MinDurability, 1);
 
             return Math.Max(leftOverMaintenanceStrength, 0);
         }

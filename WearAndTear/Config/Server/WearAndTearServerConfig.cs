@@ -1,17 +1,31 @@
 ﻿using InsanityLib.Attributes.Auto.Config;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace WearAndTear.Config
+namespace WearAndTear.Config.Server
 {
-    //TODO split into server and client config
-    public class ModConfig
+    public class WearAndTearServerConfig
     {
+        public const string ConfigName = "WearAndTear_Server_Config.json";
+
+        [AutoConfig(ConfigName, ServerSync = true)]
+        public static WearAndTearServerConfig Instance { get; private set; }
+
         public const int LatestConfigCompatibilityVersion = 1;
 
         /// <summary>
-        /// If enabled certain actions will require class traits
+        /// This is number is used to check if the config is still valid
+        /// (I update this when creating major config breaking updates, so I can ensure people update their configs)
         /// </summary>
+        [ReadOnly(true)]
+        [Browsable(false)]
+        [VersionIdentifier(LatestConfigCompatibilityVersion)]
+        public int ConfigCompatibilityVersion { get; set; } = LatestConfigCompatibilityVersion;
+
+        //Actual Config
+
+        /// <summary>If enabled certain actions will require class traits</summary>
         [DefaultValue(false)]
         public bool TraitRequirements { get; set; } = false;
 
@@ -27,7 +41,7 @@ namespace WearAndTear.Config
 
         /// <summary>
         /// Until which point the item/block is still considered to be fully repaired when broken
-        /// (this affects whether the block is dropped with durability attributes or if the item is broken into ingredients)
+        /// (If the actual durability is above the specified threshold then it won't affect the drops)
         /// </summary>
         [Category("Maintenance")]
         [DefaultValue(.95f)]
@@ -35,59 +49,25 @@ namespace WearAndTear.Config
         [DisplayFormat(DataFormatString = "P")]
         public float DurabilityLeeway { get; set; } = .95f;
 
-        /// <summary>
-        /// The minimum drop in durability is required before maintenance is allowed
-        /// </summary>
+        /// <summary>The minimum durability is required before maintenance is allowed</summary>
         [Category("Maintenance")]
         [DefaultValue(.95f)]
         [Range(0, 1)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinMaintenanceDurability { get; set; } = .95f;
 
-        /// <summary>
-        /// If the durability drops bellow this amount of durability you will see visual tearing
-        /// (set to 0 to disable entirely)
-        /// </summary>
-        [Category("Appearance")]
-        [DefaultValue(0.6f)]
-        [Range(0, 1)]
-        [DisplayFormat(DataFormatString = "P")]
-        public float VisualTearingMinDurability { get; set; } = 0.6f;
-
-        /// <summary>
-        /// Wether visual tearing should be disabled on MP blocks
-        /// (MP blocks generally move/turn and since the tearing doesn't it will end up looking weirdly)
-        /// </summary>
-        [Category("Appearance")]
-        [DefaultValue(true)]
-        [DisplayName("Disable Visual Tearing on MP Blocks")]
-        public bool DisableVisualTearingOnMPBlocks { get; set; } = true;
-
-        /// <summary>
-        /// How often the durability update method runs
-        /// </summary>
+        /// <summary>How often the durability update method runs</summary>
         [Category("Maintenance")]
         [DefaultValue(15000)]
         [Range(1, int.MaxValue)]
         public int DurabilityUpdateFrequencyInMs { get; set; } = 15000;
 
-        /// <summary>
-        /// How often the check if entity is inside room is done
-        /// </summary>
-        [DefaultValue(30000)]
-        [Range(1, int.MaxValue)]
-        public int RoomCheckFrequencyInMs { get; set; } = 30000;
-
-        /// <summary>
-        /// Whether objects can only be repaired while they are not active
-        /// </summary>
+        /// <summary>Whether objects can only be repaired while they are not active</summary>
         [Category("Maintenance")]
         [DefaultValue(true)]
         public bool MaintenanceRequiresInactivePart { get; set; } = true;
 
-        /// <summary>
-        /// When calculating decay for stuff that was unloaded for a long time this decides the ammount of dates the rainfall/temperature is collected from to get an average
-        /// </summary>
+        /// <summary>When calculating decay for stuff that was unloaded for a long time this decides the ammount of dates the rainfall/temperature is collected from to get an average</summary>
         [Category("Maintenance")]
         [DefaultValue(0.1)]
         [Range(0.01f, float.PositiveInfinity)]
@@ -101,39 +81,31 @@ namespace WearAndTear.Config
         [DefaultValue(false)]
         public bool AllowForInfiniteMaintenance { get; set; } = false;
 
+        /// <summary>How often the check if entity is inside room is done</summary>
+        [Category("Shelter")]
+        [DefaultValue(30000)]
+        [Range(1, int.MaxValue)]
+        public int RoomCheckFrequencyInMs { get; set; } = 30000;
+
         /// <summary>
         /// Leeway for considering something as Sheltered.
         /// Setting this higher means that you can build larger tunnels and still having it be considered sheltered.
         /// Setting this to -1 will make everything be considered outside
         /// </summary>
+        [Category("Shelter")]
         [DefaultValue(18)]
         [Range(-1, int.MaxValue)]
         public int RoomExitCountLeeway { get; set; } = 18;
 
+        //Sub configs
         public DecayModifierConfig DecayModifier { get; set; } = new();
 
         public SpecialPartConfig SpecialParts { get; set; } = new();
 
         public RubbleConfig Rubble { get; set; } = new();
 
-        public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
-
         public CompatibilityConfig Compatibility { get; set; } = new();
 
-        /// <summary>
-        /// If enabled, questionable events are logged (like when temperature data is invalid and creates NaN as a value)
-        /// </summary>
-        [Category("Debug")]
-        [DefaultValue(false)]
-        public bool EnableDebugLogging { get; set; } = false;
-
-        /// <summary>
-        /// This is number is used to check if the config is still valid 
-        /// (I update this when creating major config breaking updates, so I can ensure people update their configs)
-        /// </summary>
-        [ReadOnly(true)]
-        [Browsable(false)]
-        [VersionIdentifier(LatestConfigCompatibilityVersion)]
-        public int ConfigCompatibilityVersion { get; set; }
+        public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
     }
 }

@@ -3,7 +3,6 @@ using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using WearAndTear.Config.Props;
-using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Code.Interfaces
 {

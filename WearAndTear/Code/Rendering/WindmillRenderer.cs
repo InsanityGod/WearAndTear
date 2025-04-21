@@ -4,6 +4,7 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Config.Client;
 
 namespace WearAndTear.Code.Rendering
 {
@@ -15,10 +16,10 @@ namespace WearAndTear.Code.Rendering
             {
                 RecursiveRemoveCloth(shape.Elements);
             }
-            else if (WearAndTearModSystem.Config.SpecialParts.WindmillRotorDecayAutoGenShapes)
+            else if (WearAndTearClientConfig.Instance.WindmillRotorDecayAutoGenShapes)
             {
                 //Creating seeded random so it will be consistent
-                var random = new Random(randomNoise); //55 //TODO use block position
+                var random = new Random(randomNoise); //55
                 RecursiveRemoveCloth(shape.Elements, random, durability / 100d);
             }
         }

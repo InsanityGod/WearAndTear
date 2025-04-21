@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Common;
+using System.ComponentModel.DataAnnotations;
 
-namespace WearAndTear.Config
+namespace WearAndTear.Config.Server
 {
     /// <summary>
     /// Configuration for rubble and scrap that will be generated when the block breaks
@@ -20,9 +16,7 @@ namespace WearAndTear.Config
         [DefaultValue(true)]
         public bool RubbleBlock { get; set; } = true;
 
-        /// <summary>
-        /// Wether scrap should be generated
-        /// </summary>
+        /// <summary>Wether scrap should be generated</summary>
         [DefaultValue(true)]
         public bool GenerateScrap { get; set; } = true;
 
@@ -31,25 +25,25 @@ namespace WearAndTear.Config
         /// (Drop = ContentLevel * ((Durability * DurabilityDropPercentage) + FixedDropPercentage)
         /// </summary>
         [DefaultValue(.2f)]
-        public float FixedDropPercentage { get; set;} = .2f;
-        
+        [Range(0f, 1f)]
+        public float FixedDropPercentage { get; set; } = .2f;
+
         /// <summary>
         /// The percentage of content level that will drop based on durability
         /// (Drop = ContentLevel * ((Durability * DurabilityDropPercentage) + FixedDropPercentage)
         /// </summary>
         [DefaultValue(.8f)]
-        public float DurabilityDropPercentage { get; set;} = .6f;
-        
-        /// <summary>
-        /// How much damage you take from sprinting into rubble
-        /// </summary>
+        [Range(0f, 1f)]
+        public float DurabilityDropPercentage { get; set; } = .6f;
+
+        /// <summary>How much damage you take from sprinting into rubble</summary>
         [DefaultValue(2f)]
+        [Range(0f, float.PositiveInfinity)]
         public float SprintIntoDamage { get; set; } = 2f;
 
-        /// <summary>
-        /// How much damage you take from falling onto rubble
-        /// </summary>
+        /// <summary>How much damage you take from falling onto rubble</summary>
         [DefaultValue(4f)]
+        [Range(0f, float.PositiveInfinity)]
         public float FallIntoDamageMul { get; set; } = 4f;
     }
 }

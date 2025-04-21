@@ -5,7 +5,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using WearAndTear.Code;
 using WearAndTear.Code.Extensions;
-using WearAndTear.Config.Props.rubble;
 
 namespace WearAndTear.Config.Props
 {
@@ -26,7 +25,7 @@ namespace WearAndTear.Config.Props
         /// How much content this part has (affects the ammount of scrap generated)
         /// </summary>
         public float ContentLevel { get; set; }
-        
+
         /// <summary>
         /// What kind of scrap will be produced when this part is destroyed
         /// </summary>
@@ -77,11 +76,11 @@ namespace WearAndTear.Config.Props
 
         public object[] GetDisplayNameParams()
         {
-            if(MaterialVariant == null) return Array.Empty<object>();
+            if (MaterialVariant == null) return Array.Empty<object>();
 
             var key = $"{MaterialVariant.Domain}:material-{MaterialVariant.Path}";
             var str = Lang.Get(key);
-            if(str == key)
+            if (str == key)
             {
                 //TODO maybe a way to configure a list of prefixes
                 str = Lang.Get($"{MaterialVariant.Domain}:rock-{MaterialVariant.Path}");

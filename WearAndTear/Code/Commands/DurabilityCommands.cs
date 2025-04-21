@@ -4,7 +4,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Server;
 using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
@@ -23,15 +22,15 @@ namespace WearAndTear.Code.Commands
         /// <example>/wearandtear setdurability 1 0.5</example>
         [AutoCommand(Path = "wearandtear", RequiredPrivelege = "controlserver")]
         public static TextCommandResult SetDurability(
-            [CommandParameter(Source = EParamSource.CallerTarget)] [Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] WearAndTearBehavior wearAndTear,
+            [CommandParameter(Source = EParamSource.CallerTarget)][Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] WearAndTearBehavior wearAndTear,
             [CommandParameter] string PartIdentifier,
-            [CommandParameter] [Range(0f, 1f)] float Durability)
+            [CommandParameter][Range(0f, 1f)] float Durability)
         {
             IWearAndTearPart part = null;
 
-            if(int.TryParse(PartIdentifier, out int partIndex))
+            if (int.TryParse(PartIdentifier, out int partIndex))
             {
-                if(partIndex < 1 || partIndex > wearAndTear.Parts.Count) return TextCommandResult.Error($"Could not find part '{partIndex}', expected a number between 1 and {wearAndTear.Parts.Count}");
+                if (partIndex < 1 || partIndex > wearAndTear.Parts.Count) return TextCommandResult.Error($"Could not find part '{partIndex}', expected a number between 1 and {wearAndTear.Parts.Count}");
                 partIndex--;
 
                 part = wearAndTear.Parts[partIndex];
@@ -39,7 +38,7 @@ namespace WearAndTear.Code.Commands
             else
             {
                 var partCodeArray = PartIdentifier.Split(":");
-                
+
                 part = wearAndTear.Parts.Find(
                     partCodeArray.Length > 1 ?
                     p => p.Props.Code.Domain == partCodeArray[0] && p.Props.Code.Path == partCodeArray[1] :

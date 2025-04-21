@@ -1,6 +1,7 @@
 ﻿using Vintagestory.API.Common;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.DecayEngines
 {
@@ -27,7 +28,7 @@ namespace WearAndTear.Code.DecayEngines
             // Calculate degradation factor (adjusted to daily wear rate)
             double degradationRate = degradationFactor / (part.Props.AvgLifeSpanInYears * api.World.Calendar.DaysPerYear);
 
-            return (float)(degradationRate * daysPassed) * WearAndTearModSystem.Config.DecayModifier.Wind;
+            return (float)(degradationRate * daysPassed) * WearAndTearServerConfig.Instance.DecayModifier.Wind;
         }
     }
 }

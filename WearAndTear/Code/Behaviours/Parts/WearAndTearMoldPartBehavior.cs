@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -7,6 +6,7 @@ using Vintagestory.GameContent;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
@@ -55,7 +55,7 @@ namespace WearAndTear.Code.Behaviours.Parts
                 DurabilityProps.MinDurabilityUsage :
                 (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
-            damage *= WearAndTearModSystem.Config.DecayModifier.Mold;
+            damage *= WearAndTearServerConfig.Instance.DecayModifier.Mold;
             foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
             {
                 if (protectivePart is IWearAndTearOptionalPart optionalPart && !optionalPart.IsPresent) continue;

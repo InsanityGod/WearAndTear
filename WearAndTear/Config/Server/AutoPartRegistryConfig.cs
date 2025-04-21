@@ -4,8 +4,9 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Common;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Props.RegistryTemplates;
 
-namespace WearAndTear.Config
+namespace WearAndTear.Config.Server
 {
     public class AutoPartRegistryConfig
     {
@@ -29,7 +30,7 @@ namespace WearAndTear.Config
         /// </summary>
         public string[] ModBlacklist { get; set; } = new string[]
         {
-            "medievalexpansion" //Has it's own durability mechanics //TODO maybe add an option to overwrite medieval expansions own durability system?
+            "medievalexpansion" //Has it's own durability mechanics
         };
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace WearAndTear.Config
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinimalMetalCompositionPercentage { get; set; } = .8f;
-        
+
         /// <summary>
         /// The minimal percentage the composition of wood ingredients is required for that wood to be the primary wood type
         /// </summary>
@@ -144,11 +145,11 @@ namespace WearAndTear.Config
         /// <summary>
         /// The default protective parts to use for each BlockMaterial
         /// </summary>
-        public Dictionary<EnumBlockMaterial, WearAndTearProtectivePartConfig[]> DefaultProtectivePartProps { get; set; } = new()
+        public Dictionary<EnumBlockMaterial, WearAndTearProtectiveTemplate[]> DefaultProtectivePartProps { get; set; } = new()
         {
             {
                 EnumBlockMaterial.Wood,
-                new WearAndTearProtectivePartConfig[]
+                new WearAndTearProtectiveTemplate[]
                 {
                     new()
                     {
@@ -187,7 +188,7 @@ namespace WearAndTear.Config
         /// <summary>
         /// This is the template used for generating metal reinforcement parts
         /// </summary>
-        public WearAndTearProtectivePartConfig MetalReinforcementTemplate { get; set; } = new()
+        public WearAndTearProtectiveTemplate MetalReinforcementTemplate { get; set; } = new()
         {
             PartProps = new()
             {

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Code;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches

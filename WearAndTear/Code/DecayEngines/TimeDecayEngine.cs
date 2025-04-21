@@ -1,6 +1,7 @@
 ﻿using Vintagestory.API.Common;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.DecayEngines
 {
@@ -12,7 +13,7 @@ namespace WearAndTear.Code.DecayEngines
 
             if (part.WearAndTear.IsSheltered) degradationRate *= .5;
 
-            return (float)(degradationRate * daysPassed) * WearAndTearModSystem.Config.DecayModifier.Time;
+            return (float)(degradationRate * daysPassed) * WearAndTearServerConfig.Instance.DecayModifier.Time;
         }
     }
 }

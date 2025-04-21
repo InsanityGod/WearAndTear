@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
@@ -30,7 +28,6 @@ namespace WearAndTear.Code.HarmonyPatches.millwright
             {
                 if (codes[i].Calls(methodToFind))
                 {
-
                     codes[i].operand = AccessTools.Method(typeof(IBlockAccessor), nameof(IBlockAccessor.SetBlock), parameters: new Type[]
                     {
                         typeof(int),

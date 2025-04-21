@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Common;
-using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Config.Props
 {
@@ -15,7 +14,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// This should match the MaterialVariant of the part you want it to repair
         /// </summary>
-        public AssetLocation RequiredMaterialVariant { get; set;}
+        public AssetLocation RequiredMaterialVariant { get; set; }
 
         /// <summary>
         /// The tool you are required to hold in offhand while using this material to repair

@@ -1,9 +1,7 @@
-﻿using HarmonyLib;
-using InsanityLib.Attributes.Auto;
+﻿using InsanityLib.Attributes.Auto;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -13,6 +11,8 @@ using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry.Compatibility;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Props.RegistryTemplates;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.AutoRegistry
 {
@@ -63,7 +63,7 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 if (item.Name != behaviorName) return false;
                 if (item.properties != null && item.properties["Code"].AsString() != null && item.properties["Code"].AsString() != properties["Code"].Value<string>()) return false;
-                
+
                 return true;
             }) : null;
 
@@ -85,11 +85,11 @@ namespace WearAndTear.Code.AutoRegistry
         //TODO check medieval expasion waterwheel (and add to blacklist if needed)
         public static bool IsBlacklisted(Block block) =>
             Array.Exists(
-                WearAndTearModSystem.Config.AutoPartRegistry.ModBlacklist,
+                WearAndTearServerConfig.Instance.AutoPartRegistry.ModBlacklist,
                 modId => block.Code.Domain == modId
             ) ||
             Array.Exists(
-                WearAndTearModSystem.Config.AutoPartRegistry.CodeBlacklist,
+                WearAndTearServerConfig.Instance.AutoPartRegistry.CodeBlacklist,
                 codeMatch => MatchString(codeMatch, block.Code)
             );
 
@@ -113,11 +113,11 @@ namespace WearAndTear.Code.AutoRegistry
             return behavior;
         }
 
-        public static void EnsureProtectivePart(this Block block, WearAndTearProtectivePartConfig part) => block.MergeOrAddBehavior("WearAndTearOptionalProtectivePart", part.AsMergedJContainer());
+        public static void EnsureProtectivePart(this Block block, WearAndTearProtectiveTemplate part) => block.MergeOrAddBehavior("WearAndTearOptionalProtectivePart", part.AsMergedJContainer());
 
         public static void EnsureProtectivePart(this Block block, EnumBlockMaterial protectiveType)
         {
-            var protectiveDefinitions = WearAndTearModSystem.Config.AutoPartRegistry.DefaultProtectivePartProps.GetValueOrDefault(protectiveType);
+            var protectiveDefinitions = WearAndTearServerConfig.Instance.AutoPartRegistry.DefaultProtectivePartProps.GetValueOrDefault(protectiveType);
             if (protectiveDefinitions == null) return;
 
             foreach (var definition in protectiveDefinitions) block.EnsureProtectivePart(definition);
@@ -125,7 +125,7 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureFrameWearAndTearPart(this Block block)
         {
-            var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
+            var frameProps = WearAndTearServerConfig.Instance.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
 
             var behaviorName = "WearAndTearPart";
@@ -138,13 +138,13 @@ namespace WearAndTear.Code.AutoRegistry
                 ((JContainer)behaviorProperties).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
             }
 
-            if(block.BlockMaterial == EnumBlockMaterial.Wood)
+            if (block.BlockMaterial == EnumBlockMaterial.Wood)
             {
                 var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
                 analyzer.Analyze(Api);
 
                 var frameWood = analyzer.FindFrameWood();
-                if(frameWood != null)
+                if (frameWood != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameWood.Value.Wood;
                     behaviorProperties["ContentLevel"] = frameWood.Value.ContentLevel;
@@ -152,13 +152,13 @@ namespace WearAndTear.Code.AutoRegistry
                 }
             }
 
-            if(block.BlockMaterial == EnumBlockMaterial.Stone)
+            if (block.BlockMaterial == EnumBlockMaterial.Stone)
             {
                 var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
                 analyzer.Analyze(Api);
-                
+
                 var frameRock = analyzer.FindFrameRock();
-                if(frameRock != null)
+                if (frameRock != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameRock.Value.Rock;
                     behaviorProperties["ContentLevel"] = frameRock.Value.ContentLevel;
@@ -173,7 +173,7 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureMetalReinforcement(this Block block, string metal, float contentLevel)
         {
-            var template = WearAndTearModSystem.Config.AutoPartRegistry.MetalReinforcementTemplate;
+            var template = WearAndTearServerConfig.Instance.AutoPartRegistry.MetalReinforcementTemplate;
             if (template == null) return; // Not sure why you would do this but oh well
 
             var props = template.AsMergedJContainer();
@@ -181,7 +181,7 @@ namespace WearAndTear.Code.AutoRegistry
             props[nameof(WearAndTearPartProps.ContentLevel)] = contentLevel;
             props[nameof(WearAndTearPartProps.ScrapCode)] = props.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", metal);
 
-            if (!WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.TryGetValue(metal, out var metalConfig) && !WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.TryGetValue("default", out metalConfig))
+            if (!WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.TryGetValue(metal, out var metalConfig) && !WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.TryGetValue("default", out metalConfig))
             {
                 metalConfig = new();
             }
@@ -200,10 +200,10 @@ namespace WearAndTear.Code.AutoRegistry
             if (IsBlacklisted(block)) return;
             var hasWearAndTear = block.HasWearAndTearBehavior();
             var isMechanicalBlock = block is BlockMPBase;
-            var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
+            var acceptFruitPress = WearAndTearServerConfig.Instance.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : Api.ClassRegistry.GetBlockEntity(block.EntityClass);
 
-            var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
+            var acceptMold = WearAndTearServerConfig.Instance.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
 
             if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)
             {
@@ -229,7 +229,7 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 AxleInBlocks.Register(block);
             }
-            else if(block is not BlockIngotMold) //Ingot molds just have to be very special -_-
+            else if (block is not BlockIngotMold) //Ingot molds just have to be very special -_-
             {
                 block.EnsureFrameWearAndTearPart();
                 block.DetectAndAddMetalReinforcements();

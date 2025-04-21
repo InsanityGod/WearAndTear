@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Behaviours.Parts.Abstract;
@@ -10,6 +7,7 @@ using WearAndTear.Code.Enums;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
@@ -30,13 +28,13 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             base.Initialize(api, properties);
             DurabilityProps ??= properties.AsObject<WearAndTearDurabilityPartProps>() ?? new();
-            
+
             var index = Blockentity.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().ToList().FindIndex(x => x == this);
-            if(index == 0)
+            if (index == 0)
             {
                 Side = EIngotMoldSide.Left;
             }
-            else if(index == 1)
+            else if (index == 1)
             {
                 Side = EIngotMoldSide.Right;
             }
@@ -46,19 +44,19 @@ namespace WearAndTear.Code.Behaviours.Parts
 
         public bool OnBreak()
         {
-            if((Side == EIngotMoldSide.Left && IngotMoldEntity.ShatteredLeft) || (Side == EIngotMoldSide.Right && IngotMoldEntity.ShatteredRight)) return false;
+            if ((Side == EIngotMoldSide.Left && IngotMoldEntity.ShatteredLeft) || (Side == EIngotMoldSide.Right && IngotMoldEntity.ShatteredRight)) return false;
 
             Durability = 1; //Reset durability so it won't create breakage decal
             Api.World.PlaySoundAt(new AssetLocation("sounds/block/ceramicbreak"), Pos, -0.4, null, true, 32f, 1f);
             Block.SpawnBlockBrokenParticles(Pos);
             Block.SpawnBlockBrokenParticles(Pos);
 
-            if(Side == EIngotMoldSide.Left)
+            if (Side == EIngotMoldSide.Left)
             {
                 IngotMoldEntity.ShatteredLeft = true;
                 IngotMoldEntity.ContentsLeft = null;
             }
-            else if(Side == EIngotMoldSide.Right)
+            else if (Side == EIngotMoldSide.Right)
             {
                 IngotMoldEntity.ShatteredRight = true;
                 IngotMoldEntity.ContentsRight = null;
@@ -75,7 +73,7 @@ namespace WearAndTear.Code.Behaviours.Parts
                 DurabilityProps.MinDurabilityUsage :
                 (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
-            damage *= WearAndTearModSystem.Config.DecayModifier.Mold;
+            damage *= WearAndTearServerConfig.Instance.DecayModifier.Mold;
 
             foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
             {
@@ -86,7 +84,7 @@ namespace WearAndTear.Code.Behaviours.Parts
 
             if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
             Durability -= damage;
-            
+
             Blockentity.GetBehavior<WearAndTearBehavior>().UpdateDecay(0, false);
         }
 
@@ -95,7 +93,6 @@ namespace WearAndTear.Code.Behaviours.Parts
             //Molds have manual decay
         }
 
-
         //TODO Refactor this
         public override void OnBlockPlaced(ItemStack byItemStack = null)
         {
@@ -103,7 +100,7 @@ namespace WearAndTear.Code.Behaviours.Parts
 
             var tree = byItemStack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
 
-            if (tree != null && Side == EIngotMoldSide.Left) 
+            if (tree != null && Side == EIngotMoldSide.Left)
             {
                 Durability = tree.GetFloat("Mold", Durability);
             }
@@ -113,8 +110,8 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             get
             {
-                if((Side == EIngotMoldSide.Left && IngotMoldEntity.ShatteredLeft) || (Side == EIngotMoldSide.Right && IngotMoldEntity.ShatteredRight)) return false;
-                if(Side == EIngotMoldSide.Right && IngotMoldEntity.QuantityMolds < 2) return false;
+                if ((Side == EIngotMoldSide.Left && IngotMoldEntity.ShatteredLeft) || (Side == EIngotMoldSide.Right && IngotMoldEntity.ShatteredRight)) return false;
+                if (Side == EIngotMoldSide.Right && IngotMoldEntity.QuantityMolds < 2) return false;
                 return true;
             }
         }

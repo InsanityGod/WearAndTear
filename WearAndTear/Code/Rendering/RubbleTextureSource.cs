@@ -12,59 +12,57 @@ namespace WearAndTear.Code.Rendering
     public class RubbleTextureSource : ITexPositionSource
     {
         public TextureAtlasPosition this[string textureCode]
-		{
-			get
-			{
+        {
+            get
+            {
                 var source = Sources[textureCode];
-                if(source == null) return atlasMgr.UnknownTexturePos;
+                if (source == null) return atlasMgr.UnknownTexturePos;
 
                 return source[textureCode] ?? source["up"] ?? source["all"] ?? atlasMgr.UnknownTexturePos;
-			}
-		}
+            }
+        }
 
         public string[] GetSelectiveElements() => Sources.Keys.Select(key => key + "*").ToArray();
 
         public Size2i AtlasSize => atlasSize;
 
-        public RubbleTextureSource(ClientMain game, ITesselatorAPI tesselator , Block block)
-		{
+        public RubbleTextureSource(ClientMain game, ITesselatorAPI tesselator, Block block)
+        {
             atlasSize = game.BlockAtlasManager.Size;
-			atlasMgr = game.BlockAtlasManager;
-			try
-			{
+            atlasMgr = game.BlockAtlasManager;
+            try
+            {
                 foreach (var behavior in block.BlockEntityBehaviors)
                 {
-                    if(behavior.properties == null) continue;
+                    if (behavior.properties == null) continue;
                     var scrapCode = behavior.properties[nameof(WearAndTearPartProps.ScrapCode)].AsString();
-                    if(string.IsNullOrEmpty(scrapCode)) continue;
+                    if (string.IsNullOrEmpty(scrapCode)) continue;
 
                     var scrapItem = game.Api.World.GetItem(scrapCode);
-                    if(scrapItem == null) continue;
+                    if (scrapItem == null) continue;
 
                     try
                     {
                         var metal = scrapItem.Variant["metal"];
-                        if(metal != null)
+                        if (metal != null)
                         {
-                            
                             var metalBlock = game.Api.World.GetBlock($"game:metalsheet-{metal}-down");
-                            if(metalBlock != null) Sources["metal"] = tesselator.GetTextureSource(metalBlock, returnNullWhenMissing: true);
+                            if (metalBlock != null) Sources["metal"] = tesselator.GetTextureSource(metalBlock, returnNullWhenMissing: true);
                         }
 
                         var wood = scrapItem.Variant["wood"];
-                        if(wood != null)
+                        if (wood != null)
                         {
-                            
                             var woodBlock = game.Api.World.GetBlock($"game:planks-{wood}-ud");
                             woodBlock ??= game.Api.World.GetBlock($"wildcrafttree:planks-{wood}-ud");
-                            if(woodBlock != null) Sources["wood"] = tesselator.GetTextureSource(woodBlock, returnNullWhenMissing: true);
+                            if (woodBlock != null) Sources["wood"] = tesselator.GetTextureSource(woodBlock, returnNullWhenMissing: true);
                         }
 
                         var rock = scrapItem.Variant["rock"];
-                        if(rock != null)
+                        if (rock != null)
                         {
                             var rockBlock = game.Api.World.GetBlock($"game:rock-{rock}");
-                            if(rockBlock != null) Sources["rock"] = tesselator.GetTextureSource(rockBlock, returnNullWhenMissing: true);
+                            if (rockBlock != null) Sources["rock"] = tesselator.GetTextureSource(rockBlock, returnNullWhenMissing: true);
                         }
                     }
                     catch
@@ -73,19 +71,17 @@ namespace WearAndTear.Code.Rendering
                     }
                 }
             }
-			catch (Exception)
-			{
-				game.Logger.Error("[WearAndTear] Unable to initialize RubbleTextureSource for block {0}. Will crash now.", block?.Code);
-				throw;
-			}
-		}
+            catch (Exception)
+            {
+                game.Logger.Error("[WearAndTear] Unable to initialize RubbleTextureSource for block {0}. Will crash now.", block?.Code);
+                throw;
+            }
+        }
 
         private readonly BlockTextureAtlasManager atlasMgr;
 
-		private readonly Size2i atlasSize;
+        private readonly Size2i atlasSize;
 
         private Dictionary<string, ITexPositionSource> Sources { get; set; } = new();
-
     }
-
 }

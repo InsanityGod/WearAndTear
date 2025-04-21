@@ -19,7 +19,7 @@ namespace WearAndTear.Code.Interfaces
             {
                 var mult = protection.DecayMultiplier;
 
-                if(PartBonuses != null) mult = 1 + ((mult - 1) * PartBonuses.ProtectionModifier);
+                if (PartBonuses != null) mult = 1 + ((mult - 1) * PartBonuses.ProtectionModifier);
 
                 return mult;
             }

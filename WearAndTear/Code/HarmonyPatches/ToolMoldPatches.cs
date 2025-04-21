@@ -1,14 +1,10 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Behaviours.Parts;
-using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.HarmonyPatches

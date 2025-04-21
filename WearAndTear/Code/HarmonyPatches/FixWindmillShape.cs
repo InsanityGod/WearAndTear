@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts;
+using WearAndTear.Config.Client;
 
 namespace WearAndTear.Code.HarmonyPatches
 {
@@ -13,7 +14,7 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyPostfix]
         public static void FixUpdateShape(BEBehaviorMPRotor __instance)
         {
-            if (!WearAndTearModSystem.Config.SpecialParts.WindmillRotoDecayedAppearance) return;
+            if (!WearAndTearClientConfig.Instance.WindmillRotoDecayedAppearance) return;
             var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
             if (wearAndTearBehaviour == null || wearAndTearBehaviour.SailLength == 0) return;
             wearAndTearBehaviour.UpdateShape(__instance);

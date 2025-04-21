@@ -6,6 +6,7 @@ using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Enums;
 using WearAndTear.Code.Extensions;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.AutoRegistry
 {
@@ -19,9 +20,10 @@ namespace WearAndTear.Code.AutoRegistry
         public static ContentAnalyzer GetOrCreate(ICoreAPI api, CollectibleObject collectible)
         {
             collectible = collectible.GetActualPlacementItem(api);
-            if(Lookup.TryGetValue(collectible.Code, out var result)) return result;
+            if (Lookup.TryGetValue(collectible.Code, out var result)) return result;
             return Lookup[collectible.Code] = new ContentAnalyzer(api, collectible);
         }
+
         private ContentAnalyzer(ICoreAPI api, CollectibleObject collectible)
         {
             Api = api;
@@ -34,12 +36,12 @@ namespace WearAndTear.Code.AutoRegistry
 
         private void AnalyzeTextures()
         {
-            if(Collectible is not Block block) return;
+            if (Collectible is not Block block) return;
             if (block.Textures == null) return;
 
             if (block is BlockPulverizer && block.Code.Domain == "vanvar") return; //Thank you other mod creator for putting a bunch of unused metal textures in your block type definition...
 
-            var metalKeys = block.Textures.Keys.Where(key => WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.ContainsKey(key.ToLower())).ToList();
+            var metalKeys = block.Textures.Keys.Where(key => WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.ContainsKey(key.ToLower())).ToList();
             if (metalKeys.Count != 0)
             {
                 var metal = metalKeys.Count == 1 ? metalKeys[0] : "default";
@@ -49,7 +51,7 @@ namespace WearAndTear.Code.AutoRegistry
                 //TODO we could probably look through shape to calculate metal composition percentage but ehh let's not go overkill for now anyway
             }
 
-            var pathMetals = block.Textures.Values.Select(path => WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.Keys.FirstOrDefault(metal => path.ToString().Contains(metal)))
+            var pathMetals = block.Textures.Values.Select(path => WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.Keys.FirstOrDefault(metal => path.ToString().Contains(metal)))
                 .Where(value => value != null)
                 .Distinct()
                 .ToList();
@@ -84,7 +86,7 @@ namespace WearAndTear.Code.AutoRegistry
                 foreach ((var ingredient, var amount) in validIngredients)
                 {
                     var smeltStack = ingredient.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
-                    if(smeltStack != null && smeltStack.Collectible is ItemIngot ingot)
+                    if (smeltStack != null && smeltStack.Collectible is ItemIngot ingot)
                     {
                         var metalType = ingot.GetMetalType();
                         var output = (float)smeltStack.StackSize / (float)ingredient.CombustibleProps.SmeltedRatio;
@@ -93,14 +95,14 @@ namespace WearAndTear.Code.AutoRegistry
                         continue;
                     }
 
-                    if(ingredient is ItemIngot ingot2)
+                    if (ingredient is ItemIngot ingot2)
                     {
                         var metalType = ingot2.GetMetalType();
                         var output = amount * 4;
                         metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
                         continue;
                     }
-                    
+
                     //TODO other means of getting metal (like smithing recipes from ingot)
                     //TODO make amore generic and extensible scrap system
                     if (ingredient.FirstCodePart() == "log")
@@ -114,7 +116,7 @@ namespace WearAndTear.Code.AutoRegistry
                         }
                     }
 
-                    if(ingredient.FirstCodePart() == "planks")
+                    if (ingredient.FirstCodePart() == "planks")
                     {
                         var woodType = ingredient.Variant["wood"];
                         if (!string.IsNullOrEmpty(woodType))
@@ -125,7 +127,7 @@ namespace WearAndTear.Code.AutoRegistry
                         }
                     }
 
-                    if(ingredient.FirstCodePart() == "plank")
+                    if (ingredient.FirstCodePart() == "plank")
                     {
                         var woodType = ingredient.Variant["wood"];
                         if (!string.IsNullOrEmpty(woodType))
@@ -136,7 +138,7 @@ namespace WearAndTear.Code.AutoRegistry
                         }
                     }
 
-                    if(ingredient.FirstCodePart() == "rock")
+                    if (ingredient.FirstCodePart() == "rock")
                     {
                         var rockType = ingredient.Variant["rock"];
                         if (!string.IsNullOrEmpty(rockType))
@@ -147,7 +149,7 @@ namespace WearAndTear.Code.AutoRegistry
                         }
                     }
 
-                    if(ingredient.FirstCodePart() == "stone")
+                    if (ingredient.FirstCodePart() == "stone")
                     {
                         var rockType = ingredient.Variant["rock"];
                         if (!string.IsNullOrEmpty(rockType))
@@ -159,10 +161,10 @@ namespace WearAndTear.Code.AutoRegistry
                     }
 
                     var analyzer = GetOrCreate(Api, ingredient);
-                    if(analyzer.State == EAnalyzeState.Analyzing) continue; //Skipping recursive recipes
+                    if (analyzer.State == EAnalyzeState.Analyzing) continue; //Skipping recursive recipes
                     analyzer.Analyze(api);
-                    
-                    foreach((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
+
+                    foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
                     {
                         var woodAmount = AnalyzedAmount * amount;
                         woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + woodAmount : woodAmount;
@@ -178,7 +180,7 @@ namespace WearAndTear.Code.AutoRegistry
                     {
                         var rockAmount = AnalyzedAmount * amount;
                         rockContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + rockAmount : rockAmount;
-                    } 
+                    }
                 }
 
                 return (woodContent, metalContent, rockContent);
@@ -189,13 +191,13 @@ namespace WearAndTear.Code.AutoRegistry
                 .GroupBy(item => item.Key)
                 .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
 
-            if (WearAndTearModSystem.Config.AutoPartRegistry.RequireAllRecipesToContainMetal && recipeContent.Exists(item => item.metalContent.Count == 0)) return true;
+            if (WearAndTearServerConfig.Instance.AutoPartRegistry.RequireAllRecipesToContainMetal && recipeContent.Exists(item => item.metalContent.Count == 0)) return true;
 
             MetalContent = recipeContent
                 .SelectMany(item => item.metalContent)
                 .GroupBy(item => item.Key)
                 .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
-            
+
             RockContent = recipeContent
                 .SelectMany(item => item.rockContent)
                 .GroupBy(item => item.Key)
@@ -205,18 +207,18 @@ namespace WearAndTear.Code.AutoRegistry
         }
 
         public EAnalyzeState State { get; private set; } = EAnalyzeState.NotStarted;
-        
+
         public void Analyze(ICoreAPI api)
         {
-            if(State == EAnalyzeState.Analyzed) return; //Already analyzed
-            if(State == EAnalyzeState.Analyzing) throw new InvalidOperationException("Attempt at recursive analysis");
+            if (State == EAnalyzeState.Analyzed) return; //Already analyzed
+            if (State == EAnalyzeState.Analyzing) throw new InvalidOperationException("Attempt at recursive analysis");
             State = EAnalyzeState.Analyzing;
             if (!AnalyzeRecipes(api))
             {
                 //Just in case recipe analysis fails, we can still analyze textures
                 AnalyzeTextures();
             }
-            
+
             State = EAnalyzeState.Analyzed;
         }
 
@@ -227,7 +229,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalMetalCount = MetalContent.Sum(metal => metal.Value);
             var metalWithHighestCompositionRate = MetalContent.OrderByDescending(metal => metal.Value).First();
 
-            if (metalWithHighestCompositionRate.Value / totalMetalCount > WearAndTearModSystem.Config.AutoPartRegistry.MinimalMetalCompositionPercentage) return (metalWithHighestCompositionRate.Key, metalWithHighestCompositionRate.Value);
+            if (metalWithHighestCompositionRate.Value / totalMetalCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalMetalCompositionPercentage) return (metalWithHighestCompositionRate.Key, metalWithHighestCompositionRate.Value);
 
             return ("unknown", 0);
         }
@@ -239,7 +241,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalWoodCount = WoodContent.Sum(wood => wood.Value);
             var woodWithHighestCompositionRate = WoodContent.OrderByDescending(wood => wood.Value).First();
 
-            if (woodWithHighestCompositionRate.Value / totalWoodCount > WearAndTearModSystem.Config.AutoPartRegistry.MinimalWoodCompositionPercentage) return (woodWithHighestCompositionRate.Key, woodWithHighestCompositionRate.Value);
+            if (woodWithHighestCompositionRate.Value / totalWoodCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalWoodCompositionPercentage) return (woodWithHighestCompositionRate.Key, woodWithHighestCompositionRate.Value);
 
             return null; //no specific wood type
         }
@@ -251,7 +253,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalRockCount = RockContent.Sum(wood => wood.Value);
             var rockWithHighestCompositionRate = RockContent.OrderByDescending(rock => rock.Value).First();
 
-            if (rockWithHighestCompositionRate.Value / totalRockCount > WearAndTearModSystem.Config.AutoPartRegistry.MinimalRockCompositionPercentage) return (rockWithHighestCompositionRate.Key, rockWithHighestCompositionRate.Value);
+            if (rockWithHighestCompositionRate.Value / totalRockCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalRockCompositionPercentage) return (rockWithHighestCompositionRate.Key, rockWithHighestCompositionRate.Value);
 
             return null; //no specific wood type
         }

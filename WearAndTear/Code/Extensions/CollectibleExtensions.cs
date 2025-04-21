@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Vintagestory.API.Common;
+﻿using Vintagestory.API.Common;
 
 namespace WearAndTear.Code.Extensions
 {
@@ -11,14 +6,14 @@ namespace WearAndTear.Code.Extensions
     {
         public static CollectibleObject GetActualPlacementItem(this CollectibleObject collectible, ICoreAPI api)
         {
-            if(collectible.Attributes != null)
+            if (collectible.Attributes != null)
             {
                 var redirect = collectible.Attributes["WearAndTear_PlacementItemRedirect"].AsString();
-                if(redirect != null)
+                if (redirect != null)
                 {
                     CollectibleObject newCollectible = api.World.GetBlock(redirect);
                     newCollectible ??= api.World.GetItem(redirect);
-                    if(newCollectible == null) api.Logger.Error($"[WearAndTear] Invalid placement item redirect {collectible.Code} -> {redirect}");
+                    if (newCollectible == null) api.Logger.Error($"[WearAndTear] Invalid placement item redirect {collectible.Code} -> {redirect}");
                     else collectible = newCollectible;
                 }
             }
@@ -28,13 +23,13 @@ namespace WearAndTear.Code.Extensions
 
         public static Block GetActualPlacementBlock(this CollectibleObject collectible, ICoreAPI api)
         {
-            if(collectible.Attributes != null)
+            if (collectible.Attributes != null)
             {
                 var redirect = collectible.Attributes["WearAndTear_ActualBlockRedirect"].AsString();
-                if(redirect != null)
+                if (redirect != null)
                 {
                     Block block = api.World.GetBlock(redirect);
-                    if(block == null) api.Logger.Error($"[WearAndTear] Invalid actual block redirect {collectible.Code} -> {redirect}");
+                    if (block == null) api.Logger.Error($"[WearAndTear] Invalid actual block redirect {collectible.Code} -> {redirect}");
                     else collectible = block;
                 }
             }

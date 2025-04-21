@@ -16,8 +16,10 @@ using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
+using WearAndTear.Config.Client;
 using WearAndTear.Config.Props;
 using WearAndTear.Config.Props.rubble;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours
 {
@@ -58,10 +60,10 @@ namespace WearAndTear.Code.Behaviours
                         continue;
                     }
 
-                    if (part.Durability > WearAndTearModSystem.Config.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Code);
+                    if (part.Durability > WearAndTearServerConfig.Instance.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Code);
                 }
 
-                if(normalItem != null)
+                if (normalItem != null)
                 {
                     //Remove all unnecary variables
                     foreach (var item in tree.Where(item => item.Key.EndsWith("_Repaired") && (float)item.Value.GetValue() == 0).ToList())
@@ -78,7 +80,7 @@ namespace WearAndTear.Code.Behaviours
                 }
             }
 
-            foreach(var part in Parts)
+            foreach (var part in Parts)
             {
                 itemStacks = part.ModifyDroppedItemStacks(itemStacks, world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
             }
@@ -92,7 +94,7 @@ namespace WearAndTear.Code.Behaviours
             Parts = Blockentity.Behaviors.OfType<IWearAndTearPart>().ToList();
 
             RoomRegistry = Api.ModLoader.GetModSystem<RoomRegistry>(true);
-            Blockentity.RegisterGameTickListener(UpdateIsSheltered, WearAndTearModSystem.Config.RoomCheckFrequencyInMs);
+            Blockentity.RegisterGameTickListener(UpdateIsSheltered, WearAndTearServerConfig.Instance.RoomCheckFrequencyInMs);
             UpdateIsSheltered(0);
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
@@ -101,7 +103,7 @@ namespace WearAndTear.Code.Behaviours
             if (!Parts.Exists(part => part.RequiresUpdateDecay)) return;
 
             //TODO maybe create a manager for this to reduce the ammount of GameTickListeners (and allow for more gradual ticking)
-            Blockentity.RegisterGameTickListener(_ => UpdateDecay(Api.World.Calendar.TotalDays - LastDecayUpdate.Value), WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs, Api.World.Rand.Next(0, WearAndTearModSystem.Config.DurabilityUpdateFrequencyInMs));
+            Blockentity.RegisterGameTickListener(_ => UpdateDecay(Api.World.Calendar.TotalDays - LastDecayUpdate.Value), WearAndTearServerConfig.Instance.DurabilityUpdateFrequencyInMs, Api.World.Rand.Next(0, WearAndTearServerConfig.Instance.DurabilityUpdateFrequencyInMs));
         }
 
         public double? LastDecayUpdate { get; set; }
@@ -134,7 +136,7 @@ namespace WearAndTear.Code.Behaviours
 
         public bool IsSheltered { get; private set; }
 
-        public void UpdateIsSheltered(float secondsPassed) => IsSheltered = RoomRegistry.GetRoomForPosition(Pos).ExitCount <= WearAndTearModSystem.Config.RoomExitCountLeeway;
+        public void UpdateIsSheltered(float secondsPassed) => IsSheltered = RoomRegistry.GetRoomForPosition(Pos).ExitCount <= WearAndTearServerConfig.Instance.RoomExitCountLeeway;
 
         public void UpdateDecay(double daysPassed, bool updateLastUpdatedAt = true)
         {
@@ -150,7 +152,7 @@ namespace WearAndTear.Code.Behaviours
             {
                 if (part.Durability <= 0 && part.OnBreak())
                 {
-                    if(WearAndTearModSystem.Config.Rubble.RubbleBlock)
+                    if (WearAndTearServerConfig.Instance.Rubble.RubbleBlock)
                     {
                         GenerateRubbleBlock();
                     }
@@ -173,7 +175,7 @@ namespace WearAndTear.Code.Behaviours
             }
 
             var stack = new ItemStack(Block);
-            foreach(var part in Parts)
+            foreach (var part in Parts)
             {
                 (part as BlockEntityBehavior)?.ToTreeAttributes(stack.Attributes);
             }
@@ -185,7 +187,7 @@ namespace WearAndTear.Code.Behaviours
 
                 //TODO Container drops (helve hammer)
 
-                if(drops.Length == 0)
+                if (drops.Length == 0)
                 {
                     //No point in creating rubble if it doesn't contain anything
                     Api.World.BlockAccessor.BreakBlock(Pos, null);
@@ -193,13 +195,13 @@ namespace WearAndTear.Code.Behaviours
                 }
 
                 var normalDropsTree = stack.Attributes.GetOrAddTreeAttribute("rubble-normal-drops");
-                
-                for(var i = 0; i < drops.Length; i++)
+
+                for (var i = 0; i < drops.Length; i++)
                 {
                     normalDropsTree.SetItemstack(i.ToString(), drops[i]);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Api.Logger.Error("[WearAndTear] Failed to get normal drops for rubble: {0}", ex);
             }
@@ -217,7 +219,7 @@ namespace WearAndTear.Code.Behaviours
 
         public void QueueDecalUpdate(int delay = 1)
         {
-            if (Api == null || WearAndTearModSystem.Config.VisualTearingMinDurability == 0 || (WearAndTearModSystem.Config.DisableVisualTearingOnMPBlocks && Block is BlockMPBase) || Blockentity is BlockEntityIngotMold) return;
+            if (Api == null || WearAndTearClientConfig.Instance.VisualTearingMinDurability == 0 || (WearAndTearClientConfig.Instance.DisableVisualTearingOnMPBlocks && Block is BlockMPBase) || Blockentity is BlockEntityIngotMold) return;
             Blockentity.RegisterDelayedCallback(_ => UpdateDecal(), delay);
         }
 
@@ -242,12 +244,12 @@ namespace WearAndTear.Code.Behaviours
             var criticalparts = Parts.Where(part => part.Props != null && part.Props.IsCritical).ToArray();
             var durability = criticalparts.Length > 0 ? criticalparts.Min(part => part.Durability) : 1;
 
-            if (durability > WearAndTearModSystem.Config.VisualTearingMinDurability)
+            if (durability > WearAndTearClientConfig.Instance.VisualTearingMinDurability)
             {
                 if (decal != null) DecalCache.GetValue<IDictionary>().Remove(DecalId.Value);
                 return;
             }
-            var stage = 10 - (int)Math.Max(1, durability / WearAndTearModSystem.Config.VisualTearingMinDurability * 10);
+            var stage = 10 - (int)Math.Max(1, durability / WearAndTearClientConfig.Instance.VisualTearingMinDurability * 10);
 
             decal ??= DecalCreator.GetValue(Pos, stage);
 
@@ -276,7 +278,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual bool TryMaintenance(WearAndTearRepairItemProps props, ItemSlot slot, EntityAgent byEntity)
         {
-            if(byEntity is not EntityPlayer player) return false;
+            if (byEntity is not EntityPlayer player) return false;
             if (props.RequiredTool != null && !WildcardUtil.Match(props.RequiredTool, byEntity.LeftHandItemSlot?.Itemstack?.Collectible?.Code.Path ?? string.Empty))
             {
                 if (Api is ICoreClientAPI clientApi)
@@ -291,7 +293,7 @@ namespace WearAndTear.Code.Behaviours
                 return false;
             }
 
-            if(WearAndTearModSystem.Config.TraitRequirements && props.RequiredTraits != null)
+            if (WearAndTearServerConfig.Instance.TraitRequirements && props.RequiredTraits != null)
             {
                 var characterSystem = Api.ModLoader.GetModSystem<CharacterSystem>();
 
@@ -311,7 +313,7 @@ namespace WearAndTear.Code.Behaviours
             }
 
             var maintenanceStrength = props.Strength;
-            if(WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
+            if (WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
             var originalMaintenanceStrength = maintenanceStrength;
 
             var anyPartRequiredMaintenance = false;
@@ -319,19 +321,19 @@ namespace WearAndTear.Code.Behaviours
             var anyPartActive = false;
             foreach (var part in Parts)
             {
-                if (!part.CanDoMaintenanceWith(props) || part.Durability > WearAndTearModSystem.Config.MinMaintenanceDurability) continue;
+                if (!part.CanDoMaintenanceWith(props) || part.Durability > WearAndTearServerConfig.Instance.MinMaintenanceDurability) continue;
                 anyPartRequiredMaintenance = true;
 
-                if (WearAndTearModSystem.Config.MaintenanceRequiresInactivePart && part.IsActive)
+                if (WearAndTearServerConfig.Instance.MaintenanceRequiresInactivePart && part.IsActive)
                 {
                     anyPartActive = true;
                     continue;
                 }
 
                 var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength, player);
-                if(WearAndTearModSystem.XlibEnabled) part.PartBonuses?.UpdateForRepair(part, Api, player.Player);
+                if (WearAndTearModSystem.XlibEnabled) part.PartBonuses?.UpdateForRepair(part, Api, player.Player);
 
-                if (!WearAndTearModSystem.Config.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
+                if (!WearAndTearServerConfig.Instance.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
                 {
                     anyPartMaintenanceLimitReached = true;
                 }
@@ -352,7 +354,7 @@ namespace WearAndTear.Code.Behaviours
                     byEntity.LeftHandItemSlot.Itemstack.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
                 }
 
-                if (byEntity is EntityPlayer player2 && WearAndTearModSystem.XlibEnabled)SkillsAndAbilities.GiveMechanicExp(player2.Api, player2.Player, (originalMaintenanceStrength - maintenanceStrength) * WearAndTearModSystem.Config.Compatibility.DurabilityToXPRatio);
+                if (byEntity is EntityPlayer player2 && WearAndTearModSystem.XlibEnabled) SkillsAndAbilities.GiveMechanicExp(player2.Api, player2.Player, (originalMaintenanceStrength - maintenanceStrength) * WearAndTearServerConfig.Instance.Compatibility.DurabilityToXPRatio);
                 return true;
             }
             else if (Api is ICoreClientAPI clientApi2)

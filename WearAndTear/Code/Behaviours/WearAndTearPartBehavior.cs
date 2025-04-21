@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib.Containers;
+using WearAndTear.Config.Client;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours
 {
@@ -23,7 +23,7 @@ namespace WearAndTear.Code.Behaviours
         public WearAndTearPartBehavior(BlockEntity blockentity) : base(blockentity)
         {
         }
-        
+
         public PartBonuses PartBonuses { get; private set; }
 
         public override void Initialize(ICoreAPI api, JsonObject properties)
@@ -38,7 +38,7 @@ namespace WearAndTear.Code.Behaviours
             };
             DecayEngines = Api.ModLoader.GetModSystem<WearAndTearModSystem>().DecayEngines;
             WearAndTear = Blockentity.GetBehavior<IWearAndTear>();
-            if(WearAndTearModSystem.XlibEnabled) PartBonuses ??= new();
+            if (WearAndTearModSystem.XlibEnabled) PartBonuses ??= new();
         }
 
         public override void OnBlockPlaced(ItemStack byItemStack = null)
@@ -48,7 +48,7 @@ namespace WearAndTear.Code.Behaviours
             var durabilityTree = byItemStack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
             if (durabilityTree != null)
             {
-                if(WearAndTearModSystem.Config.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
+                if (WearAndTearServerConfig.Instance.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
                 Durability = durabilityTree.GetFloat(Props.Code, Durability);
                 RepairedDurability = durabilityTree.GetFloat(Props.Code + "_Repaired", RepairedDurability);
             }
@@ -60,12 +60,12 @@ namespace WearAndTear.Code.Behaviours
 
             //This is to deal with this method being called before Initialize
             Props ??= properties.AsObject<WearAndTearPartProps>() ?? new();
-            if(WearAndTearModSystem.XlibEnabled) PartBonuses ??= new();
+            if (WearAndTearModSystem.XlibEnabled) PartBonuses ??= new();
 
             if (Props == null) return;
-            
+
             var durabilityTree = tree.GetOrAddTreeAttribute("WearAndTear-Durability");
-            if(WearAndTearModSystem.Config.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
+            if (WearAndTearServerConfig.Instance.Compatibility.LegacyCompatibility) FixLegacySaveData(durabilityTree);
             Durability = durabilityTree.GetFloat(Props.Code, Durability);
             if (HasMaintenanceLimit) RepairedDurability = durabilityTree.GetFloat(Props.Code + "_Repaired", RepairedDurability);
 
@@ -77,7 +77,7 @@ namespace WearAndTear.Code.Behaviours
             if (durabilityTree[Props.Code] != null) return;
             var parts = Props.Code.Path.Split('-');
             var key = durabilityTree.Select(pair => pair.Key).FirstOrDefault(key => Array.TrueForAll(parts, part => key.ToLower().Replace(" ", string.Empty).Contains(part)));
-            if(key != null)
+            if (key != null)
             {
                 var durability = durabilityTree.GetFloat(key, Durability);
                 durabilityTree.RemoveAttribute(key);
@@ -92,7 +92,7 @@ namespace WearAndTear.Code.Behaviours
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            
+
             var durabilityTree = tree.GetOrAddTreeAttribute("WearAndTear-Durability");
             durabilityTree.SetFloat(Props.Code, Durability);
             if (HasMaintenanceLimit) durabilityTree.SetFloat(Props.Code + "_Repaired", RepairedDurability);
@@ -114,10 +114,10 @@ namespace WearAndTear.Code.Behaviours
                     loss *= protectivePart.GetDecayMultiplierFor(Props);
                 }
 
-                if(PartBonuses != null) loss *= PartBonuses.DecayModifier;
+                if (PartBonuses != null) loss *= PartBonuses.DecayModifier;
                 Durability -= loss;
             }
-            Durability = GameMath.Clamp(Durability, WearAndTearModSystem.Config.MinDurability, 1);
+            Durability = GameMath.Clamp(Durability, WearAndTearServerConfig.Instance.MinDurability, 1);
         }
 
         public WearAndTearPartProps Props { get; private set; }
@@ -131,16 +131,17 @@ namespace WearAndTear.Code.Behaviours
             {
                 if (float.IsNaN(value))
                 {
-                    if(WearAndTearModSystem.Config.EnableDebugLogging) Api?.Logger.Warning($"[WearAndTear] Invalid Durability assignment at {Pos} for {Props?.MaterialVariant} {Props?.Code} (ignoring attempt)");
+                    if (WearAndTearClientConfig.Instance.EnableDebugLogging) Api?.Logger.Warning($"[WearAndTear] Invalid Durability assignment at {Pos} for {Props?.MaterialVariant} {Props?.Code} (ignoring attempt)");
                     return;
                 }
                 _durability = value;
             }
         }
+
         public float RepairedDurability { get; set; } = 0;
 
         //HACK mod system is disposed before ToTreeAttributes is called resulting in Config being null...
-        public bool HasMaintenanceLimit => !(WearAndTearModSystem.Config?.AllowForInfiniteMaintenance ?? false) && Props.MaintenanceLimit != null;
+        public bool HasMaintenanceLimit => !(WearAndTearServerConfig.Instance?.AllowForInfiniteMaintenance ?? false) && Props.MaintenanceLimit != null;
 
         public bool IsActive
         {
@@ -153,12 +154,12 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed)
         {
-            var cfg = WearAndTearModSystem.Config.Rubble;
+            var cfg = WearAndTearServerConfig.Instance.Rubble;
 
             if (isBlockDestroyed && cfg.GenerateScrap && Props.ScrapCode != null)
             {
                 var scrap = Api.World.GetItem(Props.ScrapCode);
-                if(scrap != null && !scrap.IsMissing)
+                if (scrap != null && !scrap.IsMissing)
                 {
                     var factor = (Durability * cfg.DurabilityDropPercentage) + cfg.FixedDropPercentage;
                     var item = new ItemStack(scrap)
@@ -166,7 +167,7 @@ namespace WearAndTear.Code.Behaviours
                         StackSize = (int)(GameMath.Clamp(Props.ContentLevel * factor, 0, Props.ContentLevel) * dropQuantityMultiplier)
                     };
 
-                    if(item.StackSize > 0) itemStacks = itemStacks.Append(item);
+                    if (item.StackSize > 0) itemStacks = itemStacks.Append(item);
                 }
             }
             return itemStacks;
