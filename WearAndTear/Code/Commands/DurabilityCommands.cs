@@ -13,7 +13,14 @@ namespace WearAndTear.Code.Commands
 {
     public static class DurabilityCommands
     {
-        //TODO Test
+        /// <summary>
+        /// Sets the durability of a part on the targeted WearAndTear affected block
+        /// </summary>
+        /// <param name="wearAndTear"/>
+        /// <param name="PartIdentifier">The identifier of the part, either as index or as code</param>
+        /// <param name="Durability">The durability to set the part to, as a number between 0 and 1</param>
+        /// <example>/wearandtear setdurability frame 0.5</example>
+        /// <example>/wearandtear setdurability 1 0.5</example>
         [AutoCommand(Path = "wearandtear", RequiredPrivelege = "controlserver")]
         public static TextCommandResult SetDurability(
             [CommandParameter(Source = EParamSource.CallerTarget)] [Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] WearAndTearBehavior wearAndTear,

@@ -32,7 +32,7 @@ namespace WearAndTear.Config
         /// (if you have XLib, you need to get a skill to see exact values otherwise you will need the "wearandtear-precisemeasurements" trait)
         /// </summary>
         [Category("XLib / XSkills")]
-        [DefaultValue(EXLibPrescenceRequirement.OnlyWithXLib)]
+        [DefaultValue(EXLibPrescenceRequirement.Irrelevant)]
         public EXLibPrescenceRequirement RoughDurabilityEstimate { get; set; } = EXLibPrescenceRequirement.Irrelevant;
 
         /// <summary>

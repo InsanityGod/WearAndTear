@@ -1,8 +1,10 @@
-﻿using System.ComponentModel;
+﻿using InsanityLib.Attributes.Auto.Config;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace WearAndTear.Config
 {
+    //TODO split into server and client config
     public class ModConfig
     {
         public const int LatestConfigCompatibilityVersion = 1;
@@ -131,6 +133,7 @@ namespace WearAndTear.Config
         /// </summary>
         [ReadOnly(true)]
         [Browsable(false)]
+        [VersionIdentifier(LatestConfigCompatibilityVersion)]
         public int ConfigCompatibilityVersion { get; set; }
     }
 }

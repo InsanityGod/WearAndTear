@@ -26,6 +26,7 @@ using WearAndTear.Code.XLib;
 using WearAndTear.Config;
 using WearAndTear.DynamicPatches;
 using InsanityLib.Attributes.Auto.Harmony;
+using InsanityLib.Attributes.Auto.Config;
 
 [assembly:AutoPatcher("wearandtear")]
 namespace WearAndTear.Code
@@ -37,8 +38,7 @@ namespace WearAndTear.Code
         public static bool XlibEnabled { get; private set; }
         public static bool HelveAxeModLoaded { get; private set; }
 
-        //TODO: auto loading as well
-        [AutoDefaultValue]
+        [AutoConfig(ConfigName)]
         public static ModConfig Config { get; private set; }
 
         public static bool TraitRequirements { get; private set; }
@@ -53,9 +53,13 @@ namespace WearAndTear.Code
         public override void StartPre(ICoreAPI api)
         {
             AutoPartRegistry.Api = api;
-            LoadConfig(api);
-            
-            //TODO move this over to world config once they actually support language strings
+
+            XlibEnabled = api.ModLoader.IsModEnabled("xlib");
+            if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
+        }
+
+        public override void Start(ICoreAPI api)
+        {
             if(api.Side == EnumAppSide.Server)
             {
                 TraitRequirements = Config.TraitRequirements;
@@ -66,12 +70,6 @@ namespace WearAndTear.Code
                 TraitRequirements = api.World.Config.GetBool("wearandtear-traitrequirements");
             }
 
-            XlibEnabled = api.ModLoader.IsModEnabled("xlib");
-            if(XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
-        }
-
-        public override void Start(ICoreAPI api)
-        {
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
@@ -102,47 +100,6 @@ namespace WearAndTear.Code
         {
             api.RegisterBlockClass("WearAndTear.RubbleBlock", typeof(RubbleBlock));
             api.RegisterBlockEntityClass("WearAndTear.RubbleBlockEntity", typeof(RubbleBlockEntity));
-        }
-
-
-        private static void LoadConfig(ICoreAPI api)
-        {
-            try
-            {
-                Config = api.LoadModConfig<ModConfig>(ConfigName) ?? new()
-                {
-                    ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
-                };
-
-                if(Config.ConfigCompatibilityVersion != ModConfig.LatestConfigCompatibilityVersion)
-                {
-                    //TODO test this and see about part remapping
-                    api.Logger.Warning("[WearAndTear] Config version mismatch, attempting auto merge with default config");
-                    var newConfig = (JContainer) JToken.FromObject(new ModConfig
-                    {
-                        ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
-                    });
-                    newConfig.Merge(JToken.FromObject(Config), new JsonMergeSettings
-                    {
-                        MergeArrayHandling = MergeArrayHandling.Merge,
-                    });
-
-                    Config = newConfig.ToObject<ModConfig>();
-                    Config.ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion;
-                }
-
-                api.StoreModConfig(Config, ConfigName);
-            }
-            catch (Exception ex)
-            {
-                api.Logger.Error(ex);
-                api.Logger.Warning("[WearAndTear] Failed to load config, using default values instead");
-                Config = new()
-                {
-                    ConfigCompatibilityVersion = ModConfig.LatestConfigCompatibilityVersion,
-                };
-            }
-            LoadFeatureFlags(api);
         }
 
         public static void LoadFeatureFlags(ICoreAPI api)

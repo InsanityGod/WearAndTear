@@ -14,6 +14,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// The code of the part (for making certain kinds of parts)
         /// </summary>
+        //TODO fix code in clutch part //[Required] //TODO make this also check for empty asset location (as in no path)
         public AssetLocation Code { get; set; }
 
         /// <summary>
