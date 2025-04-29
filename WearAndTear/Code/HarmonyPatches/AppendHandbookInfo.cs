@@ -8,6 +8,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
@@ -24,7 +25,7 @@ namespace WearAndTear.Code.HarmonyPatches
             var block = inSlot.Itemstack?.Block?.GetActualPlacementBlock(capi);
 
             if (block == null || block.BlockEntityBehaviors == null) return;
-            var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "WearAndTear");
+            var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "wearandtear:PartController");
             if (wearandtear == null) return;
 
             var components = new List<RichTextComponentBase>();
@@ -36,9 +37,9 @@ namespace WearAndTear.Code.HarmonyPatches
                 .Select(beh =>
                 {
                     var behType = capi.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name);
-                    if (typeof(IWearAndTearPart).IsAssignableFrom(behType))
+                    if (typeof(Part).IsAssignableFrom(behType))
                     {
-                        var props = beh.properties.AsObject<WearAndTearPartProps>();
+                        var props = beh.properties.AsObject<PartProps>();
                         return (behType, beh, props);
                     }
                     return (behType, beh, null);
@@ -53,7 +54,7 @@ namespace WearAndTear.Code.HarmonyPatches
                 }
                 else hasParts = true;
                 var header = props.GetDisplayName();
-                if (typeof(IWearAndTearOptionalPart).IsAssignableFrom(behType)) header += $" ({Lang.Get("wearandtear:optional")})";
+                if (typeof(IOptionalPart).IsAssignableFrom(behType)) header += $" ({Lang.Get("wearandtear:optional")})";
                 AddSubHeading(components, capi, openDetailPageFor, header);
 
                 if (props.Decay != null && props.Decay.Length > 0)
@@ -74,8 +75,8 @@ namespace WearAndTear.Code.HarmonyPatches
                 }
                 else
                 {
-                    var minDurabilityUsage = beh.properties[nameof(WearAndTearDurabilityPartProps.MinDurabilityUsage)].AsFloat();
-                    var maxDurabilityUsage = beh.properties[nameof(WearAndTearDurabilityPartProps.MaxDurabilityUsage)].AsFloat();
+                    var minDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MinDurabilityUsage)].AsFloat();
+                    var maxDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MaxDurabilityUsage)].AsFloat();
                     if (minDurabilityUsage != 0 && maxDurabilityUsage != 0)
                     {
                         var str = minDurabilityUsage == maxDurabilityUsage ?
@@ -96,9 +97,9 @@ namespace WearAndTear.Code.HarmonyPatches
                     }));
                 }
 
-                if (typeof(IWearAndTearProtectivePart).IsAssignableFrom(behType))
+                if (typeof(IProtectivePart).IsAssignableFrom(behType))
                 {
-                    var protectiveProps = beh.properties.AsObject<WearAndTearProtectivePartProps>();
+                    var protectiveProps = beh.properties.AsObject<ProtectivePartProps>();
                     if (protectiveProps != null)
                     {
                         var protectiveStrings = protectiveProps.EffectiveFor

@@ -8,18 +8,15 @@ using Vintagestory.API.Datastructures;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts.Abstract;
-using WearAndTear.Code.Interfaces;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props;
 using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
-    public class WearAndTearSailBehavior : WearAndTearOptionalPartBehavior, IWearAndTearPart
+    public class WindmillSailPart : OptionalPart
     {
-        public WearAndTearSailBehavior(BlockEntity blockentity) : base(blockentity)
-        {
-        }
+        public WindmillSailPart(BlockEntity blockentity) : base(blockentity) { }
 
         public bool AreSailsRolledUp { get; set; } = false;
 
@@ -92,7 +89,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             base.Initialize(api, properties);
         }
 
-        public bool CanDoMaintenanceWith(WearAndTearRepairItemProps props) => IsPresent && props.RepairType == Props.RepairType;
+        public override bool CanRepairWith(RepairItemProps props) => IsPresent && base.CanRepairWith(props); //You can only repair a sail if there is one present
 
         public override bool IsPresent => SailLength != 0;
 
@@ -176,7 +173,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             dsc.AppendLine($"{Props.GetDurabilityStringForPlayer(Api, forPlayer, Durability)} {(AreSailsRolledUp ? " (Rolled Up)" : "")}");
         }
 
-        public float? EfficiencyModifier
+        public override float? EfficiencyModifier
         {
             get
             {
@@ -185,7 +182,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             }
         }
 
-        public float DoMaintenanceFor(float maintenanceStrength, EntityPlayer player)
+        public override float DoMaintenanceFor(float maintenanceStrength, EntityPlayer player) //TODO see about simplifying this
         {
             var realMaintenanceStrength = maintenanceStrength * (4f / (SailLength * BladeCount));
 
@@ -218,7 +215,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             }
             catch
             {
-                return 0; //can this even happen
+                return 0; //can this even happen?
             }
         }
 

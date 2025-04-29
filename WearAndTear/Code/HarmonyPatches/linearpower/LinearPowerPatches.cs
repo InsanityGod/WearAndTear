@@ -53,6 +53,6 @@ namespace WearAndTear.Code.HarmonyPatches.linearpower
 
         [HarmonyPatch("sawmill.BlockEntitySawmill", nameof(BlockEntity.GetBlockInfo))]
         [HarmonyPostfix]
-        public static void FixWearAndTearInfoDisplay(BlockEntity __instance, IPlayer forPlayer, StringBuilder sb) => __instance.GetBehavior<WearAndTearBehavior>()?.GetBlockInfo(forPlayer, sb);
+        public static void FixWearAndTearInfoDisplay(BlockEntity __instance, IPlayer forPlayer, StringBuilder sb) => __instance.GetBehavior<PartController>()?.GetBlockInfo(forPlayer, sb);
     }
 }

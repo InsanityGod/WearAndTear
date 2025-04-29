@@ -11,25 +11,25 @@ using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
-    public class WearAndTearIngotMoldPartBehavior : WearAndTearOptionalPartBehavior, IWearAndTearPart
+    public class IngotMoldPart : OptionalPart
     {
         public BlockEntityIngotMold IngotMoldEntity { get; private set; }
 
         public EIngotMoldSide Side { get; private set; }
 
-        public WearAndTearIngotMoldPartBehavior(BlockEntity blockentity) : base(blockentity)
+        public IngotMoldPart(BlockEntity blockentity) : base(blockentity)
         {
             IngotMoldEntity = (BlockEntityIngotMold)blockentity;
         }
 
-        public WearAndTearDurabilityPartProps DurabilityProps { get; private set; }
+        public DurabilityUsageProps DurabilityProps { get; private set; }
 
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
-            DurabilityProps ??= properties.AsObject<WearAndTearDurabilityPartProps>() ?? new();
+            DurabilityProps ??= properties.AsObject<DurabilityUsageProps>() ?? new();
 
-            var index = Blockentity.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().ToList().FindIndex(x => x == this);
+            var index = Blockentity.Behaviors.OfType<IngotMoldPart>().ToList().FindIndex(x => x == this);
             if (index == 0)
             {
                 Side = EIngotMoldSide.Left;
@@ -40,9 +40,9 @@ namespace WearAndTear.Code.Behaviours.Parts
             }
         }
 
-        public bool RequiresUpdateDecay => false;
+        public override bool RequiresUpdateDecay => false;
 
-        public bool OnBreak()
+        public override bool OnBreak()
         {
             if ((Side == EIngotMoldSide.Left && IngotMoldEntity.ShatteredLeft) || (Side == EIngotMoldSide.Right && IngotMoldEntity.ShatteredRight)) return false;
 
@@ -73,11 +73,11 @@ namespace WearAndTear.Code.Behaviours.Parts
                 DurabilityProps.MinDurabilityUsage :
                 (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
-            damage *= WearAndTearServerConfig.Instance.DecayModifier.Mold;
+            damage *= DecayModifiersConfig.Instance.Mold;
 
-            foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
+            foreach (var protectivePart in Controller.Parts.OfType<IProtectivePart>())
             {
-                if (protectivePart is IWearAndTearOptionalPart optionalPart && !optionalPart.IsPresent) continue;
+                if (protectivePart is IOptionalPart optionalPart && !optionalPart.IsPresent) continue;
 
                 damage *= protectivePart.GetDecayMultiplierFor(Props);
             }
@@ -85,7 +85,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
             Durability -= damage;
 
-            Blockentity.GetBehavior<WearAndTearBehavior>().UpdateDecay(0, false);
+            Blockentity.GetBehavior<PartController>().UpdateDecay(0, false);
         }
 
         public override void UpdateDecay(double daysPassed)
@@ -98,7 +98,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             base.OnBlockPlaced(byItemStack);
 
-            var tree = byItemStack?.Attributes?.GetTreeAttribute("WearAndTear-Durability");
+            var tree = byItemStack?.Attributes?.GetTreeAttribute(Constants.DurabilityTreeName);
 
             if (tree != null && Side == EIngotMoldSide.Left)
             {

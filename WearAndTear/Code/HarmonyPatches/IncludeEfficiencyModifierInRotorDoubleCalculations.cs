@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
@@ -12,7 +13,7 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance, ref double __result)
         {
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<PartController>();
             if (wearAndTearBehaviour == null) return;
             __result *= wearAndTearBehaviour.AvgEfficiencyModifier;
         }

@@ -13,7 +13,7 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyPrefix]
         public static void Prefix(BEBehaviorMPRotor __instance)
         {
-            var beh = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+            var beh = __instance.Blockentity.GetBehavior<WindmillSailPart>();
             if (beh == null) return;
             beh.SailLength = 0;
             beh.Durability = 1;

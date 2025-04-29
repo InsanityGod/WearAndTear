@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsanityLib.Attributes.Auto.Config;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -9,6 +10,9 @@ namespace WearAndTear.Config.Server
     /// </summary>
     public class RubbleConfig
     {
+        [AutoConfig("WearAndTear/Server/RubbleConfig.json", ServerSync = true)]
+        public static RubbleConfig Instance { get; private set; }
+
         /// <summary>
         /// Wether a rubble block should be generated when the block breaks
         /// (For this to work propperly you should also enable GenerateScrap)
@@ -16,7 +20,9 @@ namespace WearAndTear.Config.Server
         [DefaultValue(true)]
         public bool RubbleBlock { get; set; } = true;
 
-        /// <summary>Wether scrap should be generated</summary>
+        /// <summary>
+        /// Wether scrap should be generated
+        /// </summary>
         [DefaultValue(true)]
         public bool GenerateScrap { get; set; } = true;
 
@@ -36,12 +42,16 @@ namespace WearAndTear.Config.Server
         [Range(0f, 1f)]
         public float DurabilityDropPercentage { get; set; } = .6f;
 
-        /// <summary>How much damage you take from sprinting into rubble</summary>
+        /// <summary>
+        /// How much damage you take from sprinting into rubble
+        /// </summary>
         [DefaultValue(2f)]
         [Range(0f, float.PositiveInfinity)]
         public float SprintIntoDamage { get; set; } = 2f;
 
-        /// <summary>How much damage you take from falling onto rubble</summary>
+        /// <summary>
+        /// How much damage you take from falling onto rubble
+        /// </summary>
         [DefaultValue(4f)]
         [Range(0f, float.PositiveInfinity)]
         public float FallIntoDamageMul { get; set; } = 4f;

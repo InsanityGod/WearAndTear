@@ -1,5 +1,6 @@
 ﻿using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
@@ -11,7 +12,7 @@ namespace WearAndTear.Code.XLib.Containers
 
         public float DecayModifier = 1f;
 
-        public void ToTreeAttributes(ITreeAttribute tree, WearAndTearPartProps props)
+        public void ToTreeAttributes(ITreeAttribute tree, PartProps props)
         {
             //Skip if default configuration
             if (ProtectionModifier == 1f && DecayModifier == 1f) return;
@@ -22,7 +23,7 @@ namespace WearAndTear.Code.XLib.Containers
             bonusTree.SetFloat(nameof(ProtectionModifier), ProtectionModifier);
         }
 
-        public void FromTreeAttributes(ITreeAttribute tree, WearAndTearPartProps props)
+        public void FromTreeAttributes(ITreeAttribute tree, PartProps props)
         {
             var bonusTree = tree.GetTreeAttribute("WearAndTear-Bonuses")?.GetTreeAttribute(props.Code);
             if (bonusTree == null) return;
@@ -31,7 +32,7 @@ namespace WearAndTear.Code.XLib.Containers
             ProtectionModifier = bonusTree.GetFloat(nameof(ProtectionModifier), ProtectionModifier);
         }
 
-        public void UpdateForRepair(IWearAndTearPart part, ICoreAPI api, IPlayer player)
+        public void UpdateForRepair(Part part, ICoreAPI api, IPlayer player)
         {
             //Reset values to default
             DecayModifier = 1f;

@@ -8,7 +8,7 @@ using WearAndTear.Code.Extensions;
 
 namespace WearAndTear.Config.Props
 {
-    public class WearAndTearPartProps
+    public class PartProps
     {
         /// <summary>
         /// The code of the part (for making certain kinds of parts)
@@ -66,7 +66,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// The decay affecting this part (these are used to select the DecayEngines)
         /// </summary>
-        public WearAndTearDecayProps[] Decay { get; set; } = new WearAndTearDecayProps[]
+        public DecayProps[] Decay { get; set; } = new DecayProps[]
         {
             new()
             {

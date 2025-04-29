@@ -12,7 +12,7 @@
       "*-steel": 2700
     },
     "condition": {
-      "when": "WearAndTear_Feature_HelveAxe",
+      "when": "config://WearAndTear/Server/SpecialPartsConfig/HelveAxe",
       "isValue": "true"
     },
     "dependsOn": [ { "modid": "mechanicalwoodsplitter" } ]

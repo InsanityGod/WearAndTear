@@ -2,11 +2,11 @@
 
 namespace WearAndTear.Config.Props
 {
-    public class WearAndTearProtectivePartProps
+    public class ProtectivePartProps
     {
         /// <summary>
         /// Contains information on what parts will gain protection against which type of decay (and how much)
         /// </summary>
-        public WearAndTearProtectiveTargetProps[] EffectiveFor { get; set; } = Array.Empty<WearAndTearProtectiveTargetProps>();
+        public ProtectiveTargetProps[] EffectiveFor { get; set; } = Array.Empty<ProtectiveTargetProps>();
     }
 }

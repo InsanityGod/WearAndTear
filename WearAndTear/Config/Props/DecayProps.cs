@@ -1,6 +1,6 @@
 ﻿namespace WearAndTear.Config.Props
 {
-    public class WearAndTearDecayProps
+    public class DecayProps
     {
         /// <summary>
         /// Name of the decay engine to use

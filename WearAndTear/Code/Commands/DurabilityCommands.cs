@@ -15,18 +15,18 @@ namespace WearAndTear.Code.Commands
         /// <summary>
         /// Sets the durability of a part on the targeted WearAndTear affected block
         /// </summary>
-        /// <param name="wearAndTear"/>
+        /// <param name="wearandtear:PartController"/>
         /// <param name="PartIdentifier">The identifier of the part, either as index or as code</param>
         /// <param name="Durability">The durability to set the part to, as a number between 0 and 1</param>
         /// <example>/wearandtear setdurability frame 0.5</example>
         /// <example>/wearandtear setdurability 1 0.5</example>
-        [AutoCommand(Path = "wearandtear", RequiredPrivelege = "controlserver")]
+        [AutoCommand(Path = "wearandtear:PartController", RequiredPrivelege = "controlserver")]
         public static TextCommandResult SetDurability(
-            [CommandParameter(Source = EParamSource.CallerTarget)][Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] WearAndTearBehavior wearAndTear,
+            [CommandParameter(Source = EParamSource.CallerTarget)][Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] PartController wearAndTear,
             [CommandParameter] string PartIdentifier,
             [CommandParameter][Range(0f, 1f)] float Durability)
         {
-            IWearAndTearPart part = null;
+            Part part = null;
 
             if (int.TryParse(PartIdentifier, out int partIndex))
             {
@@ -51,6 +51,24 @@ namespace WearAndTear.Code.Commands
             part.Durability = Durability;
             wearAndTear.Blockentity.MarkDirty();
             return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability.ToPercentageString()}");
+        }
+
+        /// <summary>
+        /// Clears all WearAndTear attributes from the itemstack
+        /// </summary>
+        /// <example>/wearandtear removeattributes</example>
+        [AutoCommand(Path = "wearandtear:PartController", RequiredPrivelege = "controlserver")]
+        public static TextCommandResult RemoveAttributes([CommandParameter(Source = EParamSource.Caller)] ItemSlot itemslot)
+        {
+            if (itemslot.Empty) return TextCommandResult.Error("Not holding an itemstack");
+            
+            if(itemslot.Itemstack.Attributes != null && itemslot.Itemstack.Attributes.HasAttribute(Constants.DurabilityTreeName))
+            {
+                itemslot.Itemstack.Attributes.RemoveAttribute(Constants.DurabilityTreeName);
+                itemslot.MarkDirty();
+                return TextCommandResult.Success("Removed WearAndTear attributes from item");
+            }
+            return TextCommandResult.Error("No WearAndTear attributes on item");
         }
     }
 }

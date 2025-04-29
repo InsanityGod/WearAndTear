@@ -1,7 +1,7 @@
 {
   "code": "rubble",
-  "class": "WearAndTear.RubbleBlock",
-  "entityClass": "WearAndTear.RubbleBlockEntity",
+  "class": "wearandtear:RubbleBlock",
+  "entityClass": "wearandtear:RubbleBlockEntity",
   "shape": { "base": "wearandtear:rubble" },
   "textures": {
     "metal": { "base": "game:block/metal/ingot/tinbronze" },
@@ -17,7 +17,7 @@
   "behaviorsByType": {
     "*-unstable": [
       {
-        "name": "WearAndTearRubble",
+        "name": "wearandtear:RubbleBehavior",
         "properties": {
           "fallSound": "game:effect/rockslide", //TODO maybe a custom sound effect
           "dustIntensity": 0,

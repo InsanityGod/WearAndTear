@@ -1,4 +1,5 @@
 ﻿using Vintagestory.API.Common;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 using WearAndTear.Config.Server;
@@ -7,10 +8,10 @@ namespace WearAndTear.Code.DecayEngines
 {
     public class WindDecayEngine : IDecayEngine
     {
-        public float GetDecayLoss(ICoreAPI api, IWearAndTearPart part, WearAndTearDecayProps decayProps, double daysPassed)
+        public float GetDecayLoss(ICoreAPI api, Part part, DecayProps decayProps, double daysPassed)
         {
             //No wind decay inside
-            if (part.WearAndTear.IsSheltered) return 0;
+            if (part.Controller.IsSheltered) return 0;
 
             var avgWindSpeed = .5;
 
@@ -28,7 +29,7 @@ namespace WearAndTear.Code.DecayEngines
             // Calculate degradation factor (adjusted to daily wear rate)
             double degradationRate = degradationFactor / (part.Props.AvgLifeSpanInYears * api.World.Calendar.DaysPerYear);
 
-            return (float)(degradationRate * daysPassed) * WearAndTearServerConfig.Instance.DecayModifier.Wind;
+            return (float)(degradationRate * daysPassed) * DecayModifiersConfig.Instance.Wind;
         }
     }
 }

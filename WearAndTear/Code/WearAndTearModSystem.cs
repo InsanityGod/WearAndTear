@@ -1,21 +1,13 @@
 ﻿using HarmonyLib;
-using InsanityLib.Attributes.Auto.Harmony;
+using InsanityLib.Attributes.Auto;
 using InsanityLib.Util;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
-using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
-using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
-using WearAndTear.Code.Behaviours.Parts.Item;
-using WearAndTear.Code.Behaviours.Parts.Protective;
-using WearAndTear.Code.Behaviours.Rubble;
-using WearAndTear.Code.Behaviours.Util;
-using WearAndTear.Code.BlockEntities;
-using WearAndTear.Code.Blocks;
 using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;
@@ -25,8 +17,8 @@ using WearAndTear.Code.XLib;
 using WearAndTear.Config.Server;
 using WearAndTear.DynamicPatches;
 
-[assembly: AutoPatcher("wearandtear")]
-
+[assembly: AutoPatcher("wearandtear:PartController")]
+[assembly: AutoRegistry("wearandtear:PartController")]
 namespace WearAndTear.Code
 {
     public class WearAndTearModSystem : ModSystem
@@ -54,48 +46,13 @@ namespace WearAndTear.Code
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
-            RegisterOther(api);
 
             if (XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
 
-        public override void StartServerSide(ICoreServerAPI api)
-        {
-            LoadFeatureFlags(api);
-        }
-
         private static void RegisterBehaviours(ICoreAPI api)
         {
-            api.RegisterBlockEntityBehaviorClass("WearAndTear", typeof(WearAndTearBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearPart", typeof(WearAndTearPartBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearProtectivePart", typeof(WearAndTearProtectivePartBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearOptionalProtectivePart", typeof(WearAndTearOptionalProtectivePartBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearSail", typeof(WearAndTearSailBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(WearAndTearMoldPartBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearIngotMold", typeof(WearAndTearIngotMoldPartBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearGenericItemDisplay", typeof(WearAndTearGenericItemDisplayBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearHelveItem", typeof(WearAndTearHelveItemBehavior));
-            api.RegisterBlockEntityBehaviorClass("WearAndTearPulverizerItem", typeof(WearAndTearPulverizerItemBehavior));
-
-            api.RegisterCollectibleBehaviorClass("WearAndTearRepairItem", typeof(WearAndTearRepairItemBehavior));
-            api.RegisterCollectibleBehaviorClass("WearAndTearMaterialName", typeof(WearAndTearMaterialName));
-
-            api.RegisterBlockBehaviorClass("WearAndTearRubble", typeof(RubbleBehavior));
-        }
-
-        private static void RegisterOther(ICoreAPI api)
-        {
-            api.RegisterBlockClass("WearAndTear.RubbleBlock", typeof(RubbleBlock));
-            api.RegisterBlockEntityClass("WearAndTear.RubbleBlockEntity", typeof(RubbleBlockEntity));
-        }
-
-        public static void LoadFeatureFlags(ICoreAPI api)
-        {
-            foreach (var prop in typeof(SpecialPartConfig).GetProperties())
-            {
-                var obj = prop.GetValue(WearAndTearServerConfig.Instance.SpecialParts);
-                api.World.Config.SetBool($"WearAndTear_Feature_{prop.Name}", obj is bool turned_on ? turned_on : obj != null);
-            }
+            api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(MoldPart)); //TODO work on patch merging api
         }
 
         public override void AssetsFinalize(ICoreAPI api)
@@ -137,7 +94,7 @@ namespace WearAndTear.Code
                 BlockPatches.PatchPulverizer(block);
                 BlockPatches.PatchClutch(block);
 
-                if (WearAndTearServerConfig.Instance.AutoPartRegistry.Enabled)
+                if (AutoPartRegistryConfig.Instance.Enabled)
                 {
                     AutoPartRegistry.Register(block);
                 }
@@ -160,7 +117,6 @@ namespace WearAndTear.Code
                 }
 
                 woodscrap.MaterialDensity = plank.MaterialDensity;
-                //woodscrap.Textures = plank.Textures.ToDictionary(item => item.Key, item => item.Value);
                 woodscrap.CombustibleProps = plank.CombustibleProps?.Clone();
             }
 
@@ -175,7 +131,6 @@ namespace WearAndTear.Code
                 }
 
                 metalscrap.MaterialDensity = ingot.MaterialDensity;
-                //metalscrap.Textures = ingot.Textures.ToDictionary(item => item.Key, item => item.Value); //TODO copy correct texture only
                 metalscrap.CombustibleProps = ingot.CombustibleProps?.Clone();
                 if (metalscrap.CombustibleProps == null) continue;
                 metalscrap.CombustibleProps.SmeltedRatio = 4;
@@ -184,7 +139,7 @@ namespace WearAndTear.Code
 
         public static bool IsRoughEstimateEnabled(ICoreAPI api, IPlayer player)
         {
-            if (WearAndTearServerConfig.Instance.Compatibility.RoughDurabilityEstimate.IsFullfilled())
+            if (CompatibilityConfig.Instance.RoughDurabilityEstimate.IsFullfilled())
             {
                 if (XlibEnabled)
                 {

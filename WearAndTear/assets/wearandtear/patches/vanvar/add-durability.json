@@ -12,7 +12,7 @@
       "*-steel": 9000
     },
     "condition": {
-      "when": "WearAndTear_Feature_HelveHammer",
+      "when": "config://WearAndTear/Server/SpecialPartsConfig/HelveHammer",
       "isValue": "true"
     },
     "dependsOn": [ { "modid": "vanvar" } ]

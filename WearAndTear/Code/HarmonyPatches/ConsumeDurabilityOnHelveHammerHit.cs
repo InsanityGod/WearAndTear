@@ -29,6 +29,6 @@ namespace WearAndTear.HarmonyPatches
             if (!found) throw new InvalidOperationException("Transpiler failed to find OnHelveHammerHit call to inject code after");
         }
 
-        public static void ConsumeDurability(BEHelveHammer instance) => instance.GetBehavior<WearAndTearHelveItemBehavior>()?.DamageItem();
+        public static void ConsumeDurability(BEHelveHammer instance) => instance.GetBehavior<HelveItemPart>()?.DamageItem();
     }
 }

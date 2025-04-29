@@ -41,7 +41,7 @@ namespace WearAndTear.Code.AutoRegistry
 
             if (block is BlockPulverizer && block.Code.Domain == "vanvar") return; //Thank you other mod creator for putting a bunch of unused metal textures in your block type definition...
 
-            var metalKeys = block.Textures.Keys.Where(key => WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.ContainsKey(key.ToLower())).ToList();
+            var metalKeys = block.Textures.Keys.Where(key => AutoPartRegistryConfig.Instance.MetalConfig.ContainsKey(key.ToLower())).ToList();
             if (metalKeys.Count != 0)
             {
                 var metal = metalKeys.Count == 1 ? metalKeys[0] : "default";
@@ -51,7 +51,7 @@ namespace WearAndTear.Code.AutoRegistry
                 //TODO we could probably look through shape to calculate metal composition percentage but ehh let's not go overkill for now anyway
             }
 
-            var pathMetals = block.Textures.Values.Select(path => WearAndTearServerConfig.Instance.AutoPartRegistry.MetalConfig.Keys.FirstOrDefault(metal => path.ToString().Contains(metal)))
+            var pathMetals = block.Textures.Values.Select(path => AutoPartRegistryConfig.Instance.MetalConfig.Keys.FirstOrDefault(metal => path.ToString().Contains(metal)))
                 .Where(value => value != null)
                 .Distinct()
                 .ToList();
@@ -191,7 +191,7 @@ namespace WearAndTear.Code.AutoRegistry
                 .GroupBy(item => item.Key)
                 .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
 
-            if (WearAndTearServerConfig.Instance.AutoPartRegistry.RequireAllRecipesToContainMetal && recipeContent.Exists(item => item.metalContent.Count == 0)) return true;
+            if (AutoPartRegistryConfig.Instance.RequireAllRecipesToContainMetal && recipeContent.Exists(item => item.metalContent.Count == 0)) return true;
 
             MetalContent = recipeContent
                 .SelectMany(item => item.metalContent)
@@ -229,7 +229,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalMetalCount = MetalContent.Sum(metal => metal.Value);
             var metalWithHighestCompositionRate = MetalContent.OrderByDescending(metal => metal.Value).First();
 
-            if (metalWithHighestCompositionRate.Value / totalMetalCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalMetalCompositionPercentage) return (metalWithHighestCompositionRate.Key, metalWithHighestCompositionRate.Value);
+            if (metalWithHighestCompositionRate.Value / totalMetalCount > AutoPartRegistryConfig.Instance.MinimalMetalCompositionPercentage) return (metalWithHighestCompositionRate.Key, metalWithHighestCompositionRate.Value);
 
             return ("unknown", 0);
         }
@@ -241,7 +241,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalWoodCount = WoodContent.Sum(wood => wood.Value);
             var woodWithHighestCompositionRate = WoodContent.OrderByDescending(wood => wood.Value).First();
 
-            if (woodWithHighestCompositionRate.Value / totalWoodCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalWoodCompositionPercentage) return (woodWithHighestCompositionRate.Key, woodWithHighestCompositionRate.Value);
+            if (woodWithHighestCompositionRate.Value / totalWoodCount > AutoPartRegistryConfig.Instance.MinimalWoodCompositionPercentage) return (woodWithHighestCompositionRate.Key, woodWithHighestCompositionRate.Value);
 
             return null; //no specific wood type
         }
@@ -253,7 +253,7 @@ namespace WearAndTear.Code.AutoRegistry
             var totalRockCount = RockContent.Sum(wood => wood.Value);
             var rockWithHighestCompositionRate = RockContent.OrderByDescending(rock => rock.Value).First();
 
-            if (rockWithHighestCompositionRate.Value / totalRockCount > WearAndTearServerConfig.Instance.AutoPartRegistry.MinimalRockCompositionPercentage) return (rockWithHighestCompositionRate.Key, rockWithHighestCompositionRate.Value);
+            if (rockWithHighestCompositionRate.Value / totalRockCount > AutoPartRegistryConfig.Instance.MinimalRockCompositionPercentage) return (rockWithHighestCompositionRate.Key, rockWithHighestCompositionRate.Value);
 
             return null; //no specific wood type
         }

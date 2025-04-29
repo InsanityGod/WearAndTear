@@ -7,9 +7,7 @@ namespace WearAndTear.Config.Client
 {
     public class WearAndTearClientConfig
     {
-        public const string ConfigName = "WearAndTear_Client_Config.json";
-
-        [AutoConfig(ConfigName)]
+        [AutoConfig("WearAndTear/Client/MainConfig.json")]
         public static WearAndTearClientConfig Instance { get; private set; }
 
         //Actual Config
@@ -33,7 +31,9 @@ namespace WearAndTear.Config.Client
         [DisplayName("Disable Visual Tearing on MP Blocks")]
         public bool DisableVisualTearingOnMPBlocks { get; set; } = true;
 
-        /// <summary>Wether decayed windmills will have decayed models (look like they have are torn sails)</summary>
+        /// <summary>
+        /// Wether decayed windmills will have decayed models (look like they have are torn sails)
+        /// </summary>
         [Category("Appearance")]
         [DefaultValue(true)]
         public bool WindmillRotoDecayedAppearance { get; set; } = true;
@@ -46,7 +46,9 @@ namespace WearAndTear.Config.Client
         [DefaultValue(true)]
         public bool WindmillRotorDecayAutoGenShapes { get; set; } = true;
 
-        /// <summary>If enabled, questionable events are logged (like when temperature data is invalid and creates NaN as a value)</summary>
+        /// <summary>
+        /// If enabled, questionable events are logged (like when temperature data is invalid and creates NaN as a value)
+        /// </summary>
         [Category("Debug")]
         [DefaultValue(false)]
         public bool EnableDebugLogging { get; set; } = false;

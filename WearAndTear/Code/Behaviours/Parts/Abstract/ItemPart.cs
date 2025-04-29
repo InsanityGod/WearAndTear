@@ -7,12 +7,11 @@ using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.Behaviours.Parts.Abstract
 {
-    public abstract class WearAndTearItemPartBehavior : WearAndTearOptionalPartBehavior, IWearAndTearItemPart
+    public abstract class ItemPart : OptionalPart, IWearAndTearItemPart
     {
-        protected WearAndTearItemPartBehavior(BlockEntity blockentity) : base(blockentity)
-        {
-        }
-
+        protected ItemPart(BlockEntity blockentity) : base(blockentity) { }
+        
+        //TODO this should never be critical
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             //Empty on purpose

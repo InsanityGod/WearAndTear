@@ -18,7 +18,7 @@ namespace WearAndTear.HarmonyPatches
         {
             if (byPlayer.InventoryManager.ActiveHotbarSlot.Empty && byPlayer.Entity.Controls.ShiftKey)
             {
-                var sail = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+                var sail = __instance.Blockentity.GetBehavior<WindmillSailPart>();
                 if (sail != null && sail.Durability >= 0.05)
                 {
                     if (sail.IsActive)

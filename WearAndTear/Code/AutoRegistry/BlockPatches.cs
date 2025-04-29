@@ -13,33 +13,33 @@ namespace WearAndTear.DynamicPatches
     public static class BlockPatches
     {
         //TODO Molds should live outside AutoPartRegistry scope as well
-        public static WearAndTearPartProps DefaultHelveItemPartProps => new()
+        public static PartProps DefaultHelveItemPartProps => new()
         {
             Code = "wearandtear:helveitem",
-            Decay = Array.Empty<WearAndTearDecayProps>()
+            Decay = Array.Empty<DecayProps>()
         };
 
-        public static WearAndTearPartProps DefaultPulverizerItemPartProps => new()
+        public static PartProps DefaultPulverizerItemPartProps => new()
         {
             Code = "wearandtear:pulverizeritem",
-            Decay = Array.Empty<WearAndTearDecayProps>()
+            Decay = Array.Empty<DecayProps>()
         };
 
         public static void PatchClutch(Block block)
         {
-            if (WearAndTearServerConfig.Instance.SpecialParts.Clutch == null || block is not BlockClutch) return;
+            if (SpecialPartsConfig.Instance.Clutch == null || block is not BlockClutch) return;
             block.EnsureBaseWearAndTear(true);
             //TODO special part
         }
 
         public static void PatchWindmill(Block block)
         {
-            if (WearAndTearServerConfig.Instance.SpecialParts.WindmillSails == null) return;
+            if (SpecialPartsConfig.Instance.WindmillSails == null) return;
 
             if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced")
             {
                 block.EnsureBaseWearAndTear(true);
-                block.MergeOrAddBehavior("WearAndTearSail", (JContainer)JToken.FromObject(WearAndTearServerConfig.Instance.SpecialParts.WindmillSails));
+                block.MergeOrAddBehavior("wearandtear:WindmillSailPart", (JContainer)JToken.FromObject(SpecialPartsConfig.Instance.WindmillSails));
 
                 ((JContainer)block.Attributes.Token).Merge(JToken.FromObject(new
                 {
@@ -53,19 +53,19 @@ namespace WearAndTear.DynamicPatches
 
         public static void PatchIngotMold(Block block)
         {
-            if (!WearAndTearServerConfig.Instance.SpecialParts.Molds || block is not BlockIngotMold) return;
+            if (!SpecialPartsConfig.Instance.Molds || block is not BlockIngotMold) return;
 
             block.EnsureBaseWearAndTear(true);
-            var frameProps = WearAndTearServerConfig.Instance.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
+            var frameProps = AutoPartRegistryConfig.Instance.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             var frame = JToken.FromObject(frameProps);
-            frame[nameof(WearAndTearPartProps.Decay)] = JToken.FromObject(Array.Empty<WearAndTearDecayProps>());
-            ((JContainer)frame).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
+            frame[nameof(PartProps.Decay)] = JToken.FromObject(Array.Empty<DecayProps>());
+            ((JContainer)frame).Merge(JToken.FromObject(new DurabilityUsageProps()));
 
             frame["Code"] = "wearandtear:ingotmold-left";
-            block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame.DeepClone());
+            block.MergeOrAddBehavior("wearandtear:IngotMoldPart", (JContainer)frame.DeepClone());
 
             frame["Code"] = "wearandtear:ingotmold-right";
-            block.MergeOrAddBehavior("WearAndTearIngotMold", (JContainer)frame);
+            block.MergeOrAddBehavior("wearandtear:IngotMoldPart", (JContainer)frame);
         }
 
         public static void PatchHelve(Block block)
@@ -73,7 +73,7 @@ namespace WearAndTear.DynamicPatches
             if (block is BlockHelveHammer)
             {
                 block.EnsureBaseWearAndTear(true);
-                block.MergeOrAddBehavior("WearAndTearHelveItem", (JContainer)JToken.FromObject(DefaultHelveItemPartProps));
+                block.MergeOrAddBehavior("wearandtear:HelveItemPart", (JContainer)JToken.FromObject(DefaultHelveItemPartProps));
             }
         }
 
@@ -82,7 +82,7 @@ namespace WearAndTear.DynamicPatches
             if (block is BlockPulverizer)
             {
                 block.EnsureBaseWearAndTear(true);
-                block.MergeOrAddBehavior("WearAndTearPulverizerItem", (JContainer)JToken.FromObject(DefaultPulverizerItemPartProps));
+                block.MergeOrAddBehavior("wearandtear:PulverizerItemPart", (JContainer)JToken.FromObject(DefaultPulverizerItemPartProps));
 
                 //TODO other parts
             }

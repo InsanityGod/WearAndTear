@@ -2,17 +2,17 @@
 
 namespace WearAndTear.Config.Props.RegistryTemplates
 {
-    public class WearAndTearProtectiveTemplate
+    public class ProtectiveTemplate
     {
         /// <summary>
         /// The general part properties
         /// </summary>
-        public WearAndTearPartProps PartProps { get; set; } = new();
+        public PartProps PartProps { get; set; } = new();
 
         /// <summary>
         /// The properties specific to protective parts
         /// </summary>
-        public WearAndTearProtectivePartProps ProtectiveProps { get; set; } = new();
+        public ProtectivePartProps ProtectiveProps { get; set; } = new();
 
         internal JContainer AsMergedJContainer()
         {

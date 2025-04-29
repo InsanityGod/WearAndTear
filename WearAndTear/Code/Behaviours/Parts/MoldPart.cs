@@ -10,23 +10,21 @@ using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts
 {
-    public class WearAndTearMoldPartBehavior : WearAndTearPartBehavior, IWearAndTearPart
+    public class MoldPart : Part
     {
-        public WearAndTearMoldPartBehavior(BlockEntity blockentity) : base(blockentity)
-        {
-        }
+        public MoldPart(BlockEntity blockentity) : base(blockentity) {}
 
-        public WearAndTearDurabilityPartProps DurabilityProps { get; private set; }
+        public DurabilityUsageProps DurabilityProps { get; private set; }
 
         public override void Initialize(ICoreAPI api, JsonObject properties)
         {
             base.Initialize(api, properties);
-            DurabilityProps ??= properties.AsObject<WearAndTearDurabilityPartProps>() ?? new();
+            DurabilityProps ??= properties.AsObject<DurabilityUsageProps>() ?? new();
         }
 
-        public bool RequiresUpdateDecay => false;
+        public override bool RequiresUpdateDecay => false;
 
-        public bool OnBreak()
+        public override bool OnBreak()
         {
             var canShatter = Block.Attributes != null && Block.Attributes["shatteredShape"].Exists;
             if (!canShatter) return true;
@@ -55,10 +53,10 @@ namespace WearAndTear.Code.Behaviours.Parts
                 DurabilityProps.MinDurabilityUsage :
                 (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
-            damage *= WearAndTearServerConfig.Instance.DecayModifier.Mold;
-            foreach (var protectivePart in WearAndTear.Parts.OfType<IWearAndTearProtectivePart>())
+            damage *= DecayModifiersConfig.Instance.Mold;
+            foreach (var protectivePart in Controller.Parts.OfType<IProtectivePart>())
             {
-                if (protectivePart is IWearAndTearOptionalPart optionalPart && !optionalPart.IsPresent) continue;
+                if (protectivePart is IOptionalPart optionalPart && !optionalPart.IsPresent) continue;
 
                 damage *= protectivePart.GetDecayMultiplierFor(Props);
             }
@@ -66,7 +64,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
             Durability -= damage;
 
-            Blockentity.GetBehavior<WearAndTearBehavior>().UpdateDecay(0, false);
+            Blockentity.GetBehavior<PartController>().UpdateDecay(0, false);
         }
 
         public override void UpdateDecay(double daysPassed)

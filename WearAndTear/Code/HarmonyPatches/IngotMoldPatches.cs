@@ -54,7 +54,7 @@ namespace WearAndTear.Code.HarmonyPatches
             return codes;
         }
 
-        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer) => instance.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
+        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer) => instance.Behaviors.OfType<IngotMoldPart>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
 
         [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeMold")]
         [HarmonyTranspiler]
@@ -83,10 +83,10 @@ namespace WearAndTear.Code.HarmonyPatches
 
         public static ItemStack FixItemstack(ItemStack stack, BlockEntityIngotMold instance, IPlayer byPlayer)
         {
-            var ingotMoldWearAndTear = instance.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().OrderByDescending(x => x.Side).FirstOrDefault(x => x.IsPresent);
+            var ingotMoldWearAndTear = instance.Behaviors.OfType<IngotMoldPart>().OrderByDescending(x => x.Side).FirstOrDefault(x => x.IsPresent);
             if (ingotMoldWearAndTear != null && ingotMoldWearAndTear.Durability < 1)
             {
-                var durabilityTree = stack.Attributes.GetOrAddTreeAttribute("WearAndTear-Durability");
+                var durabilityTree = stack.Attributes.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
                 durabilityTree.SetFloat("Mold", ingotMoldWearAndTear.Durability);
             }
             return stack;
@@ -98,7 +98,7 @@ namespace WearAndTear.Code.HarmonyPatches
             BlockEntityIngotMold entity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityIngotMold;
             if (entity == null) return;
 
-            var ingotMoldWearAndTear = entity.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().Where(x => x.IsPresent).ToList();
+            var ingotMoldWearAndTear = entity.Behaviors.OfType<IngotMoldPart>().Where(x => x.IsPresent).ToList();
             if (!ingotMoldWearAndTear.Any()) return;
 
             string blockCode = __instance.Code.Path.Split('-')[0];
@@ -116,7 +116,7 @@ namespace WearAndTear.Code.HarmonyPatches
             var wearAndTear = ingotMoldWearAndTear[0];
             if (wearAndTear.Durability < 1)
             {
-                var durabilityTree = normalItem.Attributes.GetOrAddTreeAttribute("WearAndTear-Durability");
+                var durabilityTree = normalItem.Attributes.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
                 durabilityTree.SetFloat("Mold", wearAndTear.Durability);
             }
 
@@ -125,7 +125,7 @@ namespace WearAndTear.Code.HarmonyPatches
                 wearAndTear = ingotMoldWearAndTear[1];
                 if (wearAndTear.Durability < 1)
                 {
-                    var durabilityTree = secondItem.Attributes.GetOrAddTreeAttribute("WearAndTear-Durability");
+                    var durabilityTree = secondItem.Attributes.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
                     durabilityTree.SetFloat("Mold", wearAndTear.Durability);
                 }
                 __result = __result.Append(secondItem);
@@ -161,11 +161,11 @@ namespace WearAndTear.Code.HarmonyPatches
         {
             var item = byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack;
             if (item == null) return;
-            var durabilityTree = item.Attributes.GetOrAddTreeAttribute("WearAndTear-Durability");
+            var durabilityTree = item.Attributes.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
 
             var durability = durabilityTree.GetFloat("Mold", 1);
 
-            var ingotMoldWearAndTear = instance.Behaviors.OfType<WearAndTearIngotMoldPartBehavior>().LastOrDefault(x => x.IsPresent);
+            var ingotMoldWearAndTear = instance.Behaviors.OfType<IngotMoldPart>().LastOrDefault(x => x.IsPresent);
             if (ingotMoldWearAndTear == null) return;
             ingotMoldWearAndTear.Durability = durability;
         }

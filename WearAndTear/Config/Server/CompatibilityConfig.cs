@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsanityLib.Attributes.Auto.Config;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using WearAndTear.Code.Enums;
@@ -7,6 +8,9 @@ namespace WearAndTear.Config.Server
 {
     public class CompatibilityConfig
     {
+        [AutoConfig("WearAndTear/Server/CompatibilityConfig.json", ServerSync = true)]
+        public static CompatibilityConfig Instance { get; private set; }
+
         /// <summary>
         /// Multiplier on the lifespan of encased parts.
         /// (Keep in mind that you can't do maintenance on encased parts due to their inaccessibility)

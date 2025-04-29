@@ -35,7 +35,7 @@ namespace WearAndTear.Code.Rendering
                 foreach (var behavior in block.BlockEntityBehaviors)
                 {
                     if (behavior.properties == null) continue;
-                    var scrapCode = behavior.properties[nameof(WearAndTearPartProps.ScrapCode)].AsString();
+                    var scrapCode = behavior.properties[nameof(PartProps.ScrapCode)].AsString();
                     if (string.IsNullOrEmpty(scrapCode)) continue;
 
                     var scrapItem = game.Api.World.GetItem(scrapCode);

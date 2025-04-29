@@ -2,9 +2,9 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace WearAndTear.Config
+namespace WearAndTear.Config.Props.RegistryTemplates
 {
-    public class MetalReinforcementConfig
+    public class ReinforcementTemplate
     {
         /// <summary>
         /// This is used to fill the multiplier of the protective part of the Metal Reinforcement Template

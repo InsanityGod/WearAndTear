@@ -9,11 +9,11 @@ using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours.Parts.Item
 {
-    public class WearAndTearHelveItemBehavior : WearAndTearItemPartBehavior
+    public class HelveItemPart : ItemPart
     {
         public readonly BEHelveHammer HelveHammerBase;
 
-        public WearAndTearHelveItemBehavior(BlockEntity blockentity) : base(blockentity)
+        public HelveItemPart(BlockEntity blockentity) : base(blockentity)
         {
             HelveHammerBase = (BEHelveHammer)blockentity;
         }
@@ -33,14 +33,14 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
             {
                 if (!ShoulDamageHelveAxe(anvil)) return;
             }
-            else if (!WearAndTearServerConfig.Instance.SpecialParts.HelveHammer || (!WearAndTearServerConfig.Instance.SpecialParts.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null)) return;
+            else if (!SpecialPartsConfig.Instance.HelveHammer || (!SpecialPartsConfig.Instance.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null)) return;
 
             base.DamageItem(amount);
         }
 
         public bool IsHelveAxe => ItemStack?.Collectible is HelveAxe;
 
-        public bool ShoulDamageHelveAxe(object anvil) => WearAndTearServerConfig.Instance.SpecialParts.HelveAxe && anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.ChoppingBlock?.recipecomplete ?? false);
+        public bool ShoulDamageHelveAxe(object anvil) => SpecialPartsConfig.Instance.HelveAxe && anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.ChoppingBlock?.recipecomplete ?? false);
 
         public void ManualDamageIem(int amount = 1) => base.DamageItem(amount);
     }

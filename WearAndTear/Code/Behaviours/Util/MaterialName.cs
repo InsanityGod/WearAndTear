@@ -4,11 +4,9 @@ using Vintagestory.API.Config;
 
 namespace WearAndTear.Code.Behaviours.Util
 {
-    public class WearAndTearMaterialName : CollectibleBehavior
+    public class MaterialName : CollectibleBehavior //TODO move to library
     {
-        public WearAndTearMaterialName(CollectibleObject collObj) : base(collObj)
-        {
-        }
+        public MaterialName(CollectibleObject collObj) : base(collObj) { }
 
         public override void GetHeldItemName(StringBuilder sb, ItemStack itemStack)
         {

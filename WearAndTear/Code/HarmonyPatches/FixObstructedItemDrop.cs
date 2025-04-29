@@ -15,7 +15,7 @@ namespace WearAndTear.Code.HarmonyPatches
         public static void Postfix(BEBehaviorMPRotor __instance, int len, ref bool __result)
         {
             if (__instance.Api.Side != EnumAppSide.Server || !__result) return;
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WindmillSailPart>();
             if (wearAndTearBehaviour == null) return;
 
             if (len == wearAndTearBehaviour.SailLength + 1)

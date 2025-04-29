@@ -7,25 +7,12 @@ namespace WearAndTear.Config.Server
 {
     public class WearAndTearServerConfig
     {
-        public const string ConfigName = "WearAndTear_Server_Config.json";
-
-        [AutoConfig(ConfigName, ServerSync = true)]
+        [AutoConfig("WearAndTear/Server/MainConfig.json", ServerSync = true)]
         public static WearAndTearServerConfig Instance { get; private set; }
 
-        public const int LatestConfigCompatibilityVersion = 1;
-
         /// <summary>
-        /// This is number is used to check if the config is still valid
-        /// (I update this when creating major config breaking updates, so I can ensure people update their configs)
+        /// If enabled certain actions will require class traits
         /// </summary>
-        [ReadOnly(true)]
-        [Browsable(false)]
-        [VersionIdentifier(LatestConfigCompatibilityVersion)]
-        public int ConfigCompatibilityVersion { get; set; } = LatestConfigCompatibilityVersion;
-
-        //Actual Config
-
-        /// <summary>If enabled certain actions will require class traits</summary>
         [DefaultValue(false)]
         public bool TraitRequirements { get; set; } = false;
 
@@ -49,25 +36,33 @@ namespace WearAndTear.Config.Server
         [DisplayFormat(DataFormatString = "P")]
         public float DurabilityLeeway { get; set; } = .95f;
 
-        /// <summary>The minimum durability is required before maintenance is allowed</summary>
+        /// <summary>
+        /// The minimum durability is required before maintenance is allowed
+        /// </summary>
         [Category("Maintenance")]
         [DefaultValue(.95f)]
         [Range(0, 1)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinMaintenanceDurability { get; set; } = .95f;
 
-        /// <summary>How often the durability update method runs</summary>
+        /// <summary>
+        /// How often the durability update method runs
+        /// </summary>
         [Category("Maintenance")]
         [DefaultValue(15000)]
         [Range(1, int.MaxValue)]
         public int DurabilityUpdateFrequencyInMs { get; set; } = 15000;
 
-        /// <summary>Whether objects can only be repaired while they are not active</summary>
+        /// <summary>
+        /// Whether objects can only be repaired while they are not active
+        /// </summary>
         [Category("Maintenance")]
         [DefaultValue(true)]
         public bool MaintenanceRequiresInactivePart { get; set; } = true;
 
-        /// <summary>When calculating decay for stuff that was unloaded for a long time this decides the ammount of dates the rainfall/temperature is collected from to get an average</summary>
+        /// <summary>
+        /// When calculating decay for stuff that was unloaded for a long time this decides the ammount of dates the rainfall/temperature is collected from to get an average
+        /// </summary>
         [Category("Maintenance")]
         [DefaultValue(0.1)]
         [Range(0.01f, float.PositiveInfinity)]
@@ -81,7 +76,9 @@ namespace WearAndTear.Config.Server
         [DefaultValue(false)]
         public bool AllowForInfiniteMaintenance { get; set; } = false;
 
-        /// <summary>How often the check if entity is inside room is done</summary>
+        /// <summary>
+        /// How often the check if entity is inside room is done
+        /// </summary>
         [Category("Shelter")]
         [DefaultValue(30000)]
         [Range(1, int.MaxValue)]
@@ -96,16 +93,5 @@ namespace WearAndTear.Config.Server
         [DefaultValue(18)]
         [Range(-1, int.MaxValue)]
         public int RoomExitCountLeeway { get; set; } = 18;
-
-        //Sub configs
-        public DecayModifierConfig DecayModifier { get; set; } = new();
-
-        public SpecialPartConfig SpecialParts { get; set; } = new();
-
-        public RubbleConfig Rubble { get; set; } = new();
-
-        public CompatibilityConfig Compatibility { get; set; } = new();
-
-        public AutoPartRegistryConfig AutoPartRegistry { get; set; } = new();
     }
 }

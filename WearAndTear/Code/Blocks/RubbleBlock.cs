@@ -15,8 +15,8 @@ namespace WearAndTear.Code.Blocks
         public override void OnLoaded(ICoreAPI api)
         {
             base.OnLoaded(api);
-            sprintIntoDamage = Attributes["sprintIntoDamage"].AsFloat(WearAndTearServerConfig.Instance.Rubble.SprintIntoDamage);
-            fallIntoDamageMul = Attributes["fallIntoDamageMul"].AsFloat(WearAndTearServerConfig.Instance.Rubble.FallIntoDamageMul);
+            sprintIntoDamage = Attributes["sprintIntoDamage"].AsFloat(RubbleConfig.Instance.SprintIntoDamage);
+            fallIntoDamageMul = Attributes["fallIntoDamageMul"].AsFloat(RubbleConfig.Instance.FallIntoDamageMul);
         }
 
         public override bool CanAcceptFallOnto(IWorldAccessor world, BlockPos pos, Block fallingBlock, TreeAttribute blockEntityAttributes)

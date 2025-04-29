@@ -4,7 +4,7 @@ using Vintagestory.API.Common;
 
 namespace WearAndTear.Config.Props
 {
-    public class WearAndTearRepairItemProps
+    public class RepairItemProps
     {
         /// <summary>
         /// This should match the RepairType of the part you want it to repair

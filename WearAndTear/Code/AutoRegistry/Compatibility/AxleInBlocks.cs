@@ -9,7 +9,7 @@ namespace WearAndTear.Code.AutoRegistry.Compatibility
     {
         public static void Register(Block block)
         {
-            var woodenPart = WearAndTearServerConfig.Instance.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(EnumBlockMaterial.Wood);
+            var woodenPart = AutoPartRegistryConfig.Instance.DefaultFrameProps.GetValueOrDefault(EnumBlockMaterial.Wood);
             if (woodenPart == null) return;
 
             //TODO make these encased blocks turn into a full block rubble pile
@@ -24,8 +24,8 @@ namespace WearAndTear.Code.AutoRegistry.Compatibility
             var props = JToken.FromObject(woodenPart);
             props["Code"] = "wearandtear:mechanism-encased";
             props["RepairType"] = null; //It's encased so you can't propperly repair it
-            props["AvgLifeSpanInYears"] = props["AvgLifeSpanInYears"].Value<float>() * WearAndTearServerConfig.Instance.Compatibility.EncasedPartLifeSpanMultiplier;
-            block.MergeOrAddBehavior("WearAndTearPart", (JContainer)props);
+            props["AvgLifeSpanInYears"] = props["AvgLifeSpanInYears"].Value<float>() * CompatibilityConfig.Instance.EncasedPartLifeSpanMultiplier;
+            block.MergeOrAddBehavior("wearandtear:Part", (JContainer)props);
         }
     }
 }

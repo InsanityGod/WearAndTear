@@ -15,7 +15,7 @@ namespace WearAndTear.Code.HarmonyPatches
         public static void FixUpdateShape(BEBehaviorMPRotor __instance)
         {
             if (!WearAndTearClientConfig.Instance.WindmillRotoDecayedAppearance) return;
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WindmillSailPart>();
             if (wearAndTearBehaviour == null || wearAndTearBehaviour.SailLength == 0) return;
             wearAndTearBehaviour.UpdateShape(__instance);
         }
