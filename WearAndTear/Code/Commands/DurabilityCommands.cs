@@ -15,14 +15,14 @@ namespace WearAndTear.Code.Commands
         /// <summary>
         /// Sets the durability of a part on the targeted WearAndTear affected block
         /// </summary>
-        /// <param name="wearandtear:PartController"/>
+        /// <param name="controller"/>
         /// <param name="PartIdentifier">The identifier of the part, either as index or as code</param>
         /// <param name="Durability">The durability to set the part to, as a number between 0 and 1</param>
         /// <example>/wearandtear setdurability frame 0.5</example>
         /// <example>/wearandtear setdurability 1 0.5</example>
-        [AutoCommand(Path = "wearandtear:PartController", RequiredPrivelege = "controlserver")]
+        [AutoCommand(Path = "wearandtear", RequiredPrivelege = "controlserver")]
         public static TextCommandResult SetDurability(
-            [CommandParameter(Source = EParamSource.CallerTarget)][Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] PartController wearAndTear,
+            [CommandParameter(Source = EParamSource.CallerTarget)][Required(ErrorMessage = Constants.TARGET_NOT_WEARANDTEAR_AFFECTED)] PartController controller,
             [CommandParameter] string PartIdentifier,
             [CommandParameter][Range(0f, 1f)] float Durability)
         {
@@ -30,26 +30,26 @@ namespace WearAndTear.Code.Commands
 
             if (int.TryParse(PartIdentifier, out int partIndex))
             {
-                if (partIndex < 1 || partIndex > wearAndTear.Parts.Count) return TextCommandResult.Error($"Could not find part '{partIndex}', expected a number between 1 and {wearAndTear.Parts.Count}");
+                if (partIndex < 1 || partIndex > controller.Parts.Count) return TextCommandResult.Error($"Could not find part '{partIndex}', expected a number between 1 and {controller.Parts.Count}");
                 partIndex--;
 
-                part = wearAndTear.Parts[partIndex];
+                part = controller.Parts[partIndex];
             }
             else
             {
                 var partCodeArray = PartIdentifier.Split(":");
 
-                part = wearAndTear.Parts.Find(
+                part = controller.Parts.Find(
                     partCodeArray.Length > 1 ?
                     p => p.Props.Code.Domain == partCodeArray[0] && p.Props.Code.Path == partCodeArray[1] :
                     p => p.Props.Code.Path == partCodeArray[0]
                 );
             }
 
-            if (part == null) return TextCommandResult.Error($"Could not find part '{PartIdentifier}', expected one of the following: {string.Join(", ", wearAndTear.Parts.Select(p => p.Props.Code))}");
+            if (part == null) return TextCommandResult.Error($"Could not find part '{PartIdentifier}', expected one of the following: {string.Join(", ", controller.Parts.Select(p => p.Props.Code))}");
 
             part.Durability = Durability;
-            wearAndTear.Blockentity.MarkDirty();
+            controller.Blockentity.MarkDirty();
             return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability.ToPercentageString()}");
         }
 
@@ -57,7 +57,7 @@ namespace WearAndTear.Code.Commands
         /// Clears all WearAndTear attributes from the itemstack
         /// </summary>
         /// <example>/wearandtear removeattributes</example>
-        [AutoCommand(Path = "wearandtear:PartController", RequiredPrivelege = "controlserver")]
+        [AutoCommand(Path = "wearandtear", RequiredPrivelege = "controlserver")]
         public static TextCommandResult RemoveAttributes([CommandParameter(Source = EParamSource.Caller)] ItemSlot itemslot)
         {
             if (itemslot.Empty) return TextCommandResult.Error("Not holding an itemstack");

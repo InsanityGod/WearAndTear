@@ -287,9 +287,9 @@ namespace WearAndTear.Code.AutoRegistry
                 return true;
             }).ToArray();
 
-            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear:PartController")) == 1)
+            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear")) == 1) //TODO make this cleaner
             {
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear:PartController")).ToArray();
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear")).ToArray();
                 return;
             }
 

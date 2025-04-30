@@ -4,6 +4,7 @@ using InsanityLib.Util;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
+using Vintagestory.API.Datastructures;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
@@ -17,8 +18,8 @@ using WearAndTear.Code.XLib;
 using WearAndTear.Config.Server;
 using WearAndTear.DynamicPatches;
 
-[assembly: AutoPatcher("wearandtear:PartController")]
-[assembly: AutoRegistry("wearandtear:PartController")]
+[assembly: AutoPatcher("wearandtear")]
+[assembly: AutoRegistry("wearandtear")]
 namespace WearAndTear.Code
 {
     public class WearAndTearModSystem : ModSystem
@@ -43,6 +44,8 @@ namespace WearAndTear.Code
 
         public override void Start(ICoreAPI api)
         {
+
+
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
