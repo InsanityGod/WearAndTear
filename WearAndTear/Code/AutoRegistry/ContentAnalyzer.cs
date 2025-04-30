@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsanityLib.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
@@ -19,7 +20,8 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static ContentAnalyzer GetOrCreate(ICoreAPI api, CollectibleObject collectible)
         {
-            collectible = collectible.GetActualPlacementItem(api);
+            if(collectible is Block block) collectible = block.GetPlacedByItem(api);
+
             if (Lookup.TryGetValue(collectible.Code, out var result)) return result;
             return Lookup[collectible.Code] = new ContentAnalyzer(api, collectible);
         }

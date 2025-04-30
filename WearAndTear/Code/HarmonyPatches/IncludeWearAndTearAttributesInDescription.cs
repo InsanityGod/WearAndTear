@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace WearAndTear.HarmonyPatches
             ITreeAttribute tree = inSlot.Itemstack?.Attributes?.GetTreeAttribute(Constants.DurabilityTreeName);
             if (tree == null) return;
 
-            var entityBehaviors = inSlot.Itemstack.Block?.GetActualPlacementBlock(world.Api)?.BlockEntityBehaviors;
+            var entityBehaviors = inSlot.Itemstack.Block?.GetPlacedBlock(world.Api)?.BlockEntityBehaviors;
             if (entityBehaviors == null) return;
 
             dsc.AppendLine();

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -57,7 +58,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1f)
         {
-            var block = Block.GetActualPlacementItem(world.Api);
+            var block = Block.GetPlacedByItem(world.Api);
 
             string blockCode = block.Code.Path.Split('-')[0];
             var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);

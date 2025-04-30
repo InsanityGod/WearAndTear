@@ -1,5 +1,6 @@
 ﻿using InsanityLib.Attributes.Auto.Command;
 using InsanityLib.Enums.Auto.Commands;
+using InsanityLib.Util;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace WearAndTear.Code.Commands
 
             part.Durability = Durability;
             controller.Blockentity.MarkDirty();
-            return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability.ToPercentageString()}");
+            return TextCommandResult.Success($"Set durability of '{part.Props.GetDisplayName()}' to {part.Durability:P0}");
         }
 
         /// <summary>

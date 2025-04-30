@@ -1,5 +1,6 @@
 ﻿using Cairo;
 using HarmonyLib;
+using InsanityLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyPostfix]
         public static void Append(CollectibleBehaviorHandbookTextAndExtraInfo __instance, ItemSlot inSlot, ICoreClientAPI capi, ItemStack[] allStacks, ActionConsumable<string> openDetailPageFor, ref RichTextComponentBase[] __result)
         {
-            var block = inSlot.Itemstack?.Block?.GetActualPlacementBlock(capi);
+            var block = inSlot.Itemstack?.Block?.GetPlacedBlock(capi);
 
             if (block == null || block.BlockEntityBehaviors == null) return;
             var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "wearandtear:PartController");
@@ -80,8 +81,8 @@ namespace WearAndTear.Code.HarmonyPatches
                     if (minDurabilityUsage != 0 && maxDurabilityUsage != 0)
                     {
                         var str = minDurabilityUsage == maxDurabilityUsage ?
-                            Lang.Get("wearandtear:handbook-usage-limit", minDurabilityUsage.ToPercentageString()) :
-                            Lang.Get("wearandtear:handbook-usage-limit-random", minDurabilityUsage.ToPercentageString(), maxDurabilityUsage.ToPercentageString());
+                            Lang.Get("wearandtear:handbook-usage-limit", minDurabilityUsage) :
+                            Lang.Get("wearandtear:handbook-usage-limit-random", minDurabilityUsage, maxDurabilityUsage);
                         components.Add(new RichTextComponent(capi, str + "\n", new CairoFont
                         {
                             Color = (double[])GuiStyle.WarningTextColor.Clone(),
@@ -103,7 +104,7 @@ namespace WearAndTear.Code.HarmonyPatches
                     if (protectiveProps != null)
                     {
                         var protectiveStrings = protectiveProps.EffectiveFor
-                            .GroupBy(effect => (1 - effect.DecayMultiplier).ToPercentageString())
+                            .GroupBy(effect => Math.Round(1 - effect.DecayMultiplier, 2))
                             .SelectMany(effectGroup => effectGroup.Select(
                                 effect =>
                                 {

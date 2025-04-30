@@ -106,10 +106,10 @@ Trust me I'm an engineer!",
   "wearandtear:handbook-lifespan": "Average (unsheltered) lifespan of {0} years",
   "wearandtear:handbook-critical": "This part is critical for mainting the structural integrity of the block",
   "wearandtear:handbook-decay": "This part is susceptible to: {0}",
-  "wearandtear:handbook-usage-limit": "This part will lose {0} durability per use",
-  "wearandtear:handbook-usage-limit-random": "This part will lose {0} to {1} durability per use",
+  "wearandtear:handbook-usage-limit": "This part will lose {0:P0} durability per use",
+  "wearandtear:handbook-usage-limit-random": "This part will lose {0:P0} to {1:P0} durability per use",
   "wearandtear:handbook-scrap": "Leftover Scrap",
-  "wearandtear:hanbook-protection": "This part reduces decay speed by {0} (multaplicative) on: {1}",
+  "wearandtear:hanbook-protection": "This part reduces decay speed by {0:P0} (multaplicative) on: {1}",
   //Handbook entries
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",

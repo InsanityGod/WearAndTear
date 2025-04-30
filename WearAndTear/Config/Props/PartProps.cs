@@ -1,10 +1,10 @@
-﻿using System;
+﻿using InsanityLib.Util;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using WearAndTear.Code;
-using WearAndTear.Code.Extensions;
 
 namespace WearAndTear.Config.Props
 {

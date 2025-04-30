@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib.Util;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Client;
@@ -76,7 +77,7 @@ namespace WearAndTear.Code.BlockEntities
             var primaryContent = PrimaryContent;
             if (primaryContent == null || (primaryContent.Block == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
 
-            var block = PrimaryContent.Block?.GetActualPlacementBlock(Api);
+            var block = PrimaryContent.Block?.GetPlacedBlock(Api);
             var cache = ObjectCacheUtil.GetOrCreate(Api, CacheKey, () => new Dictionary<string, MeshData>());
 
             var cacheKey = block.Code.ToString();
