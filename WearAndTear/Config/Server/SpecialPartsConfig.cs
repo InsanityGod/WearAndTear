@@ -1,4 +1,5 @@
 ﻿using InsanityLib.Attributes.Auto.Config;
+using System.Collections.Generic;
 using System.ComponentModel;
 using WearAndTear.Config.Props;
 
@@ -16,6 +17,19 @@ namespace WearAndTear.Config.Server
         public bool HelveHammer { get; set; } = true;
 
         /// <summary>
+        /// Helve Hammer durability mapping
+        /// </summary>
+        public Dictionary<string, int> HelveHammerDurability { get; set; } = new Dictionary<string, int>()
+        {
+              {"*-tinbronze",       1500 },
+              {"*-bismuthbronze",   1800},
+              {"*-blackbronze",     2200},
+              {"*-iron",            3600},
+              {"*-meteoriciron",    4200},
+              {"*-steel",           9000}
+        };
+
+        /// <summary>
         /// If set to false, the helve hammer will only be damaged if there is actually something on the anvil
         /// </summary>
         [DefaultValue(true)]
@@ -26,6 +40,19 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [DefaultValue(true)]
         public bool HelveAxe { get; set; } = true;
+
+        /// <summary>
+        /// Helve Axe durability mapping
+        /// </summary>
+        public Dictionary<string, int> HelveAxeDurability { get; set; } = new Dictionary<string, int>()
+        {
+            {"*-tinbronze",         600 },
+            {"*-bismuthbronze",     750},
+            {"*-blackbronze",       900},
+            {"*-iron",              1350},
+            {"*-meteoriciron",      1800},
+            {"*-steel",             2700}
+        };
 
         /// <summary>
         /// Wether pounders have durability

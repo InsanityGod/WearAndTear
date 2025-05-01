@@ -13,14 +13,7 @@ namespace WearAndTear.Code.AutoRegistry.Compatibility
             if (woodenPart == null) return;
 
             //TODO make these encased blocks turn into a full block rubble pile
-            //block.Attributes ??= new JsonObject(JToken.Parse("{}"));
-            //block.Attributes.Token[WearAndTearRubbleProps.Key] = JToken.FromObject(new WearAndTearRubbleProps
-            //{
-            //    DamageOnTouch = false,
-            //    CollisionSelectionBoxes = Block.DefaultCollisionSelectionBoxes,
-            //    Unstable = false,
-            //    Shape = block.Shape.Base
-            //});=
+
             var props = JToken.FromObject(woodenPart);
             props["Code"] = "wearandtear:mechanism-encased";
             props["RepairType"] = null; //It's encased so you can't propperly repair it
