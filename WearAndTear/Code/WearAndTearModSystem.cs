@@ -43,8 +43,6 @@ namespace WearAndTear.Code
 
         public override void Start(ICoreAPI api)
         {
-
-
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
             RegisterBehaviours(api);
@@ -54,7 +52,8 @@ namespace WearAndTear.Code
 
         private static void RegisterBehaviours(ICoreAPI api)
         {
-            api.RegisterBlockEntityBehaviorClass("WearAndTearMold", typeof(MoldPart)); //TODO work on patch merging api
+            // TODO inform Extra Molds of required change: "WearAndTearMold" -> "wearandtear:MoldPart"
+            // TODO work on patch merging api
         }
 
         public override void AssetsFinalize(ICoreAPI api)

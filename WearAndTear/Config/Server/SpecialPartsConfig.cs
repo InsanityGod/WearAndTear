@@ -21,7 +21,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         public Dictionary<string, int> HelveHammerDurability { get; set; } = new Dictionary<string, int>()
         {
-              {"*-tinbronze",       1500 },
+              {"*-tinbronze",       1500},
               {"*-bismuthbronze",   1800},
               {"*-blackbronze",     2200},
               {"*-iron",            3600},
@@ -47,8 +47,8 @@ namespace WearAndTear.Config.Server
         public Dictionary<string, int> HelveAxeDurability { get; set; } = new Dictionary<string, int>()
         {
             {"*-tinbronze",         600 },
-            {"*-bismuthbronze",     750},
-            {"*-blackbronze",       900},
+            {"*-bismuthbronze",     750 },
+            {"*-blackbronze",       900 },
             {"*-iron",              1350},
             {"*-meteoriciron",      1800},
             {"*-steel",             2700}
@@ -61,7 +61,20 @@ namespace WearAndTear.Config.Server
         public bool Pounder { get; set; } = true;
 
         /// <summary>
-        /// Wether molds have durability (NOTE: doesn't affect tool molds currently due to limitations)
+        /// PounderCap durability mapping
+        /// </summary>
+        public Dictionary<string, int> PounderCapDurability { get; set; } = new Dictionary<string, int>()
+        {
+            {"*-tinbronze",         750 },
+            {"*-bismuthbronze",     900 },
+            {"*-blackbronze",       1100},
+            {"*-iron",              1800},
+            {"*-meteoriciron",      2100},
+            {"*-steel",             4500}
+        };
+
+        /// <summary>
+        /// Wether molds have durability
         /// </summary>
         [DefaultValue(true)]
         public bool Molds { get; set; } = true;
@@ -69,7 +82,6 @@ namespace WearAndTear.Config.Server
         /// <summary>
         /// The default clutch part
         /// BEWARE: Setting this doesn't currently do anything other making it be included in AutoPartRegistry
-        /// TODO: Planning on having a custom damage type from engaging at very high speeds
         /// </summary>
         public PartProps Clutch { get; set; } = new();
 
