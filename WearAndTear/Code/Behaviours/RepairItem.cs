@@ -30,19 +30,6 @@ namespace WearAndTear.Code.Behaviours
             return false;
         }
 
-        //TODO: is this method even needed?
-        //public override bool OnHeldInteractCancel(float secondsUsed, ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, EnumItemUseCancelReason cancelReason, ref EnumHandling handled)
-        //{
-        //    var wearAndTear = slot.Inventory.Api.World.BlockAccessor.GetBlockEntity(blockSel.Position)?.GetBehavior<PartController>();
-        //
-        //    if (wearAndTear != null && wearAndTear.CanRepairWith(Props))
-        //    {
-        //        handled = EnumHandling.PreventDefault;
-        //        return false;
-        //    }
-        //    return true;
-        //}
-
         public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handHandling, ref EnumHandling handling)
         {
             if (blockSel == null) return;
