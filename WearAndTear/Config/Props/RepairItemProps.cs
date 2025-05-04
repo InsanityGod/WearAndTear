@@ -13,6 +13,7 @@ namespace WearAndTear.Config.Props
 
         /// <summary>
         /// This should match the MaterialVariant of the part you want it to repair
+        /// (leave NULL, if the variant is not important)
         /// </summary>
         public AssetLocation RequiredMaterialVariant { get; set; }
 

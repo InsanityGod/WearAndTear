@@ -1,0 +1,77 @@
+[
+  {
+    "file": "expandedmolds:blocktypes/clay/mold/chutesectionmold.json",
+    "op": "addmerge",
+    "path": "/entityBehaviorsByType/chutesectionmold-*",
+    "value": [
+      {
+        "Name": "wearandtear:PartController",
+        "Properties": {
+          "MergeWithAutoRegistry": true,
+          "OnlyMergeIfNormallyAutoReg": true
+        }
+      },
+      {
+        "Name": "wearandtear:MoldPart",
+        "Properties": {
+          "MinDurabilityUsage": 0.06,
+          "MaxDurabilityUsage": 0.10
+        }
+      }
+    ],
+    "dependsOn": [
+      { "modid": "wearandtear" },
+      { "modid": "expandedmolds" }
+    ]
+  },
+  {
+    "file": "expandedmolds:blocktypes/clay/mold/ingotmold.json",
+    "op": "addmerge",
+    "path": "/entityBehaviorsByType/ingotmold-*",
+    "value": [
+      {
+        "Name": "wearandtear:PartController",
+        "Properties": {
+          "MergeWithAutoRegistry": true,
+          "OnlyMergeIfNormallyAutoReg": true
+        }
+      },
+      {
+        "Name": "wearandtear:MoldPart",
+        "Properties": {
+          "MinDurabilityUsage": 0.06,
+          "MaxDurabilityUsage": 0.10
+        }
+      }
+    ],
+    "dependsOn": [
+      { "modid": "wearandtear" },
+      { "modid": "expandedmolds" }
+    ]
+  },
+  {
+    "file": "expandedmolds:blocktypes/clay/mold/platemold.json",
+    "op": "addmerge",
+    "path": "/entityBehaviorsByType/platemold-*",
+    "value": [
+      {
+        "Name": "wearandtear:PartController",
+        "Properties": {
+          "MergeWithAutoRegistry": true,
+          "OnlyMergeIfNormallyAutoReg": true
+        }
+      },
+      {
+        "Name": "wearandtear:MoldPart",
+        "Properties": {
+          "MinDurabilityUsage": 0.06,
+          "MaxDurabilityUsage": 0.10
+        }
+      }
+    ],
+    "dependsOn": [
+      { "modid": "wearandtear" },
+      { "modid": "expandedmolds" }
+    ]
+  }
+]

@@ -13,7 +13,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// The code of the part (for making certain kinds of parts)
         /// </summary>
-        //TODO fix code in clutch part //[Required] //TODO make this also check for empty asset location (as in no path)
+        [Required]
         public AssetLocation Code { get; set; }
 
         /// <summary>
@@ -24,6 +24,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// How much content this part has (affects the ammount of scrap generated)
         /// </summary>
+        [Range(0f, float.PositiveInfinity)]
         public float ContentLevel { get; set; }
 
         /// <summary>

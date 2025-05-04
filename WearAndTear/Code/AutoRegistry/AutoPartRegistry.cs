@@ -133,7 +133,7 @@ namespace WearAndTear.Code.AutoRegistry
             var behaviorProperties = JToken.FromObject(frameProps);
             if (block is BlockToolMold)
             {
-                behaviorName = "WearAndTearMold";
+                behaviorName = "wearandtear:MoldPart";
                 behaviorProperties[nameof(PartProps.Code)] = "wearandtear:mold";
                 behaviorProperties[nameof(PartProps.Decay)] = JToken.FromObject(Array.Empty<DecayProps>());
                 ((JContainer)behaviorProperties).Merge(JToken.FromObject(new DurabilityUsageProps()));

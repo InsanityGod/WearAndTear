@@ -81,9 +81,12 @@ namespace WearAndTear.Config.Server
 
         /// <summary>
         /// The default clutch part
-        /// BEWARE: Setting this doesn't currently do anything other making it be included in AutoPartRegistry
+        /// BEWARE: These settings don't actually do anything other then decide wether it's included in AutoPartRegistry for now.
         /// </summary>
-        public PartProps Clutch { get; set; } = new();
+        public PartProps Clutch { get; set; } = new()
+        {
+            Code = "wearandtear:clutch"
+        };
 
         /// <summary>
         /// The default windmill sail part
