@@ -207,7 +207,7 @@ namespace WearAndTear.Code.Behaviours
             {
                 var drops = Block.GetDrops(Api.World, Pos, null);
 
-                //TODO Container drops (helve hammer)
+                //TODO Container drops (helve hammer) should be part of rubble pile
 
                 if (drops.Length == 0)
                 {

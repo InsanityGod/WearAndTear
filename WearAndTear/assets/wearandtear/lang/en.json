@@ -26,6 +26,9 @@
   "itemdesc-sawdust": "Byproduct created when sawing wood",
   "item-woodfiller": "Wood Filler",
   "itemdesc-woodfiller": "Usefull for repairing damage to wood",
+  
+  "item-sawdustbrick": "Sawdust Brick",
+  "itemdesc-sawdustbrick": "A brick made from sawdust so it can be used as fuel",
 
   "item-metalscrap-*": "Metal Scrap",
   "itemdesc-metalscrap-*": "Leftovers from something that used to be functional",

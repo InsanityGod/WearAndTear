@@ -287,7 +287,8 @@ namespace WearAndTear.Code.AutoRegistry
                 return true;
             }).ToArray();
 
-            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear")) == 1) //TODO make this cleaner
+            //If only the PartController remains, then remove that as well
+            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear")) == 1)
             {
                 block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear")).ToArray();
                 return;
@@ -295,7 +296,7 @@ namespace WearAndTear.Code.AutoRegistry
 
             block.BlockEntityBehaviors = block.BlockEntityBehaviors.OrderBy(SortOrder).ToArray();
         }
-
+        
         public static int SortOrder(BlockEntityBehaviorType blockEntityBehaviorType)
         {
             var type = Api.ClassRegistry.GetBlockEntityBehaviorClass(blockEntityBehaviorType.Name);

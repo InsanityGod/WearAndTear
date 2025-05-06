@@ -38,7 +38,6 @@ namespace WearAndTear.Code.Behaviours
         /// Wether there is a limit to how much maintenance can be done to this part
         /// </summary>
         public virtual bool HasMaintenanceLimit => !(WearAndTearServerConfig.Instance?.AllowForInfiniteMaintenance ?? false) && Props.MaintenanceLimit != null;
-        //TODO Check and see if above is still required //public virtual bool HasMaintenanceLimit => !WearAndTearServerConfig.Instance.AllowForInfiniteMaintenance && Props.MaintenanceLimit != null;
 
         /// <summary>
         /// Method to add info about this part to the string builder
@@ -219,8 +218,6 @@ namespace WearAndTear.Code.Behaviours
         }
 
         public float RepairedDurability { get; set; } = 0;
-
-        //HACK mod system is disposed before ToTreeAttributes is called resulting in Config being null...
 
         public bool IsActive
         {

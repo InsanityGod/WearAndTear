@@ -1,0 +1,18 @@
+{
+  "ingredientPattern": "SSS,SSS",
+  "ingredients": {
+    "S": {
+      "type": "item",
+      "code": "wearandtear:sawdust",
+      "quantity": 1
+    }
+  },
+  "width": 3,
+  "height": 2,
+  "shapeless": false,
+  "output": {
+    "type": "item",
+    "code": "wearandtear:sawdustbrick",
+    "quantity": 1
+  }
+}

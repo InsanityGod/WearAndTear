@@ -50,7 +50,6 @@ namespace WearAndTear.Code.AutoRegistry
 
                 MetalContent[metal] = MetalContent.TryGetValue(metal, out var current) ? current : 0;
                 return;
-                //TODO we could probably look through shape to calculate metal composition percentage but ehh let's not go overkill for now anyway
             }
 
             var pathMetals = block.Textures.Values.Select(path => AutoPartRegistryConfig.Instance.MetalConfig.Keys.FirstOrDefault(metal => path.ToString().Contains(metal)))

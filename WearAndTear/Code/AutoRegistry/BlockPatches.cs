@@ -12,7 +12,6 @@ namespace WearAndTear.DynamicPatches
 {
     public static class BlockPatches
     {
-        //TODO Molds should live outside AutoPartRegistry scope as well
         public static PartProps DefaultHelveItemPartProps => new()
         {
             Code = "wearandtear:helveitem",
@@ -83,8 +82,6 @@ namespace WearAndTear.DynamicPatches
             {
                 block.EnsureBaseWearAndTear(true);
                 block.MergeOrAddBehavior("wearandtear:PulverizerItemPart", (JContainer)JToken.FromObject(DefaultPulverizerItemPartProps));
-
-                //TODO other parts
             }
         }
     }

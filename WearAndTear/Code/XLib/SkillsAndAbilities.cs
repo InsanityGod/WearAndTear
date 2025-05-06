@@ -150,7 +150,6 @@ namespace WearAndTear.Code.XLib
             return damage * (1 - (ability.Value(0) * 0.01f));
         }
 
-        //TODO BEFORE_RELEASE compacted sawdust
         public static int ApplyScrapperBonus(ICoreAPI api, IPlayer player, int amount)
         {
             var xleveling = api.ModLoader.GetModSystem<XLeveling>();

@@ -1,0 +1,27 @@
+{
+	"editor": {
+		"allAngles": false,
+		"entityTextureMode": false
+	},
+	"textureWidth": 16,
+	"textureHeight": 16,
+	"textureSizes": {
+	},
+	"textures": {
+		"material": "wearandtear:item/resource/sawdust"
+	},
+	"elements": [
+		{
+			"name": "brick",
+			"from": [ 0.0, 0.0, 0.0 ],
+			"to": [ 16.0, 6.0, 8.0 ],
+			"faces": {
+				"north": { "texture": "#material", "uv": [ 5.0, 6.5, 10.0, 10.5 ], "autoUv": false, "windMode": [-1,-1,-1,-1] },
+				"east": { "texture": "#material", "uv": [ 5.5, 4.5, 9.5, 9.5 ], "autoUv": false, "windMode": [-1,-1,-1,-1] },
+				"south": { "texture": "#material", "uv": [ 5.0, 6.0, 11.0, 11.0 ], "autoUv": false, "windMode": [-1,-1,-1,-1] },
+				"west": { "texture": "#material", "uv": [ 5.0, 6.0, 9.0, 11.0 ], "autoUv": false, "windMode": [-1,-1,-1,-1] },
+				"up": { "texture": "#material", "uv": [ 5.0, 4.5, 11.0, 8.5 ], "autoUv": false, "windMode": [-1,-1,-1,-1] },
+				"down": { "texture": "#material", "uv": [ 5.0, 7.0, 11.0, 11.0 ], "autoUv": false, "windMode": [-1,-1,-1,-1] }
+			}
+		}
+	]}
