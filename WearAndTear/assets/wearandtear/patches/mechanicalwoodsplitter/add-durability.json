@@ -3,16 +3,9 @@
     "file": "mechanicalwoodsplitter:itemtypes/helveaxe.json",
     "op": "addmerge",
     "path": "/durabilitybytype",
-    "value": {
-      "*-tinbronze": 600,
-      "*-bismuthbronze": 750,
-      "*-blackbronze": 900,
-      "*-iron": 1350,
-      "*-meteoriciron": 1800,
-      "*-steel": 2700
-    },
+    "value": "config://WearAndTear/Server/SpecialPartsConfig/HelveAxeDurability",
     "condition": {
-      "when": "WearAndTear_Feature_HelveAxe",
+      "when": "config://WearAndTear/Server/SpecialPartsConfig/HelveAxe",
       "isValue": "true"
     },
     "dependsOn": [ { "modid": "mechanicalwoodsplitter" } ]

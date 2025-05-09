@@ -4,6 +4,7 @@ using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
@@ -13,7 +14,7 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, ref ItemStack[] __result)
         {
-            var wearAndTear = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<IWearAndTear>();
+            var wearAndTear = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<PartController>();
             if (wearAndTear != null)
             {
                 __result = wearAndTear.ModifyDroppedItemStacks(__result, world, pos, byPlayer, dropQuantityMultiplier);

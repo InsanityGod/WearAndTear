@@ -4,7 +4,7 @@
     "op": "addmerge",
     "path": "/attributes",
     "value": {
-      "WearAndTear_ActualBlockRedirect": "millwright:woodenaxlepassthrough-ud"
+      "PlacedBlock": "millwright:woodenaxlepassthrough-ud"
     },
     "dependsOn": [ { "modid": "millwright" } ]
   },
@@ -13,7 +13,7 @@
     "op": "addmerge",
     "path": "/attributes",
     "value": {
-      "WearAndTear_PlacementItemRedirect": "millwright:woodenaxlepassthroughfull"
+      "PlacedByItem": "millwright:woodenaxlepassthroughfull"
     },
     "dependsOn": [ { "modid": "millwright" } ]
   }

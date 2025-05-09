@@ -1,8 +1,7 @@
-﻿using HarmonyLib;
+﻿using InsanityLib.Attributes.Auto;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -10,36 +9,39 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry.Compatibility;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
+using WearAndTear.Config.Props.RegistryTemplates;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.AutoRegistry
 {
     public static class AutoPartRegistry
     {
-
+        [AutoDefaultValue]
         internal static ICoreAPI Api { get; set; }
 
         public static bool HasWearAndTearBehavior(this Block block) => Array.Exists(
             block.BlockEntityBehaviors,
-            beh => typeof(IWearAndTear).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
+            beh => typeof(PartController).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
         );
 
         public static BlockEntityBehaviorType FindWearAndTearBehavior(this Block block) => Array.Find(
             block.BlockEntityBehaviors,
-            beh => typeof(IWearAndTear).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
+            beh => typeof(PartController).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
         );
 
         public static bool HasWearAndTearFramePart(this Block block) => Array.Exists(
             block.BlockEntityBehaviors,
-            beh => typeof(IWearAndTearPart).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
+            beh => typeof(Part).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
                     && beh.properties != null
                     && beh.properties["Code"].AsString(string.Empty).Split(":")[0] == "frame"
         );
 
         public static bool HasWearAndTearPart(this Block block, string name) => Array.Exists(
             block.BlockEntityBehaviors,
-            beh => typeof(IWearAndTearPart).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
+            beh => typeof(Part).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name))
                     && beh.properties != null
                     && beh.properties["Code"].AsString(string.Empty) == name
         );
@@ -62,7 +64,7 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 if (item.Name != behaviorName) return false;
                 if (item.properties != null && item.properties["Code"].AsString() != null && item.properties["Code"].AsString() != properties["Code"].Value<string>()) return false;
-                
+
                 return true;
             }) : null;
 
@@ -84,11 +86,11 @@ namespace WearAndTear.Code.AutoRegistry
         //TODO check medieval expasion waterwheel (and add to blacklist if needed)
         public static bool IsBlacklisted(Block block) =>
             Array.Exists(
-                WearAndTearModSystem.Config.AutoPartRegistry.ModBlacklist,
+                AutoPartRegistryConfig.Instance.ModBlacklist,
                 modId => block.Code.Domain == modId
             ) ||
             Array.Exists(
-                WearAndTearModSystem.Config.AutoPartRegistry.CodeBlacklist,
+                AutoPartRegistryConfig.Instance.CodeBlacklist,
                 codeMatch => MatchString(codeMatch, block.Code)
             );
 
@@ -100,7 +102,7 @@ namespace WearAndTear.Code.AutoRegistry
             var behavior = block.FindWearAndTearBehavior();
             if (behavior == null)
             {
-                behavior = new BlockEntityBehaviorType { Name = "WearAndTear" };
+                behavior = new BlockEntityBehaviorType { Name = "wearandtear:PartController" };
 
                 if (allowMerge)
                 {
@@ -112,11 +114,11 @@ namespace WearAndTear.Code.AutoRegistry
             return behavior;
         }
 
-        public static void EnsureProtectivePart(this Block block, WearAndTearProtectivePartConfig part) => block.MergeOrAddBehavior("WearAndTearOptionalProtectivePart", part.AsMergedJContainer());
+        public static void EnsureProtectivePart(this Block block, ProtectiveTemplate part) => block.MergeOrAddBehavior("wearandtear:OptionalProtectivePart", part.AsMergedJContainer());
 
         public static void EnsureProtectivePart(this Block block, EnumBlockMaterial protectiveType)
         {
-            var protectiveDefinitions = WearAndTearModSystem.Config.AutoPartRegistry.DefaultProtectivePartProps.GetValueOrDefault(protectiveType);
+            var protectiveDefinitions = AutoPartRegistryConfig.Instance.DefaultProtectivePartProps.GetValueOrDefault(protectiveType);
             if (protectiveDefinitions == null) return;
 
             foreach (var definition in protectiveDefinitions) block.EnsureProtectivePart(definition);
@@ -124,44 +126,44 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureFrameWearAndTearPart(this Block block)
         {
-            var frameProps = WearAndTearModSystem.Config.AutoPartRegistry.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
+            var frameProps = AutoPartRegistryConfig.Instance.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
 
-            var behaviorName = "WearAndTearPart";
+            var behaviorName = "wearandtear:Part";
             var behaviorProperties = JToken.FromObject(frameProps);
             if (block is BlockToolMold)
             {
-                behaviorName = "WearAndTearMold";
-                behaviorProperties[nameof(WearAndTearPartProps.Code)] = "wearandtear:mold";
-                behaviorProperties[nameof(WearAndTearPartProps.Decay)] = JToken.FromObject(Array.Empty<WearAndTearDecayProps>());
-                ((JContainer)behaviorProperties).Merge(JToken.FromObject(new WearAndTearDurabilityPartProps()));
+                behaviorName = "wearandtear:MoldPart";
+                behaviorProperties[nameof(PartProps.Code)] = "wearandtear:mold";
+                behaviorProperties[nameof(PartProps.Decay)] = JToken.FromObject(Array.Empty<DecayProps>());
+                ((JContainer)behaviorProperties).Merge(JToken.FromObject(new DurabilityUsageProps()));
             }
 
-            if(block.BlockMaterial == EnumBlockMaterial.Wood)
+            if (block.BlockMaterial == EnumBlockMaterial.Wood)
             {
                 var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
                 analyzer.Analyze(Api);
 
                 var frameWood = analyzer.FindFrameWood();
-                if(frameWood != null)
+                if (frameWood != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameWood.Value.Wood;
                     behaviorProperties["ContentLevel"] = frameWood.Value.ContentLevel;
-                    behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", frameWood.Value.Wood);
+                    behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(PartProps.ScrapCode))?.Replace("*", frameWood.Value.Wood);
                 }
             }
 
-            if(block.BlockMaterial == EnumBlockMaterial.Stone)
+            if (block.BlockMaterial == EnumBlockMaterial.Stone)
             {
                 var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
                 analyzer.Analyze(Api);
-                
+
                 var frameRock = analyzer.FindFrameRock();
-                if(frameRock != null)
+                if (frameRock != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameRock.Value.Rock;
                     behaviorProperties["ContentLevel"] = frameRock.Value.ContentLevel;
-                    behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", frameRock.Value.Rock);
+                    behaviorProperties["ScrapCode"] = behaviorProperties.Value<string>(nameof(PartProps.ScrapCode))?.Replace("*", frameRock.Value.Rock);
                 }
             }
 
@@ -172,26 +174,26 @@ namespace WearAndTear.Code.AutoRegistry
 
         public static void EnsureMetalReinforcement(this Block block, string metal, float contentLevel)
         {
-            var template = WearAndTearModSystem.Config.AutoPartRegistry.MetalReinforcementTemplate;
+            var template = AutoPartRegistryConfig.Instance.MetalReinforcementTemplate;
             if (template == null) return; // Not sure why you would do this but oh well
 
             var props = template.AsMergedJContainer();
-            props[nameof(WearAndTearPartProps.MaterialVariant)] = metal;
-            props[nameof(WearAndTearPartProps.ContentLevel)] = contentLevel;
-            props[nameof(WearAndTearPartProps.ScrapCode)] = props.Value<string>(nameof(WearAndTearPartProps.ScrapCode))?.Replace("*", metal);
+            props[nameof(PartProps.MaterialVariant)] = metal;
+            props[nameof(PartProps.ContentLevel)] = contentLevel;
+            props[nameof(PartProps.ScrapCode)] = props.Value<string>(nameof(PartProps.ScrapCode))?.Replace("*", metal);
 
-            if (!WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.TryGetValue(metal, out var metalConfig) && !WearAndTearModSystem.Config.AutoPartRegistry.MetalConfig.TryGetValue("default", out metalConfig))
+            if (!AutoPartRegistryConfig.Instance.MetalConfig.TryGetValue(metal, out var metalConfig) && !AutoPartRegistryConfig.Instance.MetalConfig.TryGetValue("default", out metalConfig))
             {
                 metalConfig = new();
             }
 
-            props[nameof(WearAndTearPartProps.AvgLifeSpanInYears)] = metalConfig.AvgLifeSpanInYears;
-            foreach (var target in props[nameof(WearAndTearProtectivePartProps.EffectiveFor)])
+            props[nameof(PartProps.AvgLifeSpanInYears)] = metalConfig.AvgLifeSpanInYears;
+            foreach (var target in props[nameof(ProtectivePartProps.EffectiveFor)])
             {
-                target[nameof(WearAndTearProtectiveTargetProps.DecayMultiplier)] = metalConfig.DecayMultiplier;
+                target[nameof(ProtectiveTargetProps.DecayMultiplier)] = metalConfig.DecayMultiplier;
             }
 
-            block.MergeOrAddBehavior("WearAndTearProtectivePart", props);
+            block.MergeOrAddBehavior("wearandtear:ProtectivePart", props);
         }
 
         public static void Register(Block block)
@@ -199,10 +201,10 @@ namespace WearAndTear.Code.AutoRegistry
             if (IsBlacklisted(block)) return;
             var hasWearAndTear = block.HasWearAndTearBehavior();
             var isMechanicalBlock = block is BlockMPBase;
-            var acceptFruitPress = WearAndTearModSystem.Config.AutoPartRegistry.IncludeFruitPress && block is BlockFruitPress;
+            var acceptFruitPress = AutoPartRegistryConfig.Instance.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : Api.ClassRegistry.GetBlockEntity(block.EntityClass);
 
-            var acceptMold = WearAndTearModSystem.Config.SpecialParts.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
+            var acceptMold = SpecialPartsConfig.Instance.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
 
             if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)
             {
@@ -228,7 +230,7 @@ namespace WearAndTear.Code.AutoRegistry
             {
                 AxleInBlocks.Register(block);
             }
-            else if(block is not BlockIngotMold) //Ingot molds just have to be very special -_-
+            else if (block is not BlockIngotMold) //Ingot molds just have to be very special -_-
             {
                 block.EnsureFrameWearAndTearPart();
                 block.DetectAndAddMetalReinforcements();
@@ -236,15 +238,15 @@ namespace WearAndTear.Code.AutoRegistry
 
             if (block.Code.Domain == "linearpower" && block.Code.FirstCodePart() == "sawmill")
             {
-                var props = JToken.FromObject(new WearAndTearPartProps
+                var props = JToken.FromObject(new PartProps
                 {
                     Code = "linearpower:sawblade"
                 }) as JContainer;
-                props.Merge(JToken.FromObject(new WearAndTearGenericItemDisplayProps { ItemSlotIndex = 1 }));
+                props.Merge(JToken.FromObject(new GenericItemDisplayProps { ItemSlotIndex = 1 }));
 
                 block.BlockEntityBehaviors = block.BlockEntityBehaviors.Append(new BlockEntityBehaviorType
                 {
-                    Name = "WearAndTearGenericItemDisplay",
+                    Name = "wearandtear:GenericItemDisplay",
                     properties = new JsonObject(props)
                 });
             }
@@ -278,35 +280,36 @@ namespace WearAndTear.Code.AutoRegistry
             //Removing all parts that do not have name (for overrides specified in patch that did not match an actual part)
             block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh =>
             {
-                if (typeof(IWearAndTearPart).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name)))
+                if (typeof(Part).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name)))
                 {
                     return beh.properties != null && !string.IsNullOrEmpty(beh.properties["Code"].AsString());
                 }
                 return true;
             }).ToArray();
 
-            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("WearAndTear")) == 1)
+            //If only the PartController remains, then remove that as well
+            if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear")) == 1)
             {
-                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("WearAndTear")).ToArray();
+                block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear")).ToArray();
                 return;
             }
 
             block.BlockEntityBehaviors = block.BlockEntityBehaviors.OrderBy(SortOrder).ToArray();
         }
-
+        
         public static int SortOrder(BlockEntityBehaviorType blockEntityBehaviorType)
         {
             var type = Api.ClassRegistry.GetBlockEntityBehaviorClass(blockEntityBehaviorType.Name);
             if (type == null) return 0; // This should never happen
 
-            if (typeof(IWearAndTear).IsAssignableFrom(type))
+            if (typeof(PartController).IsAssignableFrom(type))
             {
                 return 2;
             }
 
-            bool isPart = typeof(IWearAndTearPart).IsAssignableFrom(type);
-            bool isProtectivePart = typeof(IWearAndTearProtectivePart).IsAssignableFrom(type);
-            bool isOptionalPart = typeof(IWearAndTearOptionalPart).IsAssignableFrom(type);
+            bool isPart = typeof(Part).IsAssignableFrom(type);
+            bool isProtectivePart = typeof(IProtectivePart).IsAssignableFrom(type);
+            bool isOptionalPart = typeof(IOptionalPart).IsAssignableFrom(type);
 
             if (isPart && !isOptionalPart)
             {

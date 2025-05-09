@@ -9,7 +9,7 @@
   },
   "behaviors": [
     {
-      "name": "WearAndTearRepairItem",
+      "name": "wearandtear:RepairItem",
       "properties": {
         "RepairType": "wood",
         "Strength": 0.5

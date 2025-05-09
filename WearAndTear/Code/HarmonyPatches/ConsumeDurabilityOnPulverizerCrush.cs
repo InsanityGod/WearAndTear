@@ -8,6 +8,6 @@ namespace WearAndTear.HarmonyPatches
     [HarmonyPatch(typeof(BEPulverizer), "Crush")]
     public static class ConsumeDurabilityOnPulverizerCrush
     {
-        public static void Postfix(BlockEntity __instance) => __instance.GetBehavior<WearAndTearPulverizerItemBehavior>()?.DamageItem();
+        public static void Postfix(BlockEntity __instance) => __instance.GetBehavior<PulverizerItemPart>()?.DamageItem();
     }
 }

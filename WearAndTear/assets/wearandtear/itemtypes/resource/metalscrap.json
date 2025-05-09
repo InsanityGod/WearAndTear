@@ -9,7 +9,7 @@
   ],
   "behaviors": [
     {
-      "name": "WearAndTearMaterialName"
+      "name": "wearandtear:MaterialName"
     }
   ],
   "dimensions": {
