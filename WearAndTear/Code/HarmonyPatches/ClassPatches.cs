@@ -1,14 +1,12 @@
 ﻿using HarmonyLib;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Config;
+using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.HarmonyPatches
 {
@@ -19,18 +17,17 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyPostfix]
         public static void ModifyClasses(CharacterSystem __instance)
         {
-            
             var traitConfigs = Traverse.Create(__instance).Field<ICoreAPI>("api").Value.Assets.Get<TraitConfig[]>("wearandtear:config/traitconfig.json");
-            foreach(var traitConfig in traitConfigs)
+            foreach (var traitConfig in traitConfigs)
             {
                 if (!traitConfig.XLibPresenceRequirement.IsFullfilled()) continue;
-                if (traitConfig.OnlyWithTraitRequirementEnabled && !WearAndTearModSystem.TraitRequirements) continue;
+                if (traitConfig.OnlyWithTraitRequirementEnabled && !WearAndTearServerConfig.Instance.TraitRequirements) continue;
                 if (__instance.TraitsByCode.ContainsKey(traitConfig.Code)) continue;
 
                 __instance.traits.Add(traitConfig);
                 __instance.TraitsByCode[traitConfig.Code] = traitConfig;
 
-                foreach(var appendTo in traitConfig.AppendToClasses)
+                foreach (var appendTo in traitConfig.AppendToClasses)
                 {
                     if (__instance.characterClassesByCode.TryGetValue(appendTo, out var characterClass) && !characterClass.Traits.Contains(traitConfig.Code))
                     {

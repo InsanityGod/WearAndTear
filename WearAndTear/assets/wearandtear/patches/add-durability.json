@@ -3,16 +3,9 @@
     "file": "game:itemtypes/part/helvehammer.json",
     "op": "addmerge",
     "path": "/durabilitybytype",
-    "value": {
-      "*-tinbronze": 1500,
-      "*-bismuthbronze": 1800,
-      "*-blackbronze": 2200,
-      "*-iron": 3600,
-      "*-meteoriciron": 4200,
-      "*-steel": 9000
-    },
+    "value": "config://WearAndTear/Server/SpecialPartsConfig/HelveHammerDurability",
     "condition": {
-      "when": "WearAndTear_Feature_HelveHammer",
+      "when": "config://WearAndTear/Server/SpecialPartsConfig/HelveHammer",
       "isValue": "true"
     }
   },
@@ -20,16 +13,9 @@
     "file": "game:itemtypes/part/poundercap.json",
     "op": "addmerge",
     "path": "/durabilitybytype",
-    "value": {
-      "*-tinbronze": 750,
-      "*-bismuthbronze": 900,
-      "*-blackbronze": 1100,
-      "*-iron": 1800,
-      "*-meteoriciron": 2100,
-      "*-steel": 4500
-    },
+    "value": "config://WearAndTear/Server/SpecialPartsConfig/PounderCapDurability",
     "condition": {
-      "when": "WearAndTear_Feature_Pounder",
+      "when": "config://WearAndTear/Server/SpecialPartsConfig/Pounder",
       "isValue": "true"
     }
   }

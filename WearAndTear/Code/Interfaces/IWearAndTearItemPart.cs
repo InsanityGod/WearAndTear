@@ -2,9 +2,9 @@
 
 namespace WearAndTear.Code.Interfaces
 {
-    public interface IWearAndTearItemPart : IWearAndTearOptionalPart
+    public interface IWearAndTearItemPart
     {
-        ItemStack ItemStack { get; set; }
+        ItemStack ItemStack { get; }
 
         ItemSlot ItemSlot { get; }
 

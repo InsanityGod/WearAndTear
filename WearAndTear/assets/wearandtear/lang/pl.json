@@ -107,10 +107,10 @@ Zaufaj mi, jestem inżynierem!",
   "wearandtear:handbook-lifespan": "Średnia żywotność (wewnątrz budynku): {0} lat",
   "wearandtear:handbook-critical": "Ta część jest krytyczna dla utrzymania integralności strukturalnej bloku",
   "wearandtear:handbook-decay": "Ta część jest podatna na: {0}",
-  "wearandtear:handbook-usage-limit": "Ta część traci {0} wytrzymałości na użycie",
-  "wearandtear:handbook-usage-limit-random": "Ta część traci od {0} do {1} wytrzymałości na użycie",
+  "wearandtear:handbook-usage-limit": "Ta część traci {0:P0} wytrzymałości na użycie",
+  "wearandtear:handbook-usage-limit-random": "Ta część traci od {0:P0} do {1:P0} wytrzymałości na użycie",
   "wearandtear:handbook-scrap": "Pozostały złom",
-  "wearandtear:hanbook-protection": "Ta część zmniejsza prędkość rozpadu o {0} (mnożnik) na: {1}",
+  "wearandtear:hanbook-protection": "Ta część zmniejsza prędkość rozpadu o {0:P0} (mnożnik) na: {1}",
   //Handbook entries
 
   "wearandtearguide-title": "Zużycie i Konserwacja",

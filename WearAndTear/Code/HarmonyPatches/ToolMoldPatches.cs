@@ -1,14 +1,11 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Behaviours.Parts;
-using WearAndTear.Code.HarmonyPatches.AutoRegistry;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.HarmonyPatches
@@ -21,7 +18,7 @@ namespace WearAndTear.Code.HarmonyPatches
         public static void ConsumeToolMoldDurability(BlockEntityToolMold __instance, IPlayer byPlayer, ref bool __result)
         {
             if (!__result) return;
-            __instance.GetBehavior<WearAndTearMoldPartBehavior>()?.Damage(byPlayer);
+            __instance.GetBehavior<MoldPart>()?.Damage(byPlayer);
         }
 
         [HarmonyPatch(typeof(BlockEntityToolMold), nameof(BlockEntityToolMold.OnPlayerInteract))]
@@ -49,7 +46,7 @@ namespace WearAndTear.Code.HarmonyPatches
 
         public static ItemStack FixItemStack(ItemStack stack, BlockEntityToolMold instance, IPlayer byPlayer)
         {
-            var wearAndTear = instance.Api.World.BlockAccessor.GetBlockEntity(instance.Pos)?.GetBehavior<IWearAndTear>();
+            var wearAndTear = instance.Api.World.BlockAccessor.GetBlockEntity(instance.Pos)?.GetBehavior<PartController>();
             var fixedStacks = wearAndTear?.ModifyDroppedItemStacks(new ItemStack[] { stack }, instance.Api.World, instance.Pos, byPlayer);
             if (fixedStacks?.Length == 1) return fixedStacks[0];
             return stack;

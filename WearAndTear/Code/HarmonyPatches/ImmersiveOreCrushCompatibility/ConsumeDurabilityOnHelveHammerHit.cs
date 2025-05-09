@@ -63,7 +63,7 @@ namespace WearAndTear.HarmonyPatches.ImmersiveOreCrushCompatibility
 
             if (helveHammerEntity != null && Traverse.Create(helveHammerEntity).Field<BlockEntityAnvil>("targetAnvil").Value == anvilEntity)
             {
-                helveHammerEntity.GetBehavior<WearAndTearHelveItemBehavior>()?.ManualDamageIem();
+                helveHammerEntity.GetBehavior<HelveItemPart>()?.ManualDamageIem();
                 return;
             }
 
@@ -72,7 +72,7 @@ namespace WearAndTear.HarmonyPatches.ImmersiveOreCrushCompatibility
 
             if (helveHammerEntity != null && Traverse.Create(helveHammerEntity).Field<BlockEntityAnvil>("targetAnvil").Value == anvilEntity)
             {
-                helveHammerEntity.GetBehavior<WearAndTearHelveItemBehavior>()?.ManualDamageIem();
+                helveHammerEntity.GetBehavior<HelveItemPart>()?.ManualDamageIem();
                 return;
             }
 
@@ -82,7 +82,7 @@ namespace WearAndTear.HarmonyPatches.ImmersiveOreCrushCompatibility
 
             if (helveHammerEntity != null && Traverse.Create(helveHammerEntity).Field<BlockEntityAnvil>("targetAnvil").Value == anvilEntity)
             {
-                helveHammerEntity.GetBehavior<WearAndTearHelveItemBehavior>()?.ManualDamageIem();
+                helveHammerEntity.GetBehavior<HelveItemPart>()?.ManualDamageIem();
                 return;
             }
 
@@ -90,7 +90,7 @@ namespace WearAndTear.HarmonyPatches.ImmersiveOreCrushCompatibility
             helveHammerEntity = serverApi.World.BlockAccessor.GetBlockEntity<BEHelveHammer>(pos);
             if (helveHammerEntity != null && Traverse.Create(helveHammerEntity).Field<BlockEntityAnvil>("targetAnvil").Value == anvilEntity)
             {
-                helveHammerEntity.GetBehavior<WearAndTearHelveItemBehavior>()?.ManualDamageIem();
+                helveHammerEntity.GetBehavior<HelveItemPart>()?.ManualDamageIem();
             }
         }
     }

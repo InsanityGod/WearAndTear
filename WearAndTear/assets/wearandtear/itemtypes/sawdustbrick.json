@@ -1,0 +1,160 @@
+{
+  "code": "sawdustbrick",
+  "maxstacksize": 24,
+  "variantgroups": [
+    {
+      "code": "state",
+      "states": [ "wet", "dry", "burned" ]
+    }
+  ],
+  "behaviors": [
+    {
+      "name": "GroundStorable",
+      "properties": {
+        "layout": "Stacking",
+        "placeRemoveSoundByType": {
+          "sawdustbrick-burned": "game:block/charcoal",
+          "*": "game:block/planks"
+        },
+        "stackingModel": "sawdustbrickpile",
+        "upSolid": true,
+        "stackingCapacity": 6,
+        "transferQuantity": 1,
+        "bulkTransferQuantity": 6,
+        "collisionBox": {
+          "x1": 0,
+          "y1": 0,
+          "z1": 0,
+          "x2": 1,
+          "y2": 0.333333333,
+          "z2": 1
+        },
+        "cbScaleYByLayer": 0.5,
+        "burnHoursPerItem": 0.5
+      }
+    }
+  ],
+  "attributes": {
+    "handbook": {
+      "groupBy": [ "sawdustbrick-*" ],
+      "extraSectionsByType": {
+        "sawdustbrick-burned": [
+          {
+            "title": "game:handbook-item-sources",
+            "text": "wearandtear:handbook-bycharcoalburning"
+          }
+        ]
+      }
+    }
+  },
+  "attributesByType": {
+    "sawdustbrick-dry": {
+      "firepitConstructable": true,
+      "isClayOvenFuel": true
+    },
+    "sawdustbrick-burned": {
+      "firepitConstructable": true,
+      "isClayOvenFuel": true
+    }
+  },
+  "shape": {
+    "base": "wearandtear:sawdustbrick"
+  },
+  "creativeinventory": {
+    "general": [ "*" ],
+    "items": [ "*" ]
+  },
+  "texturesByType": {
+    "sawdustbrick-burned": {
+      "material": {
+        "base": "game:block/coal/charcoal"
+      }
+    },
+    "*": {
+      "material": {
+        "base": "wearandtear:item/resource/sawdust"
+      }
+    }
+  },
+  "materialDensityByType": {
+    "sawdustbrick-burned": 300,
+    "*": 700
+  },
+  "combustiblePropsByType": {
+    "sawdustbrick-dry": {
+      "burnTemperature": 400,
+      "burnDuration": 80
+    },
+    "sawdustbrick-burned": {
+      "burnTemperature": 500,
+      "burnDuration": 160
+    }
+  },
+  "transitionablePropsByType": {
+    "sawdustbrick-wet": [
+      {
+        "type": "Dry",
+        "freshHours": { "avg": 0 },
+        "transitionHours": { "avg": 12 },
+        "transitionedStack": {
+          "type": "item",
+          "code": "sawdustbrick-dry"
+        },
+        "transitionRatio": 1
+      }
+    ]
+  },
+
+  "heldTpIdleAnimation": "holdbothhandslarge",
+  "heldRightReadyAnimation": "heldblockready",
+  "heldTpUseAnimation": "twohandplaceblock",
+  "tpHandTransform": {
+    "translation": {
+      "x": -0.3,
+      "y": -0.5,
+      "z": 0.9
+    },
+    "rotation": {
+      "x": 0,
+      "y": -75,
+      "z": 10
+    },
+    "origin": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "scale": 0.5
+  },
+  "groundTransform": {
+    "translation": {
+      "x": 0,
+      "y": -0.1,
+      "z": 0
+    },
+    "rotation": {
+      "x": 180,
+      "y": 0,
+      "z": 0
+    },
+    "origin": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0.5299
+    },
+    "scale": 3
+  },
+  "guiTransform": {
+    "translation": {
+      "x": 2,
+      "y": 10,
+      "z": 0
+    },
+    "rotation": {
+      "x": -30,
+      "y": 25,
+      "z": 0
+    },
+    "scale": 1.3
+  }
+}

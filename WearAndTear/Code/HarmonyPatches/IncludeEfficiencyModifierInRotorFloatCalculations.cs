@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
-using WearAndTear.Code;
+using WearAndTear.Code.Behaviours;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
@@ -13,7 +13,7 @@ namespace WearAndTear.HarmonyPatches
     {
         public static void Postfix(BEBehaviorMPRotor __instance, ref float __result)
         {
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<IWearAndTear>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<PartController>();
             if (wearAndTearBehaviour == null) return;
             __result *= wearAndTearBehaviour.AvgEfficiencyModifier;
         }
@@ -23,7 +23,7 @@ namespace WearAndTear.HarmonyPatches
             var baseType = typeof(BEBehaviorMPRotor);
 
             // Find all derived classes, including the base class itself
-            var derivedTypes = WearAndTearModSystem.ModTypesForHarmonyScan.Where(type => type != baseType && baseType.IsAssignableFrom(type));
+            var derivedTypes = AccessTools.AllTypes().Where(type => type != baseType && baseType.IsAssignableFrom(type));
 
             foreach (var type in derivedTypes)
             {

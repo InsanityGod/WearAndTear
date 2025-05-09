@@ -1,17 +1,21 @@
 ﻿using HarmonyLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts;
 
-namespace WearAndTear.HarmonyPatches
+namespace WearAndTear.Code.HarmonyPatches
 {
-    [HarmonyPatch(typeof(BEBehaviorWindmillRotor), "obstructed")]
+    [HarmonyPatch]
     public static class FixObstructedItemDrop
     {
+        [HarmonyPostfix]
         public static void Postfix(BEBehaviorMPRotor __instance, int len, ref bool __result)
         {
             if (__instance.Api.Side != EnumAppSide.Server || !__result) return;
-            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WearAndTearSailBehavior>();
+            var wearAndTearBehaviour = __instance.Blockentity.GetBehavior<WindmillSailPart>();
             if (wearAndTearBehaviour == null) return;
 
             if (len == wearAndTearBehaviour.SailLength + 1)
@@ -22,6 +26,21 @@ namespace WearAndTear.HarmonyPatches
 
                 var manager = __instance.Api.ModLoader.GetModSystem<MechanicalPowerMod>();
                 __instance.Network.updateNetwork(manager.getTickNumber());
+            }
+        }
+
+        [HarmonyTargetMethods]
+        public static IEnumerable<MethodBase> TargetMethods()
+        {
+            var baseType = typeof(BEBehaviorMPRotor);
+            var derivedTypes = AccessTools.AllTypes().Where(type => type != baseType && baseType.IsAssignableFrom(type) && type.Name.StartsWith(nameof(BEBehaviorWindmillRotor)));
+            foreach (var type in derivedTypes)
+            {
+                var method = type.GetMethod("obstructed", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (method != null)
+                {
+                    yield return method;
+                }
             }
         }
     }
