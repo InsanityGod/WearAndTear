@@ -7,7 +7,6 @@ using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.AutoRegistry;
-using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.DecayEngines;
 using WearAndTear.Code.Extensions;
 using WearAndTear.Code.HarmonyPatches.AutoRegistry;

@@ -1,0 +1,7 @@
+{
+  "inheritFrom": "game:blocktypes/charcoalpit",
+  "code": "charcoalbrickpit",
+  "class": "wearandtear:BlockCharcoalBrickPit", //TODO
+  "entityClass": "wearandtear:BlockEntityCharcoalBrickPit", //TODO
+  "shape": { "base": "game:block/wood/firepit/lit-normal" } //Because inheritFrom does not take into account domain
+}

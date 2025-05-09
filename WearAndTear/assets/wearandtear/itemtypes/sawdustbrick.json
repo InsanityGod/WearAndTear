@@ -1,12 +1,21 @@
 {
   "code": "sawdustbrick",
-  "maxstacksize": 12,
+  "maxstacksize": 24,
+  "variantgroups": [
+    {
+      "code": "state",
+      "states": [ "wet", "dry", "burned" ]
+    }
+  ],
   "behaviors": [
     {
       "name": "GroundStorable",
       "properties": {
         "layout": "Stacking",
-        "placeRemoveSound": "game:block/planks",
+        "placeRemoveSoundByType": {
+          "sawdustbrick-burned": "game:block/charcoal",
+          "*": "game:block/planks"
+        },
         "stackingModel": "sawdustbrickpile",
         "upSolid": true,
         "stackingCapacity": 6,
@@ -26,26 +35,76 @@
     }
   ],
   "attributes": {
-    "firepitConstructable": true,
-    "isClayOvenFuel": true,
-    "placeSound": "game:block/planks"
-  },
-  "shape": {
-    "base": "sawdustbrick"
-  },
-  "creativeinventory": {
-    "general": [ "*" ]
-  },
-  "textures": {
-    "material": {
-      "base": "item/resource/sawdust"
+    "handbook": {
+      "groupBy": [ "sawdustbrick-*" ],
+      "extraSectionsByType": {
+        "sawdustbrick-burned": [
+          {
+            "title": "game:handbook-item-sources",
+            "text": "wearandtear:handbook-bycharcoalburning"
+          }
+        ]
+      }
     }
   },
-  "materialDensity": 700,
-  "combustibleProps": {
-    "burnTemperature": 600,
-    "burnDuration": 48
+  "attributesByType": {
+    "sawdustbrick-dry": {
+      "firepitConstructable": true,
+      "isClayOvenFuel": true
+    },
+    "sawdustbrick-burned": {
+      "firepitConstructable": true,
+      "isClayOvenFuel": true
+    }
   },
+  "shape": {
+    "base": "wearandtear:sawdustbrick"
+  },
+  "creativeinventory": {
+    "general": [ "*" ],
+    "items": [ "*" ]
+  },
+  "texturesByType": {
+    "sawdustbrick-burned": {
+      "material": {
+        "base": "game:block/coal/charcoal"
+      }
+    },
+    "*": {
+      "material": {
+        "base": "wearandtear:item/resource/sawdust"
+      }
+    }
+  },
+  "materialDensityByType": {
+    "sawdustbrick-burned": 300,
+    "*": 700
+  },
+  "combustiblePropsByType": {
+    "sawdustbrick-dry": {
+      "burnTemperature": 400,
+      "burnDuration": 80
+    },
+    "sawdustbrick-burned": {
+      "burnTemperature": 500,
+      "burnDuration": 160
+    }
+  },
+  "transitionablePropsByType": {
+    "sawdustbrick-wet": [
+      {
+        "type": "Dry",
+        "freshHours": { "avg": 0 },
+        "transitionHours": { "avg": 12 },
+        "transitionedStack": {
+          "type": "item",
+          "code": "sawdustbrick-dry"
+        },
+        "transitionRatio": 1
+      }
+    ]
+  },
+
   "heldTpIdleAnimation": "holdbothhandslarge",
   "heldRightReadyAnimation": "heldblockready",
   "heldTpUseAnimation": "twohandplaceblock",

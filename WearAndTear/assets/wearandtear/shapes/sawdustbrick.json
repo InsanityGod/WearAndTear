@@ -8,7 +8,7 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"material": "wearandtear:item/resource/sawdust"
+		//"material": "wearandtear:item/resource/sawdust"
 	},
 	"elements": [
 		{

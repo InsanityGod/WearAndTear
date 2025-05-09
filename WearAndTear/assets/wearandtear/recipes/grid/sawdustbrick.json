@@ -1,18 +1,110 @@
-{
-  "ingredientPattern": "SSS,SSS",
-  "ingredients": {
-    "S": {
+[
+  {
+    "ingredientPattern": "LSR,SSS",
+    "ingredients": {
+      "S": {
+        "type": "item",
+        "code": "wearandtear:sawdust",
+        "quantity": 2
+      },
+      "R": {
+        "type": "item",
+        "code": "game:resin",
+        "quantity": 1
+      },
+      "L": {
+        "type": "block",
+        "code": "game:woodbucket"
+      }
+    },
+    "width": 3,
+    "height": 2,
+    "shapeless": false,
+    "attributes": {
+      "liquidContainerProps": {
+        "requiresContent": {
+          "type": "item",
+          "code": "game:waterportion"
+        },
+        "requiresLitres": 0.2
+      }
+    },
+    "output": {
       "type": "item",
-      "code": "wearandtear:sawdust",
+      "code": "wearandtear:sawdustbrick-wet",
       "quantity": 1
     }
   },
-  "width": 3,
-  "height": 2,
-  "shapeless": false,
-  "output": {
-    "type": "item",
-    "code": "wearandtear:sawdustbrick",
-    "quantity": 1
+  {
+    "ingredientPattern": "LSR,SSS",
+    "ingredients": {
+      "S": {
+        "type": "item",
+        "code": "wearandtear:sawdust",
+        "quantity": 2
+      },
+      "R": {
+        "type": "item",
+        "code": "game:resin",
+        "quantity": 1
+      },
+      "L": {
+        "type": "block",
+        "code": "game:bowl-fired"
+      }
+    },
+    "width": 3,
+    "height": 2,
+    "shapeless": false,
+    "attributes": {
+      "liquidContainerProps": {
+        "requiresContent": {
+          "type": "item",
+          "code": "game:waterportion"
+        },
+        "requiresLitres": 0.2
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "wearandtear:sawdustbrick-wet",
+      "quantity": 1
+    }
+  },
+  {
+    "ingredientPattern": "LSR,SSS",
+    "ingredients": {
+      "S": {
+        "type": "item",
+        "code": "wearandtear:sawdust",
+        "quantity": 2
+      },
+      "R": {
+        "type": "item",
+        "code": "game:resin",
+        "quantity": 1
+      },
+      "L": {
+        "type": "block",
+        "code": "game:jug-*-fired"
+      }
+    },
+    "width": 3,
+    "height": 2,
+    "shapeless": false,
+    "attributes": {
+      "liquidContainerProps": {
+        "requiresContent": {
+          "type": "item",
+          "code": "game:waterportion"
+        },
+        "requiresLitres": 0.2
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "wearandtear:sawdustbrick-wet",
+      "quantity": 1
+    }
   }
-}
+]

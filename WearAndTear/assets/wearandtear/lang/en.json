@@ -26,9 +26,12 @@
   "itemdesc-sawdust": "Byproduct created when sawing wood",
   "item-woodfiller": "Wood Filler",
   "itemdesc-woodfiller": "Usefull for repairing damage to wood",
+
+  "item-sawdustbrick-dry": "Sawdust Brick (Dry)",
+  "itemdesc-sawdustbrick-dry": "A brick made from sawdust so it can be used as fuel",
   
-  "item-sawdustbrick": "Sawdust Brick",
-  "itemdesc-sawdustbrick": "A brick made from sawdust so it can be used as fuel",
+  "item-sawdustbrick-wet": "Sawdust Brick (Wet)",
+  "item-sawdustbrick-burned": "Charcoal Brick",
 
   "item-metalscrap-*": "Metal Scrap",
   "itemdesc-metalscrap-*": "Leftovers from something that used to be functional",
@@ -59,6 +62,8 @@
   //blocks
   "wearandtear:block-rubble-unstable": "Rubble (unstable)",
   "wearandtear:block-rubble-stable": "Rubble (stable)",
+
+  "wearandtear:block-charcoalbrickpit": "Charcoal pit",
 
   //traits
   "game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Engineer </font>",
@@ -114,6 +119,8 @@ Trust me I'm an engineer!",
   "wearandtear:handbook-scrap": "Leftover Scrap",
   "wearandtear:hanbook-protection": "This part reduces decay speed by {0:P0} (multaplicative) on: {1}",
   //Handbook entries
+
+  "wearandtear:handbook-bycharcoalburning": "Obtained by <a href=\"handbook://craftinginfo-charcoalburning\">charcoal burning</a> <a href=\"handbook://item-wearandtear:sawdustbrick-dry\">dry sawdust bricks</a><br />(Beware: You cannot do mixed charcoal burning)",
 
   "wearandtearguide-title": "Wear And Tear: Maintenance",
   "wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>
