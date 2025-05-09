@@ -61,7 +61,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="xlib">
-      <HintPath>..\..\Dep\xlib_v0.8.13\xlib.dll</HintPath>
+      <HintPath>..\..\Dep\xlib_v0.8.16\xlib.dll</HintPath>
 		<Private>False</Private>
     </Reference>
   </ItemGroup>

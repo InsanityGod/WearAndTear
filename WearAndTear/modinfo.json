@@ -1,13 +1,14 @@
 {
     "type": "code",
     "modid": "wearandtear",
-    "name": "WearAndTear",
+    "name": "Wear And Tear",
     "authors": [
         "TheInsanityGod"
     ],
     "description": "Wear And Tear for various mechanical devices",
-    "version": "1.4.2",
+    "version": "1.5.0",
     "dependencies": {
-        "game": ""
+      "game": "",
+      "insanitylib": "1.0.1"
     }
 }
