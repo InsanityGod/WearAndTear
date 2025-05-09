@@ -44,15 +44,15 @@ namespace WearAndTear.Code
         {
             HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
             MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
-            RegisterBehaviours(api);
 
             if (XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
         }
 
-        private static void RegisterBehaviours(ICoreAPI api)
+        public override void AssetsLoaded(ICoreAPI api)
         {
-            // TODO inform Extra Molds of required change: "WearAndTearMold" -> "wearandtear:MoldPart"
-            // TODO work on patch merging api
+            base.AssetsLoaded(api);
+
+            if(XlibEnabled) SkillsAndAbilities.FixAbilityLangStrings(api);
         }
 
         public override void AssetsFinalize(ICoreAPI api)

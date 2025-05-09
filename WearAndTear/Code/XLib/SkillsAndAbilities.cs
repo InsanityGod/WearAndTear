@@ -125,6 +125,21 @@ namespace WearAndTear.Code.XLib
             //TODO Temporal Tinkerer
         }
 
+        public static void FixAbilityLangStrings(ICoreAPI api)
+        {
+            XLeveling leveling = api.ModLoader.GetModSystem<XLeveling>();
+            var mechanics = leveling.GetSkill("mechanics");
+
+            mechanics.Group = Lang.GetUnformatted(mechanics.Group);
+            mechanics.DisplayName = Lang.GetUnformatted(mechanics.DisplayName);
+            foreach(var ability in mechanics.Abilities)
+            {
+                ability.DisplayName = Lang.GetUnformatted(ability.DisplayName);
+                ability.Description = Lang.GetUnformatted(ability.Description);
+            }
+        }
+
+
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)
         {
             var xleveling = api.ModLoader.GetModSystem<XLeveling>();
