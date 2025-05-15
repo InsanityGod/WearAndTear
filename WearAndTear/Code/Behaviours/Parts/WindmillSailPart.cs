@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,6 +150,13 @@ namespace WearAndTear.Code.Behaviours.Parts
 
                 sailItems.Add(new ItemStack(world.GetItem(new AssetLocation("flaxtwine")), stackSize));
             }
+
+            var block = Block.GetPlacedByItem(world.Api);
+
+            //Remove sail durability from tree as it is no longer relevant
+            string blockCode = block.Code.Path.Split('-')[0];
+            var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
+            normalItem?.Attributes.GetTreeAttribute(Constants.DurabilityTreeName).RemoveAttribute(Props.Code);
 
             return base.ModifyDroppedItemStacks(itemStacks.Concat(sailItems).ToArray(), world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
         }
