@@ -1,56 +1,160 @@
 {
-//Translation author - UA_Shaman
-  "durability": "міцність",
-  "item-sawdust": "Тирса",
-  "itemdesc-sawdust": "Побічний продукт, що утворюється при розпилюванні деревини",
-  "item-woodfiller": "Деревний наповнювач",
-  "itemdesc-woodfiller": "Корисно для ремонту пошкоджень деревини",
-  "maintenance": "Виконайте технічне обслуговування",
-  "repaired": "відремонтований",
-  "failed-maintenance-not-required": "Обслуговування не потрібне",
-  "failed-maintenance-active": "Неможливо виконати обслуговування, поки об’єкт активний/активований/працює",
-  "failed-maintenance-limit-reached": "Досягнуто ліміту обслуговування",
+//Translation author - UA_Shaman  
+	"durability": "міцність",
+	"maintenance": "Виконайте технічне обслуговування",
+	"repaired": "відремонтований",
+	"optional": "додатковий",
+	"failed-maintenance-not-required": "Обслуговування не потрібне",
+	"failed-maintenance-active": "Неможливо виконати обслуговування, поки об’єкт активний/активований/працює",
+	"failed-maintenance-limit-reached": "Досягнуто ліміту обслуговування",
+	"failed-maintenance-missing-traits": "Потрібна риса серафима: {0}",
 
-  //Handbook entries
+//Оцінки стану
+	"wearandtear:durability-good": "У відмінному стані",
+	"wearandtear:durability-decent": "У задовільному стані",
+	"wearandtear:durability-bad": "У поганому стані",
+	"wearandtear:durability-critical": "На межі руйнування",
 
-  "wearandtearguide-title": "Wear And Tear: Maintenance",
-  "wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>
-Хоча механічні пристрої полегшують життя завдяки автоматизації різноманітних завдань, вони не є джерелом нескінченної потужності та потребують обслуговування, щоб продовжувати функціонувати за призначенням.
-На цій сторінці описано різні види зношення, до якого схильні ці пристрої та як захистити їх від цього або відремонтувати.
+//Руйнування
+	"wearandtear:decay-wind": "Руйнування вітром",
+	"wearandtear:decay-humidity": "Руйнування вологості",
+	"wearandtear:decay-time": "Руйнування часом",
+	"wearandtear:decay-usage": "Руйнування використанням",
 
-<font weight='bold' align='center'>'Неписані правила'</font>
-- Предмети довше 'зберігаються' всередині
-- Якщо не ремонтувати об'єкти, це призведе до втрати ефективності, а згодом і до їх руйнування.
-- Ви не можете проводити обслуговування механічного блоку, якщо він активний.
- (отримання механічної енергії зазвичай означає, що він активний)
-- Обслуговування має свої межі – зрештою доведеться замінити об'єкт.
-- Краще метал = довший термін служби.
+//Предмети
+	"item-sawdust": "Тирса",
+	"itemdesc-sawdust": "Побічний продукт, що утворюється при розпилюванні деревини",
+	"item-woodfiller": "Деревний наповнювач",
+	"itemdesc-woodfiller": "Корисно для ремонту пошкоджень деревини",
 
-<font weight='bold' align='center'>Зношення від вітру</font>
-Вітрила та подібні конструкції поступово зношуються під дією вітру. 
-Вітрила можна згортати, взаємодіючи з ними порожньою рукою в режимі присідання – це запобіжить їх пошкодженню, коли вони не використовуються.
-Вітрила та інші предмети, схожі на тканину, можна відремонтувати за допомогою <a href=\"handbook:\/\/item-sewingkit\">наборів для шиття<\/a>
+	"item-sawdustbrick-dry": "Брикет з тирси (висушена)",
+	"itemdesc-sawdustbrick-dry": "Цеглина з тирси, яку можна використовувати як паливо",
 
-<font weight='bold' align='center'>Зношення від вологи</font>
-Дерев'яні блоки, такі як шестерні, вали, великі шестерні, чутливі до пошкоджень від вологи. Основні способи зменшення цього пошкодження такі:
-- Вощення деревини за допомогою <a href=\"handbook:\/\/item-beeswax\">бджолиного воску<\/a>. 
- (майте на увазі, що воскове покриття зменшується, його доведеться періодично оновлювати)
-- Зберігання предмета всередині. 
- (Настійно рекомендується використання <a href=\"handbook:\/\/block-millwright:woodenaxlepassthroughfull\">Дерев'яна вісь (прохідна)<\/a> від MillWright та зберігати інфраструктуру всередині, коли це можливо)
- 
-Більшість дерев’яних об’єктів можна відремонтувати <a href=\"handbook:\/\/item-resin\">смолою<\/a> або <a href=\"handbook:\/\/item-wearandtear:woodfiller\">деревним наповнювачем<\/a>.
+	"item-sawdustbrick-wet": "Брикет з тирси (сира)",
+	"item-sawdustbrick-burned": "Вугільний брикет",
 
-<font weight='bold' align='center'>Зношення від використання</font>
-Предмети, такі як важільні молоти, зношуються під час використання. 
-Ви можете запобігти надмірному пошкодженню важільного молота, переконавшись, що він не б'є по ковадлу, поки ви ним не користуєтесь.
-Рекомендовано використовувати <a href=\"handbook:\/\/block-brake-north\">гальма<\/a> або <a href=\"handbook:\/\/block-transmission-ns\">трансмісію<\/a>. 
-Такі предмети зазвичай не підлягають ремонту і потребують заміни після зламу.
+	"item-metalscrap-*": "Металевий брухт",
+	"itemdesc-metalscrap-*": "Залишки чогось, що колись працювало",
+	"item-woodscrap-*": "Дерев'яний брухт",
+	"itemdesc-woodscrap-*": "Залишки чогось, що колись працювало",
+//Запчастини:
+	"wearandtear:partname-frame": "Каркас ({0})",
+	"wearandtear:partname-mechanism-encased": "Упакований механізм ({0})",
+	"wearandtear:partname-wax": "Віск",
+	"wearandtear:partname-reinforcement": "Підсилення ({0})",
 
-<font weight='bold' align='center'>Металеві деталі</font>
-Металеві деталі можна ремонтувати за допомогою відповідних <a href=\"handbook:\/\/item-metalnailsandstrips-copper\">цвяхів і планок<\/a> (в залежності від металу), використовуючи молоток у другій руці.
+	"wearandtear:partname-mold": "Форма",
+	"wearandtear:partname-ingotmold-left": "Форма для зливка (ліва)",
+	"wearandtear:partname-ingotmold-right": "Форма для зливка (права)",
+	"wearandtear:partname-helveitem": "Деталь важеля",
+	"wearandtear:partname-pulverizeritem": "Насадки трамбівки",
 
-<font weight='bold' align='center'>Усунення несправностей</font>
-Якщо ви не можете відремонтувати щось і не отримуєте повідомлення про помилку, спробуйте зробити це в режимі присідання, а у випадку багатоблокових структур – спробуйте різні блоки.
-Наприклад, у Фруктовому пресі потрібно присісти й цілитися в нижній блок.
-У випадку з металевими деталями переконайтеся, що матеріал для ремонту відповідає типу металу (наприклад, цвяхи та смужки з чорної бронзи для підсилення з чорної бронзи)."
+	"wearandtear:partname-sail": "Вітрило",
+//RepairType
+
+//Матеріали
+	"game:material-unknown": "Невідомий",
+	"wearandtear:material-wood": "Дерево",
+	"wearandtear:material-stone": "Камінь",
+	"wearandtear:material-ceramic": "Кераміка",
+
+//Блоки
+	"wearandtear:block-rubble-unstable": "Завал (нестабільний)",
+	"wearandtear:block-rubble-stable": "Завал (стабільний)",
+
+	"wearandtear:block-charcoalbrickpit": "Вугільна яма",
+
+//Риси
+	"game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Інженер </font>",
+	"game:traitdesc-wearandtear-engineer": "Дозволяє обслуговувати механічні пристрої",
+
+	"game:trait-wearandtear-precisemeasurements": "<font color=\"#84ff84\">• Точні вимірювання </font>",
+	"game:traitdesc-wearandtear-precisemeasurements": "Дозволяє бачити точний відсоток залишкової міцності",
+
+//Навички
+	"wearandtear:skill-mechanics": "Механіка",
+
+	"wearandtear:ability-handyman": "Умілець",
+	"wearandtear:abilitydesc-handyman": "Ремонтні матеріали ефективніші на {0}%",
+
+	"wearandtear:ability-butterfingers": "Незграбні руки",
+	"wearandtear:abilitydesc-butterfingers": "Віск ефективніший на {0}%, але зношується на {1}% швидше",
+
+	"wearandtear:ability-limitbreaker": "Порушник меж",
+	"wearandtear:abilitydesc-limitbreaker": "Дозволяє перевищити межу обслуговування на {0}%",
+
+	"wearandtear:ability-precise-measurements": "Точні вимірювання",
+	"wearandtear:abilitydesc-precise-measurements": "Дозволяє бачити міцність у вигляді відсотка",
+
+	"wearandtear:ability-strong-feet": "Міцні ноги",
+	"wearandtear:abilitydesc-strong-feet": "Зменшує шкоду від ходіння по завалах на {0}%",
+
+	"wearandtear:ability-scrapper": "Брухтяр",
+	"wearandtear:abilitydesc-scrapper": "Збільшує кількість знайденого брухту на {0}%",
+
+	"wearandtear:ability-reinforcer": "Підсилювач",
+	"wearandtear:abilitydesc-reinforcer": "Під час ремонту підсилень покращує їх ефективність на {0}% (працює лише один раз)",
+
+	"wearandtear:ability-engineer": "Інженер",
+	"wearandtear:abilitydesc-engineer": "Ви отримуєте на {0}% більше досвіду у навичці «Механіка». Кількість професій, які можна вивчити, обмежена. Довірся мені, я інженер!",
+
+	"wearandtear:ability-careful-caster": "Обережний ливарник",
+	"wearandtear:abilitydesc-careful-caster": "Зменшує знос форми при витяганні предметів з неї на {0}%",
+
+	"wearandtear:ability-expert-caster": "Майстер ливарник",
+	"wearandtear:abilitydesc-expert-caster": "Майстер-ливарник нічого не залишає на волю випадку. (Форма зношується по мінімуму)",
+
+//Handbook appending
+	"wearandtear:handbook-heading": "Знос і руйнування",
+	"wearandtear:handbook-lifespan": "Середній (без укриття) термін служби: {0} років",
+	"wearandtear:handbook-critical": "Ця частина критична для збереження цілісності блоку",
+	"wearandtear:handbook-decay": "Ця частина вразлива до: {0}",
+	"wearandtear:handbook-usage-limit": "Ця частина втрачає {0} міцності за використання",
+	"wearandtear:handbook-usage-limit-random": "Ця частина втрачає від {0} до {1} міцності за використання",
+	"wearandtear:handbook-scrap": "Залишковий брухт",
+	"wearandtear:hanbook-protection": "Ця частина зменшує швидкість руйнування на {0} (множник) для: {1}",
+
+//Handbook entries
+	"wearandtear:handbook-bycharcoalburning": "Отримується шляхом <a href=\"handbook://craftinginfo-charcoalburning\">випалювання вугілля</a> <a href=\"handbook://item-wearandtear:sawdustbrick-dry\">сухих тирсових брикетів</a><br />(Увага: не можна змішувати різні типи цегли під час випалювання вугілля)",
+
+	"wearandtearguide-title": "Wear And Tear: Maintenance",
+	"wearandtearguide-text": "<font weight='bold' align='center'>Wear And Tear</font>
+	Хоча механічні пристрої полегшують життя завдяки автоматизації різноманітних завдань, вони не є джерелом нескінченної потужності та потребують обслуговування, щоб продовжувати функціонувати за призначенням.
+	На цій сторінці описано різні види зношення, до якого схильні ці пристрої та як захистити їх від цього або відремонтувати.
+
+	<font weight='bold' align='center'>'Неписані правила'</font>
+	- Предмети довше 'зберігаються' всередині
+	- Якщо не ремонтувати об'єкти, це призведе до втрати ефективності, а згодом і до їх руйнування.
+	- Ви не можете проводити обслуговування механічного блоку, якщо він активний.
+	(отримання механічної енергії зазвичай означає, що він активний)
+	- Обслуговування має свої межі – зрештою доведеться замінити об'єкт.
+	- Краще метал = довший термін служби.
+
+	<font weight='bold' align='center'>Зношення від вітру</font>
+	Вітрила та подібні конструкції поступово зношуються під дією вітру. 
+	Вітрила можна згортати, взаємодіючи з ними порожньою рукою в режимі присідання – це запобіжить їх пошкодженню, коли вони не використовуються.
+	Вітрила та інші предмети, схожі на тканину, можна відремонтувати за допомогою <a href=\"handbook:\/\/item-sewingkit\">наборів для шиття<\/a>
+
+	<font weight='bold' align='center'>Зношення від вологи</font>
+	Дерев'яні блоки, такі як шестерні, вали, великі шестерні, чутливі до пошкоджень від вологи. Основні способи зменшення цього пошкодження такі:
+	- Вощення деревини за допомогою <a href=\"handbook:\/\/item-beeswax\">бджолиного воску<\/a>. 
+	(майте на увазі, що воскове покриття зменшується, його доведеться періодично оновлювати)
+	- Зберігання предмета всередині. 
+	(Настійно рекомендується використання <a href=\"handbook:\/\/block-millwright:woodenaxlepassthroughfull\">Дерев'яна вісь (прохідна)<\/a> від MillWright та зберігати інфраструктуру всередині, коли це можливо)
+
+	Більшість дерев’яних об’єктів можна відремонтувати <a href=\"handbook:\/\/item-resin\">смолою<\/a> або <a href=\"handbook:\/\/item-wearandtear:woodfiller\">деревним наповнювачем<\/a>.
+
+	<font weight='bold' align='center'>Зношення від використання</font>
+	Предмети, такі як важільні молоти, зношуються під час використання. 
+	Ви можете запобігти надмірному пошкодженню важільного молота, переконавшись, що він не б'є по ковадлу, поки ви ним не користуєтесь.
+	Рекомендовано використовувати <a href=\"handbook:\/\/block-brake-north\">гальма<\/a> або <a href=\"handbook:\/\/block-transmission-ns\">трансмісію<\/a>. 
+	Такі предмети зазвичай не підлягають ремонту і потребують заміни після зламу.
+
+	<font weight='bold' align='center'>Металеві деталі</font>
+	Металеві деталі можна ремонтувати за допомогою відповідних <a href=\"handbook:\/\/item-metalnailsandstrips-copper\">цвяхів і планок<\/a> (в залежності від металу), використовуючи молоток у другій руці.
+
+	<font weight='bold' align='center'>Усунення несправностей</font>
+	Якщо ви не можете відремонтувати щось і не отримуєте повідомлення про помилку, спробуйте зробити це в режимі присідання, а у випадку багатоблокових структур – спробуйте різні блоки.
+	Наприклад, у Фруктовому пресі потрібно присісти й цілитися в нижній блок.
+	У випадку з металевими деталями переконайтеся, що матеріал для ремонту відповідає типу металу (наприклад, цвяхи та смужки з чорної бронзи для підсилення з чорної бронзи)."
 }
