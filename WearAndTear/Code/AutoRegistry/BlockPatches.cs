@@ -35,7 +35,7 @@ namespace WearAndTear.DynamicPatches
         {
             if (SpecialPartsConfig.Instance.WindmillSails == null) return;
 
-            if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced")
+            if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced" || block.GetType().Name == "BlockWindmillRotorUD")
             {
                 block.EnsureBaseWearAndTear(true);
                 block.MergeOrAddBehavior("wearandtear:WindmillSailPart", (JContainer)JToken.FromObject(SpecialPartsConfig.Instance.WindmillSails));

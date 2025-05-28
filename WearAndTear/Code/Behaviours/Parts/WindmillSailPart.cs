@@ -42,6 +42,7 @@ namespace WearAndTear.Code.Behaviours.Parts
                 {
                     return rotor.SailLength;
                 }
+                //TODO maybe get rid of these traverses and add some extra checks that only run when MillWright is enabled
                 return Traverse.Create(beh).Property("SailLength").GetValue<int>();
             }
             set
