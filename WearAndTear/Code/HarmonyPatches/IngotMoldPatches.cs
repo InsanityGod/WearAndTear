@@ -54,7 +54,27 @@ namespace WearAndTear.Code.HarmonyPatches
             return codes;
         }
 
-        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer) => instance.Behaviors.OfType<IngotMoldPart>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
+        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer)
+        {
+            if(instance.Api.Side != EnumAppSide.Server) return;
+            instance.Behaviors.OfType<IngotMoldPart>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
+        }
+
+        [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeIngot")]
+        [HarmonyPostfix]
+        public static void ContentLevel(BlockEntityIngotMold __instance)
+        {
+            //HACK: Due to weird vanilla behavior you can actually pickup the mold even if it's shattered, the check that prevents this is actually based on FillLevel
+            if(__instance.ShatteredLeft && __instance.FillLevelLeft == 0)
+            {
+                __instance.FillLevelLeft = -1;
+            }
+            
+            if(__instance.ShatteredRight && __instance.FillLevelRight == 0)
+            {
+                __instance.FillLevelRight = -1;
+            }
+        }
 
         [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeMold")]
         [HarmonyTranspiler]
@@ -161,9 +181,9 @@ namespace WearAndTear.Code.HarmonyPatches
         {
             var item = byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack;
             if (item == null) return;
-            var durabilityTree = item.Attributes.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
+            var durabilityTree = item.Attributes.GetTreeAttribute(Constants.DurabilityTreeName);
 
-            var durability = durabilityTree.GetFloat("Mold", 1);
+            var durability = durabilityTree?.GetFloat("Mold", 1) ?? 1;
 
             var ingotMoldWearAndTear = instance.Behaviors.OfType<IngotMoldPart>().LastOrDefault(x => x.IsPresent);
             if (ingotMoldWearAndTear == null) return;
