@@ -124,7 +124,7 @@ namespace WearAndTear.Code.AutoRegistry
             foreach (var definition in protectiveDefinitions) block.EnsureProtectivePart(definition);
         }
 
-        public static void EnsureFrameWearAndTearPart(this Block block)
+        public static void EnsureFrameWearAndTearPart(this Block block, ContentAnalyzer analysis)
         {
             var frameProps = AutoPartRegistryConfig.Instance.DefaultFrameProps.GetValueOrDefault(block.BlockMaterial);
             if (frameProps == null) return;
@@ -141,10 +141,7 @@ namespace WearAndTear.Code.AutoRegistry
 
             if (block.BlockMaterial == EnumBlockMaterial.Wood)
             {
-                var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
-                analyzer.Analyze(Api);
-
-                var frameWood = analyzer.FindFrameWood();
+                var frameWood = analysis.FindFrameWood();
                 if (frameWood != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameWood.Value.Wood;
@@ -155,10 +152,7 @@ namespace WearAndTear.Code.AutoRegistry
 
             if (block.BlockMaterial == EnumBlockMaterial.Stone)
             {
-                var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
-                analyzer.Analyze(Api);
-
-                var frameRock = analyzer.FindFrameRock();
+                var frameRock = analysis.FindFrameRock();
                 if (frameRock != null)
                 {
                     behaviorProperties["MaterialVariant"] = frameRock.Value.Rock;
@@ -194,6 +188,14 @@ namespace WearAndTear.Code.AutoRegistry
             }
 
             block.MergeOrAddBehavior("wearandtear:ProtectivePart", props);
+        }
+
+        public static ContentAnalyzer CleanAnalysis(Block block)
+        {
+            ClearAnalyzerCache();
+            var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
+            analyzer.Analyze(Api);
+            return analyzer;
         }
 
         public static void Register(Block block)
@@ -232,8 +234,9 @@ namespace WearAndTear.Code.AutoRegistry
             }
             else if (block is not BlockIngotMold) //Ingot molds just have to be very special -_-
             {
-                block.EnsureFrameWearAndTearPart();
-                block.DetectAndAddMetalReinforcements();
+                var analysis = CleanAnalysis(block);
+                block.EnsureFrameWearAndTearPart(analysis);
+                block.EnsureMetalReinforcements(analysis);
             }
 
             if (block.Code.Domain == "linearpower" && block.Code.FirstCodePart() == "sawmill")
@@ -264,14 +267,11 @@ namespace WearAndTear.Code.AutoRegistry
             return string.Join('-', obj.Code.ToString().Split('-').RemoveAt(index + 1));
         }
 
-        public static void DetectAndAddMetalReinforcements(this Block block)
+        public static void EnsureMetalReinforcements(this Block block, ContentAnalyzer analysis)
         {
             if (block.BlockMaterial == EnumBlockMaterial.Metal) return; //Otherwise all metal objects would end up being metal reinforced :p
-
-            var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
-            analyzer.Analyze(Api);
-
-            var reinforcementMetal = analyzer.FindReinforcementMetal();
+            
+            var reinforcementMetal = analysis.FindReinforcementMetal();
             if (reinforcementMetal != null) block.EnsureMetalReinforcement(reinforcementMetal.Value.Metal, reinforcementMetal.Value.ContentLevel);
         }
 

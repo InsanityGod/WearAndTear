@@ -33,11 +33,17 @@ namespace WearAndTear.Code.Behaviours.Parts
             base.FromTreeAttributes(tree, worldAccessForResolve);
         }
 
+        private BlockEntityBehavior GetRotor()
+        {
+            var beh = Blockentity.GetBehavior<BEBehaviorMPRotor>();
+            return beh ?? Blockentity.Behaviors.Find(b => b.GetType().Name.Contains("WindmillRotor"));
+        }
+
         public int SailLength
         {
             get
             {
-                var beh = Blockentity.GetBehavior<BEBehaviorMPRotor>();
+                var beh = GetRotor();
                 if (beh is BEBehaviorWindmillRotor rotor)
                 {
                     return rotor.SailLength;
@@ -47,7 +53,7 @@ namespace WearAndTear.Code.Behaviours.Parts
             }
             set
             {
-                var beh = Blockentity.GetBehavior<BEBehaviorMPRotor>();
+                var beh = GetRotor();
                 if (beh is BEBehaviorWindmillRotor)
                 {
                     Traverse.Create(beh).Field("sailLength").SetValue(value);
@@ -61,7 +67,7 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             get
             {
-                var beh = Blockentity.GetBehavior<BEBehaviorMPRotor>();
+                var beh = GetRotor();
                 if (beh is BEBehaviorWindmillRotor)
                 {
                     return "sail";

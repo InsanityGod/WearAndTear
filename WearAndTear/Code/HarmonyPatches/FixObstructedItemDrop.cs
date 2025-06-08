@@ -32,11 +32,10 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyTargetMethods]
         public static IEnumerable<MethodBase> TargetMethods()
         {
-            var baseType = typeof(BEBehaviorMPRotor);
-            var derivedTypes = AccessTools.AllTypes().Where(type => type != baseType && baseType.IsAssignableFrom(type) && type.Name.StartsWith(nameof(BEBehaviorWindmillRotor)));
-            foreach (var type in derivedTypes)
+            foreach(var type in Helpers.WindmillRotorBehaviorTypes())
             {
                 var method = type.GetMethod("obstructed", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                method ??= type.GetMethod("Obstructed", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
                 if (method != null)
                 {
                     yield return method;
