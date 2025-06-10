@@ -119,7 +119,7 @@ namespace WearAndTear.Code.Behaviours
 
             RoomRegistry = Api.ModLoader.GetModSystem<RoomRegistry>(true);
             Blockentity.RegisterGameTickListener(UpdateIsSheltered, WearAndTearServerConfig.Instance.RoomCheckFrequencyInMs);
-            UpdateIsSheltered(0);
+            Blockentity.RegisterDelayedCallback(UpdateIsSheltered, 1);
 
             LastDecayUpdate ??= Api.World.Calendar.TotalDays;
             if (api.Side == EnumAppSide.Client) QueueDecalUpdate();
