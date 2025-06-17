@@ -257,16 +257,6 @@ namespace WearAndTear.Code.AutoRegistry
             block.CleanupWearAndTearAutoRegistry();
         }
 
-        public static string CodeWithoutOrientation(this CollectibleObject obj)
-        {
-            int index = obj.VariantStrict.IndexOfKey("side");
-            if (index == -1) index = obj.VariantStrict.IndexOfKey("rotation");
-            if (index == -1) index = obj.VariantStrict.IndexOfKey("orientation");
-            if (index == -1) return obj.Code.ToString();
-
-            return string.Join('-', obj.Code.ToString().Split('-').RemoveAt(index + 1));
-        }
-
         public static void EnsureMetalReinforcements(this Block block, ContentAnalyzer analysis)
         {
             if (block.BlockMaterial == EnumBlockMaterial.Metal) return; //Otherwise all metal objects would end up being metal reinforced :p
@@ -340,6 +330,6 @@ namespace WearAndTear.Code.AutoRegistry
         }
 
         public static void ClearAnalyzerCache() => ContentAnalyzer.Lookup.Clear();
-        public static void ClearDeadLocks() => ContentAnalyzer.Lookup.RemoveAll((key, value) => value.State == Enums.EAnalyzeState.AnalyzedWithDeadlock);
+        public static void ClearDeadLocks() => ContentAnalyzer.Lookup.RemoveAll((key, value) => value.EncounteredDeadlock);
     }
 }

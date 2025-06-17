@@ -1,4 +1,5 @@
 ﻿using InsanityLib.Util;
+using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace WearAndTear.Code.AutoRegistry
     {
         public static Dictionary<string, ContentAnalyzer> Lookup { get; set; } = new();
 
+        public bool EncounteredDeadlock { get; private set; } = false;
         public CollectibleObject Collectible { get; set; }
         public ICoreAPI Api { get; set; }
 
@@ -64,141 +66,134 @@ namespace WearAndTear.Code.AutoRegistry
             }
         }
 
-
-        private bool AnalyzeRecipes(ICoreAPI api, out bool encounteredDeadlock)
+        private (Dictionary<string, float> woodContent, Dictionary<string, float> metalContent, Dictionary<string, float> rockContent) ExtractContent(GridRecipe recipe)
         {
-            var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output.ResolvedItemstack.Collectible.CodeWithoutOrientation() == Collectible.CodeWithoutOrientation()).ToList();
+            var outputAmmount = recipe.Output.ResolvedItemstack.StackSize;
+            //TODO see if we can resolve wildcard to some degree
 
-            if (craftedBy.Count == 0)
+            var validIngredients = recipe.resolvedIngredients
+            .Where(item => item?.ResolvedItemstack != null && !item.IsTool)
+            .Select(ingredient => (ingredient.ResolvedItemstack.Collectible, (float)ingredient.ResolvedItemstack.StackSize / (float)outputAmmount))
+            .GroupBy(item => item.Collectible)
+            .ToDictionary(item => item.Key, item => item.Sum(a => a.Item2));
+            
+            //TODO see if we can ignore stuff that is returned like buckets
+            var woodContent = new Dictionary<string, float>();
+            var metalContent = new Dictionary<string, float>();
+            var rockContent = new Dictionary<string, float>();
+
+            foreach ((var ingredient, var amount) in validIngredients)
             {
-                encounteredDeadlock = false;
-                return false;
-            }
-
-            var _encounteredDeadLock = false;
-            var recipeContent = craftedBy.Select(recipe =>
-            {
-                var outputAmmount = recipe.Output.ResolvedItemstack.StackSize;
-                //TODO see if we can resolve wildcard to some degree
-                var validIngredients = recipe.resolvedIngredients
-                .Where(item => item?.ResolvedItemstack != null && !item.IsTool)
-                .Select(ingredient => (ingredient.ResolvedItemstack.Collectible, (float)ingredient.ResolvedItemstack.StackSize / (float)outputAmmount))
-                .GroupBy(item => item.Collectible)
-                .ToDictionary(item => item.Key, item => item.Sum(a => a.Item2));
-                //TODO see if we can ignore stuff that is returned like buckets
-                var woodContent = new Dictionary<string, float>();
-                var metalContent = new Dictionary<string, float>();
-                var rockContent = new Dictionary<string, float>();
-
-                foreach ((var ingredient, var amount) in validIngredients)
+                var smeltStack = ingredient.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
+                if (smeltStack != null && smeltStack.Collectible is ItemIngot ingot)
                 {
-                    var smeltStack = ingredient.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
-                    if (smeltStack != null && smeltStack.Collectible is ItemIngot ingot)
+                    var metalType = ingot.GetMetalType();
+                    var output = (float)smeltStack.StackSize / (float)ingredient.CombustibleProps.SmeltedRatio;
+                    output = output * 4 * amount;
+                    metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
+                    continue;
+                }
+
+                if (ingredient is ItemIngot ingot2)
+                {
+                    var metalType = ingot2.GetMetalType();
+                    var output = amount * 4;
+                    metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
+                    continue;
+                }
+
+                //TODO other means of getting metal (like smithing recipes from ingot)
+                //TODO make amore generic and extensible scrap system
+                var firstCodePart = ingredient.FirstCodePartAsSpan();
+                if (firstCodePart == "log")
+                {
+                    var woodType = ingredient.Variant["wood"];
+                    if (!string.IsNullOrEmpty(woodType))
                     {
-                        var metalType = ingot.GetMetalType();
-                        var output = (float)smeltStack.StackSize / (float)ingredient.CombustibleProps.SmeltedRatio;
-                        output = output * 4 * amount;
-                        metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
+                        var woodAmount = 12 * amount;
+                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
                         continue;
                     }
-
-                    if (ingredient is ItemIngot ingot2)
+                }
+                else if (firstCodePart == "planks")
+                {
+                    var woodType = ingredient.Variant["wood"];
+                    if (!string.IsNullOrEmpty(woodType))
                     {
-                        var metalType = ingot2.GetMetalType();
-                        var output = amount * 4;
-                        metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
+                        var woodAmount = 4 * amount;
+                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
                         continue;
                     }
-
-                    //TODO other means of getting metal (like smithing recipes from ingot)
-                    //TODO make amore generic and extensible scrap system
-                    if (ingredient.FirstCodePart() == "log")
+                }
+                else if (firstCodePart == "plank")
+                {
+                    var woodType = ingredient.Variant["wood"];
+                    if (!string.IsNullOrEmpty(woodType))
                     {
-                        var woodType = ingredient.Variant["wood"];
-                        if (!string.IsNullOrEmpty(woodType))
-                        {
-                            var woodAmount = 12 * amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                            continue;
-                        }
+                        var woodAmount = amount;
+                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
+                        continue;
                     }
-
-                    if (ingredient.FirstCodePart() == "planks")
+                }
+                else if (firstCodePart == "rock")
+                {
+                    var rockType = ingredient.Variant["rock"];
+                    if (!string.IsNullOrEmpty(rockType))
                     {
-                        var woodType = ingredient.Variant["wood"];
-                        if (!string.IsNullOrEmpty(woodType))
-                        {
-                            var woodAmount = 4 * amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                            continue;
-                        }
+                        var rockAmount = amount;
+                        rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
+                        continue;
                     }
-
-                    if (ingredient.FirstCodePart() == "plank")
+                }
+                else if (firstCodePart == "stone")
+                {
+                    var rockType = ingredient.Variant["rock"];
+                    if (!string.IsNullOrEmpty(rockType))
                     {
-                        var woodType = ingredient.Variant["wood"];
-                        if (!string.IsNullOrEmpty(woodType))
-                        {
-                            var woodAmount = amount;
-                            woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                            continue;
-                        }
-                    }
-
-                    if (ingredient.FirstCodePart() == "rock")
-                    {
-                        var rockType = ingredient.Variant["rock"];
-                        if (!string.IsNullOrEmpty(rockType))
-                        {
-                            var rockAmount = amount;
-                            rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
-                            continue;
-                        }
-                    }
-
-                    if (ingredient.FirstCodePart() == "stone")
-                    {
-                        var rockType = ingredient.Variant["rock"];
-                        if (!string.IsNullOrEmpty(rockType))
-                        {
-                            var rockAmount = 4 * amount;
-                            rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
-                            continue;
-                        }
-                    }
-
-                    var analyzer = GetOrCreate(Api, ingredient);
-                    if (analyzer.State == EAnalyzeState.Analyzing)
-                    {
-                        _encounteredDeadLock = true;
-                        continue; //Skipping recursive recipe
-                    }
-
-                    analyzer.Analyze(api);
-
-                    foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
-                    {
-                        var woodAmount = AnalyzedAmount * amount;
-                        woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + woodAmount : woodAmount;
-                    }
-
-                    foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.MetalContent)
-                    {
-                        var metalAmount = AnalyzedAmount * amount;
-                        metalContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + metalAmount : metalAmount;
-                    }
-
-                    foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.RockContent)
-                    {
-                        var rockAmount = AnalyzedAmount * amount;
-                        rockContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + rockAmount : rockAmount;
+                        var rockAmount = 4 * amount;
+                        rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
+                        continue;
                     }
                 }
 
-                return (woodContent, metalContent, rockContent);
-            }).ToList();
+                var analyzer = GetOrCreate(Api, ingredient);
+                if (analyzer.State == EAnalyzeState.Analyzing)
+                {
+                    EncounteredDeadlock = true;
+                    continue; //Skipping recursive recipe
+                }
 
-            encounteredDeadlock = _encounteredDeadLock;
+                analyzer.Analyze(Api);
+
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
+                {
+                    var woodAmount = AnalyzedAmount * amount;
+                    woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + woodAmount : woodAmount;
+                }
+
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.MetalContent)
+                {
+                    var metalAmount = AnalyzedAmount * amount;
+                    metalContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + metalAmount : metalAmount;
+                }
+
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.RockContent)
+                {
+                    var rockAmount = AnalyzedAmount * amount;
+                    rockContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + rockAmount : rockAmount;
+                }
+            }
+
+            return (woodContent, metalContent, rockContent);
+        }
+
+        private bool AnalyzeRecipes(ICoreAPI api)
+        {
+            var craftedBy = api.World.GridRecipes.Where(recipe => ComparisonUtil.CompareWithoutOrientation(recipe.Output.ResolvedItemstack.Collectible, Collectible)).ToList();
+
+            if (craftedBy.Count == 0) return false;
+
+            var recipeContent = craftedBy.Select(ExtractContent).ToList();
 
             WoodContent = recipeContent
                 .SelectMany(item => item.woodContent)
@@ -224,16 +219,16 @@ namespace WearAndTear.Code.AutoRegistry
 
         public void Analyze(ICoreAPI api)
         {
-            if (State == EAnalyzeState.Analyzed || State == EAnalyzeState.AnalyzedWithDeadlock) return; //Already analyzed
+            if (State == EAnalyzeState.Analyzed) return; //Already analyzed
             if (State == EAnalyzeState.Analyzing) throw new InvalidOperationException("Attempt at recursive analysis");
             State = EAnalyzeState.Analyzing;
-            if (!AnalyzeRecipes(api, out bool encounteredDeadLock))
+            if (!AnalyzeRecipes(api))
             {
                 //Just in case recipe analysis fails, we can still analyze textures
                 AnalyzeTextures();
             }
 
-            State = encounteredDeadLock ? EAnalyzeState.AnalyzedWithDeadlock : EAnalyzeState.Analyzed;
+            State = EAnalyzeState.Analyzed;
         }
 
         public (string Metal, float ContentLevel)? FindReinforcementMetal()
