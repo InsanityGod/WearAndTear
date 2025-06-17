@@ -68,40 +68,10 @@ namespace WearAndTear.Code.HarmonyPatches.AutoRegistry
             {
                 harmony.Patch(method, postfix: new HarmonyMethod(typeof(ConnectBlockDropModifier), nameof(ConnectBlockDropModifier.Postfix)));
             }
-            catch (Exception ex)
+            catch
             {
+                //Empty stump
             }
         }
-
-        //[HarmonyPatch(typeof(BlockBehaviorRightClickPickup), nameof(BlockBehaviorRightClickPickup.OnBlockInteractStart))]
-        //[HarmonyTranspiler]
-        //public static IEnumerable<CodeInstruction> FixRightClickToPickup(IEnumerable<CodeInstruction> instructions)
-        //{
-        //    var codes = instructions.ToList();
-        //    var method = AccessTools.Method(typeof(AutoRegistryPatches), nameof(FixItemStacks));
-        //    for(int i = 0; i < codes.Count; i++)
-        //    {
-        //        var code = codes[i];
-        //        if(code.opcode == OpCodes.Stloc_0)
-        //        {
-        //            codes.InsertRange(i, new CodeInstruction[]
-        //            {
-        //                CodeInstruction.LoadArgument(1),
-        //                CodeInstruction.LoadArgument(2),
-        //                CodeInstruction.LoadArgument(3),
-        //                new(OpCodes.Call, method),
-        //            });
-        //            break;
-        //        }
-        //    }
-        //    return codes;
-        //}
-
-        //public static ItemStack[] FixItemStacks(ItemStack[] stacks, IWorldAccessor world, IPlayer byPlayer, BlockPos pos)
-        //{
-        //    var wearAndTear = world.BlockAccessor.GetBlockEntity(pos)?.GetBehavior<IWearAndTear>();
-        //
-        //    return wearAndTear?.ModifyDroppedItemStacks(stacks, world, pos, byPlayer) ?? stacks;
-        //}
     }
 }

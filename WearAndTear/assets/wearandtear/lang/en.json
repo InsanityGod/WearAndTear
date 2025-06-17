@@ -39,6 +39,7 @@
   "itemdesc-woodscrap-*": "Leftovers from something that used to be functional",
   //Parts
   //TODO maybe add a durability bar system
+  "linearpower:partname-sawblade": "Saw Blade",
   "wearandtear:partname-frame": "Frame ({0})",
   "wearandtear:partname-mechanism-encased": "Encased Mechanism ({0})",
   "wearandtear:partname-wax": "Wax",

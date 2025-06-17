@@ -68,14 +68,25 @@ namespace WearAndTear.Code.AutoRegistry
 
         private (Dictionary<string, float> woodContent, Dictionary<string, float> metalContent, Dictionary<string, float> rockContent) ExtractContent(GridRecipe recipe)
         {
-            var outputAmmount = recipe.Output.ResolvedItemstack.StackSize;
+            var outputAmmount = recipe.Output.Quantity;
             //TODO see if we can resolve wildcard to some degree
 
             var validIngredients = recipe.resolvedIngredients
-            .Where(item => item?.ResolvedItemstack != null && !item.IsTool)
-            .Select(ingredient => (ingredient.ResolvedItemstack.Collectible, (float)ingredient.ResolvedItemstack.StackSize / (float)outputAmmount))
+            .Where(item => item != null && !item.IsTool
+            && (
+                item.ResolvedItemstack != null
+                || item.IsWildCard && item.AllowedVariants?.Length == 1
+            ))
+            .Select(ingredient =>
+            {
+                var amount = (float)ingredient.Quantity / (float)outputAmmount;
+
+                if(ingredient.ResolvedItemstack != null) return (ingredient.ResolvedItemstack.Collectible, amount);
+                return (Collectible: Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])), amount);
+            })
+            .Where(pair => pair.Collectible != null)
             .GroupBy(item => item.Collectible)
-            .ToDictionary(item => item.Key, item => item.Sum(a => a.Item2));
+            .ToDictionary(item => item.Key, item => item.Sum(a => a.amount));
             
             //TODO see if we can ignore stuff that is returned like buckets
             var woodContent = new Dictionary<string, float>();
@@ -105,7 +116,7 @@ namespace WearAndTear.Code.AutoRegistry
                 //TODO other means of getting metal (like smithing recipes from ingot)
                 //TODO make amore generic and extensible scrap system
                 var firstCodePart = ingredient.FirstCodePartAsSpan();
-                if (firstCodePart == "log")
+                if (firstCodePart.SequenceEqual("log"))
                 {
                     var woodType = ingredient.Variant["wood"];
                     if (!string.IsNullOrEmpty(woodType))
@@ -115,7 +126,7 @@ namespace WearAndTear.Code.AutoRegistry
                         continue;
                     }
                 }
-                else if (firstCodePart == "planks")
+                else if (firstCodePart.SequenceEqual("planks"))
                 {
                     var woodType = ingredient.Variant["wood"];
                     if (!string.IsNullOrEmpty(woodType))
@@ -125,7 +136,7 @@ namespace WearAndTear.Code.AutoRegistry
                         continue;
                     }
                 }
-                else if (firstCodePart == "plank")
+                else if (firstCodePart.SequenceEqual("plank"))
                 {
                     var woodType = ingredient.Variant["wood"];
                     if (!string.IsNullOrEmpty(woodType))
@@ -135,7 +146,7 @@ namespace WearAndTear.Code.AutoRegistry
                         continue;
                     }
                 }
-                else if (firstCodePart == "rock")
+                else if (firstCodePart.SequenceEqual("rock"))
                 {
                     var rockType = ingredient.Variant["rock"];
                     if (!string.IsNullOrEmpty(rockType))
@@ -145,7 +156,7 @@ namespace WearAndTear.Code.AutoRegistry
                         continue;
                     }
                 }
-                else if (firstCodePart == "stone")
+                else if (firstCodePart.SequenceEqual("stone"))
                 {
                     var rockType = ingredient.Variant["rock"];
                     if (!string.IsNullOrEmpty(rockType))
@@ -189,7 +200,7 @@ namespace WearAndTear.Code.AutoRegistry
 
         private bool AnalyzeRecipes(ICoreAPI api)
         {
-            var craftedBy = api.World.GridRecipes.Where(recipe => ComparisonUtil.CompareWithoutOrientation(recipe.Output.ResolvedItemstack.Collectible, Collectible)).ToList();
+            var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output.Type == Collectible.ItemClass && ComparisonUtil.CompareWithoutOrientation(recipe.Output.ResolvedItemstack.Collectible, Collectible)).ToList();
 
             if (craftedBy.Count == 0) return false;
 
