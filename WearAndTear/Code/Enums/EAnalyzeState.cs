@@ -4,6 +4,7 @@
     {
         NotStarted,
         Analyzing,
-        Analyzed
+        Analyzed,
+        AnalyzedWithDeadlock,
     }
 }

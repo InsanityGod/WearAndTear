@@ -57,6 +57,7 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
+            api.Logger.VerboseDebug("[WearAndTear] Finalizing assets");
             if (!ReflectionUtil.SideLoaded(EnumAppSide.Server) || api.Side == EnumAppSide.Server)
             {
                 //TODO find beter solution for this
@@ -83,7 +84,8 @@ namespace WearAndTear.Code
 
             FinalizeScrap(api);
             if (api.Side != EnumAppSide.Server) return;
-
+            
+            api.Logger.VerboseDebug("[WearAndTear] Starting part registration");
             foreach (var block in api.World.Blocks)
             {
                 //Dynammically add BlockEntityBehaviors server side
@@ -99,8 +101,10 @@ namespace WearAndTear.Code
                     AutoPartRegistry.Register(block);
                 }
             }
+            api.Logger.VerboseDebug("[WearAndTear] Finished part registration");
 
             AutoPartRegistry.ClearAnalyzerCache();
+            api.Logger.VerboseDebug("[WearAndTear] Finished finalizing assets");
         }
 
         public void FinalizeScrap(ICoreAPI api)

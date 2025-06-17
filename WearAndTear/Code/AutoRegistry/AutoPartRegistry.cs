@@ -190,9 +190,9 @@ namespace WearAndTear.Code.AutoRegistry
             block.MergeOrAddBehavior("wearandtear:ProtectivePart", props);
         }
 
-        public static ContentAnalyzer CleanAnalysis(Block block)
+        public static ContentAnalyzer CleanDeadlocksAndAnalyze(Block block)
         {
-            ClearAnalyzerCache();
+            ClearDeadLocks();
             var analyzer = ContentAnalyzer.GetOrCreate(Api, block);
             analyzer.Analyze(Api);
             return analyzer;
@@ -234,7 +234,7 @@ namespace WearAndTear.Code.AutoRegistry
             }
             else if (block is not BlockIngotMold) //Ingot molds just have to be very special -_-
             {
-                var analysis = CleanAnalysis(block);
+                var analysis = CleanDeadlocksAndAnalyze(block);
                 block.EnsureFrameWearAndTearPart(analysis);
                 block.EnsureMetalReinforcements(analysis);
             }
@@ -340,5 +340,6 @@ namespace WearAndTear.Code.AutoRegistry
         }
 
         public static void ClearAnalyzerCache() => ContentAnalyzer.Lookup.Clear();
+        public static void ClearDeadLocks() => ContentAnalyzer.Lookup.RemoveAll((key, value) => value.State == Enums.EAnalyzeState.AnalyzedWithDeadlock);
     }
 }

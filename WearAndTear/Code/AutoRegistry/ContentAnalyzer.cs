@@ -64,12 +64,18 @@ namespace WearAndTear.Code.AutoRegistry
             }
         }
 
-        private bool AnalyzeRecipes(ICoreAPI api)
+
+        private bool AnalyzeRecipes(ICoreAPI api, out bool encounteredDeadlock)
         {
             var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output.ResolvedItemstack.Collectible.CodeWithoutOrientation() == Collectible.CodeWithoutOrientation()).ToList();
 
-            if (craftedBy.Count == 0) return false;
+            if (craftedBy.Count == 0)
+            {
+                encounteredDeadlock = false;
+                return false;
+            }
 
+            var _encounteredDeadLock = false;
             var recipeContent = craftedBy.Select(recipe =>
             {
                 var outputAmmount = recipe.Output.ResolvedItemstack.StackSize;
@@ -162,7 +168,12 @@ namespace WearAndTear.Code.AutoRegistry
                     }
 
                     var analyzer = GetOrCreate(Api, ingredient);
-                    if (analyzer.State == EAnalyzeState.Analyzing) continue; //Skipping recursive recipes
+                    if (analyzer.State == EAnalyzeState.Analyzing)
+                    {
+                        _encounteredDeadLock = true;
+                        continue; //Skipping recursive recipe
+                    }
+
                     analyzer.Analyze(api);
 
                     foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
@@ -186,6 +197,8 @@ namespace WearAndTear.Code.AutoRegistry
 
                 return (woodContent, metalContent, rockContent);
             }).ToList();
+
+            encounteredDeadlock = _encounteredDeadLock;
 
             WoodContent = recipeContent
                 .SelectMany(item => item.woodContent)
@@ -211,16 +224,16 @@ namespace WearAndTear.Code.AutoRegistry
 
         public void Analyze(ICoreAPI api)
         {
-            if (State == EAnalyzeState.Analyzed) return; //Already analyzed
+            if (State == EAnalyzeState.Analyzed || State == EAnalyzeState.AnalyzedWithDeadlock) return; //Already analyzed
             if (State == EAnalyzeState.Analyzing) throw new InvalidOperationException("Attempt at recursive analysis");
             State = EAnalyzeState.Analyzing;
-            if (!AnalyzeRecipes(api))
+            if (!AnalyzeRecipes(api, out bool encounteredDeadLock))
             {
                 //Just in case recipe analysis fails, we can still analyze textures
                 AnalyzeTextures();
             }
 
-            State = EAnalyzeState.Analyzed;
+            State = encounteredDeadLock ? EAnalyzeState.AnalyzedWithDeadlock : EAnalyzeState.Analyzed;
         }
 
         public (string Metal, float ContentLevel)? FindReinforcementMetal()
