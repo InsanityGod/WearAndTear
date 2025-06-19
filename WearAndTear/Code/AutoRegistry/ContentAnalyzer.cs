@@ -200,8 +200,7 @@ namespace WearAndTear.Code.AutoRegistry
 
         private bool AnalyzeRecipes(ICoreAPI api)
         {
-            var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output.Type == Collectible.ItemClass && ComparisonUtil.CompareWithoutOrientation(recipe.Output.ResolvedItemstack.Collectible, Collectible)).ToList();
-
+            var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output?.Type == Collectible.ItemClass && ComparisonUtil.CompareWithoutOrientation(recipe.Output?.ResolvedItemstack?.Collectible, Collectible)).ToList();
             if (craftedBy.Count == 0) return false;
 
             var recipeContent = craftedBy.Select(ExtractContent).ToList();

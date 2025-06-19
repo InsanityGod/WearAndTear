@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using InsanityLib.Attributes.Auto;
 using InsanityLib.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Vintagestory.API.Common;
@@ -98,7 +99,14 @@ namespace WearAndTear.Code
 
                 if (AutoPartRegistryConfig.Instance.Enabled)
                 {
-                    AutoPartRegistry.Register(block);
+                    try
+                    {
+                        AutoPartRegistry.Register(block);
+                    }
+                    catch (Exception e)
+                    {
+                        api.Logger.Error("[WearAndTear] Failed AutoRegistry for block {0}: {1}", block.Code, e);
+                    }
                 }
             }
             api.Logger.VerboseDebug("[WearAndTear] Finished part registration");
