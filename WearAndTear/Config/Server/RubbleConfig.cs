@@ -32,6 +32,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [DefaultValue(.2f)]
         [Range(0f, 1f)]
+        [DisplayFormat(DataFormatString = "P")]
         public float FixedDropPercentage { get; set; } = .2f;
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [DefaultValue(.8f)]
         [Range(0f, 1f)]
+        [DisplayFormat(DataFormatString = "P")]
         public float DurabilityDropPercentage { get; set; } = .6f;
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace WearAndTear.Config.Server
         public float SprintIntoDamage { get; set; } = 2f;
 
         /// <summary>
-        /// How much damage you take from falling onto rubble
+        /// How much damage you take from falling onto rubble multiplied by the fall speed
         /// </summary>
         [DefaultValue(4f)]
         [Range(0f, float.PositiveInfinity)]

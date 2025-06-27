@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using InsanityLib.Attributes.Auto;
 using InsanityLib.Util;
+using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,6 @@ namespace WearAndTear.Code
 
         public override void AssetsFinalize(ICoreAPI api)
         {
-            api.Logger.VerboseDebug("[WearAndTear] Finalizing assets");
             if (!ReflectionUtil.SideLoaded(EnumAppSide.Server) || api.Side == EnumAppSide.Server)
             {
                 //TODO find beter solution for this
@@ -90,7 +90,7 @@ namespace WearAndTear.Code
             foreach (var block in api.World.Blocks)
             {
                 //Dynammically add BlockEntityBehaviors server side
-                if (block?.Code == null) continue;
+                if (block.IsMissing || block?.Code is null) continue;
                 BlockPatches.PatchWindmill(block);
                 BlockPatches.PatchIngotMold(block);
                 BlockPatches.PatchHelve(block);
@@ -112,40 +112,44 @@ namespace WearAndTear.Code
             api.Logger.VerboseDebug("[WearAndTear] Finished part registration");
 
             AutoPartRegistry.ClearAnalyzerCache();
-            api.Logger.VerboseDebug("[WearAndTear] Finished finalizing assets");
         }
 
-        public void FinalizeScrap(ICoreAPI api)
+        public static void FinalizeScrap(ICoreAPI api)
         {
-            foreach (var woodscrap in api.World.Items.Where(item => item.FirstCodePart() == "woodscrap"))
+            foreach(var item in api.World.Items)
             {
-                var woodVariant = woodscrap.Variant["wood"];
-                var plank = api.World.GetItem($"game:plank-{woodVariant}");
-                plank ??= api.World.GetItem($"wildcrafttree:plank-{woodVariant}");
-                if (plank == null)
+                if(item.IsMissing || item.Code?.Domain != "wearandtear") continue;
+                var firstCodePart = item.FirstCodePartAsSpan();
+
+                if (firstCodePart.SequenceEqual("woodscrap"))
                 {
-                    api.Logger.Error("[WearAndTear] No plank for {0} variant and this is required for wearandtear:woodscrap to function propperly", woodVariant);
-                    continue;
+                    var woodVariant = item.Variant["wood"];
+                    var plank = api.World.GetItem($"game:plank-{woodVariant}");
+                    plank ??= api.World.GetItem($"wildcrafttree:plank-{woodVariant}");
+                    if (plank == null)
+                    {
+                        api.Logger.Error("[WearAndTear] No plank for {0} variant and this is required for wearandtear:woodscrap to function propperly", woodVariant);
+                        continue;
+                    }
+
+                    item.MaterialDensity = plank.MaterialDensity;
+                    item.CombustibleProps = plank.CombustibleProps?.Clone();
                 }
-
-                woodscrap.MaterialDensity = plank.MaterialDensity;
-                woodscrap.CombustibleProps = plank.CombustibleProps?.Clone();
-            }
-
-            foreach (var metalscrap in api.World.Items.Where(item => item.FirstCodePart() == "metalscrap"))
-            {
-                var metalVariant = metalscrap.Variant["metal"];
-                var ingot = api.World.GetItem($"game:ingot-{metalVariant}");
-                if (ingot == null)
+                else if (firstCodePart.SequenceEqual("metalscrap"))
                 {
-                    api.Logger.Error("[WearAndTear] No ingot for {0} variant and this is required for wearandtear:metalscrap to function propperly", metalVariant);
-                    continue;
-                }
+                    var metalVariant = item.Variant["metal"];
+                    var ingot = api.World.GetItem($"game:ingot-{metalVariant}");
+                    if (ingot == null)
+                    {
+                        api.Logger.Error("[WearAndTear] No ingot for {0} variant and this is required for wearandtear:metalscrap to function propperly", metalVariant);
+                        continue;
+                    }
 
-                metalscrap.MaterialDensity = ingot.MaterialDensity;
-                metalscrap.CombustibleProps = ingot.CombustibleProps?.Clone();
-                if (metalscrap.CombustibleProps == null) continue;
-                metalscrap.CombustibleProps.SmeltedRatio = 4;
+                    item.MaterialDensity = ingot.MaterialDensity;
+                    item.CombustibleProps = ingot.CombustibleProps?.Clone();
+                    if (item.CombustibleProps == null) continue;
+                    item.CombustibleProps.SmeltedRatio = 4;
+                }
             }
         }
 

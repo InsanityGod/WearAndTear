@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using InsanityLib.Util;
+using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,8 +162,8 @@ namespace WearAndTear.Code.Behaviours.Parts
             var block = Block.GetPlacedByItem(world.Api);
 
             //Remove sail durability from tree as it is no longer relevant
-            string blockCode = block.Code.Path.Split('-')[0];
-            var normalItem = Array.Find(itemStacks, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
+            var blockCode = block.FirstCodePartAsSpan().ToString(); //Sadly we can't use a ReadonlySpan here (due to lambda scope)
+            var normalItem = Array.Find(itemStacks, item => item.Block != null && item.Block.FirstCodePartAsSpan().SequenceEqual(blockCode));
             normalItem?.Attributes.GetTreeAttribute(Constants.DurabilityTreeName).RemoveAttribute(Props.Code);
 
             return base.ModifyDroppedItemStacks(itemStacks.Concat(sailItems).ToArray(), world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);

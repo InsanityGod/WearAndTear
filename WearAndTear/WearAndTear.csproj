@@ -84,7 +84,4 @@
 		<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	</Content>
 </ItemGroup>
-
-<ProjectExtensions><VisualStudio><UserProperties assets_4wearandtear_4lang_4en_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
-
 </Project>

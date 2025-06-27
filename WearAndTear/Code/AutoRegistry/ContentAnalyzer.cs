@@ -1,8 +1,11 @@
-﻿using InsanityLib.Util;
+﻿using Cairo;
+using InsanityLib.Util;
+using InsanityLib.Util.FastComparisons;
 using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
@@ -20,12 +23,30 @@ namespace WearAndTear.Code.AutoRegistry
         public CollectibleObject Collectible { get; set; }
         public ICoreAPI Api { get; set; }
 
+        public static string GetLookupKey(CollectibleObject collectible)
+        {
+            var code = collectible.Code;
+            
+            if(collectible is not Block) return code.ToString(); //Only blocks have orientation
+            
+            var orientationIndex = collectible.GetOrientationVariantIndex();
+            if(orientationIndex == -1) return code.ToString();
+            
+            ReadOnlySpan<char> path = code.Path;
+            var index1 = path.NthIndexOf('-', orientationIndex) + 1;
+            var index2 = path.NthIndexOf('-', orientationIndex + 1);
+            if(index2 == -1) index2 = path.Length;
+
+            return $"{code.Domain}:{path[..index1]}{orientationIndex}{path[index2..]}";
+        }
+
         public static ContentAnalyzer GetOrCreate(ICoreAPI api, CollectibleObject collectible)
         {
             if(collectible is Block block) collectible = block.GetPlacedByItem(api);
-
-            if (Lookup.TryGetValue(collectible.Code, out var result)) return result;
-            return Lookup[collectible.Code] = new ContentAnalyzer(api, collectible);
+            
+            var key = GetLookupKey(collectible);
+            if (Lookup.TryGetValue(key, out var result)) return result;
+            return Lookup[key] = new ContentAnalyzer(api, collectible);
         }
 
         private ContentAnalyzer(ICoreAPI api, CollectibleObject collectible)
@@ -66,105 +87,87 @@ namespace WearAndTear.Code.AutoRegistry
             }
         }
 
-        private (Dictionary<string, float> woodContent, Dictionary<string, float> metalContent, Dictionary<string, float> rockContent) ExtractContent(GridRecipe recipe)
+        private void ExtractGridRecipe(GridRecipe recipe)
         {
-            var outputAmmount = recipe.Output.Quantity;
-            //TODO see if we can resolve wildcard to some degree
-
-            var validIngredients = recipe.resolvedIngredients
-            .Where(item => item != null && !item.IsTool
-            && (
-                item.ResolvedItemstack != null
-                || item.IsWildCard && item.AllowedVariants?.Length == 1
-            ))
-            .Select(ingredient =>
+            var ingredients = new Dictionary<CollectibleObject, float>();
+            var outputAmount = recipe.Output.Quantity;
+            foreach(var ingredient in recipe.resolvedIngredients)
             {
-                var amount = (float)ingredient.Quantity / (float)outputAmmount;
+                if(ingredient is null || ingredient.IsTool || (ingredient.ResolvedItemstack is null && (!ingredient.IsWildCard || ingredient.AllowedVariants?.Length != 1))) continue;
+                
+                var collectible = ingredient.ResolvedItemstack is null ? Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])) : ingredient.ResolvedItemstack.Collectible;
+                if(collectible is null) continue;
+                
+                var amount = (float)ingredient.Quantity / (float)outputAmount;
+                if(ingredients.TryGetValue(collectible, out float currentValue))
+                {
+                    ingredients[collectible] = currentValue + amount;
+                }
+                else ingredients[collectible] = amount;
+            }
 
-                if(ingredient.ResolvedItemstack != null) return (ingredient.ResolvedItemstack.Collectible, amount);
-                return (Collectible: Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])), amount);
-            })
-            .Where(pair => pair.Collectible != null)
-            .GroupBy(item => item.Collectible)
-            .ToDictionary(item => item.Key, item => item.Sum(a => a.amount));
-            
-            //TODO see if we can ignore stuff that is returned like buckets
-            var woodContent = new Dictionary<string, float>();
-            var metalContent = new Dictionary<string, float>();
-            var rockContent = new Dictionary<string, float>();
+            ExtractIngredients(ingredients);
+        }
+        
+        private bool TryAddContent(Dictionary<string, float> content, string key, float amount)
+        {
+            if(string.IsNullOrEmpty(key)) return false;
 
-            foreach ((var ingredient, var amount) in validIngredients)
+            if(content.TryGetValue(key, out float currentValue))
             {
-                var smeltStack = ingredient.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
-                if (smeltStack != null && smeltStack.Collectible is ItemIngot ingot)
-                {
-                    var metalType = ingot.GetMetalType();
-                    var output = (float)smeltStack.StackSize / (float)ingredient.CombustibleProps.SmeltedRatio;
-                    output = output * 4 * amount;
-                    metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
-                    continue;
-                }
+                content[key] = currentValue + amount;
+            }
+            else content[key] = amount;
 
-                if (ingredient is ItemIngot ingot2)
-                {
-                    var metalType = ingot2.GetMetalType();
-                    var output = amount * 4;
-                    metalContent[metalType] = metalContent.TryGetValue(metalType, out var current) ? current + output : output;
-                    continue;
-                }
+            return true;
+        }
 
-                //TODO other means of getting metal (like smithing recipes from ingot)
-                //TODO make amore generic and extensible scrap system
+        private void ExtractIngredients(Dictionary<CollectibleObject, float> ingredients)
+        {
+            bool metal = false;
+            foreach((var ingredient, var amount) in ingredients)
+            {
                 var firstCodePart = ingredient.FirstCodePartAsSpan();
+
+                //Scan wood
+
                 if (firstCodePart.SequenceEqual("log"))
                 {
-                    var woodType = ingredient.Variant["wood"];
-                    if (!string.IsNullOrEmpty(woodType))
-                    {
-                        var woodAmount = 12 * amount;
-                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                        continue;
-                    }
+                    if(TryAddContent(WoodContent, ingredient.Variant["wood"], amount * 12)) continue;
                 }
                 else if (firstCodePart.SequenceEqual("planks"))
                 {
-                    var woodType = ingredient.Variant["wood"];
-                    if (!string.IsNullOrEmpty(woodType))
-                    {
-                        var woodAmount = 4 * amount;
-                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                        continue;
-                    }
+                    if(TryAddContent(WoodContent, ingredient.Variant["wood"], amount * 4)) continue;
                 }
                 else if (firstCodePart.SequenceEqual("plank"))
                 {
-                    var woodType = ingredient.Variant["wood"];
-                    if (!string.IsNullOrEmpty(woodType))
-                    {
-                        var woodAmount = amount;
-                        woodContent[woodType] = woodContent.TryGetValue(woodType, out var current) ? current + woodAmount : woodAmount;
-                        continue;
-                    }
+                    if(TryAddContent(WoodContent, ingredient.Variant["wood"], amount)) continue;
                 }
-                else if (firstCodePart.SequenceEqual("rock"))
+                //Scan rock
+                else if (firstCodePart.SequenceEqual("rock")) 
                 {
-                    var rockType = ingredient.Variant["rock"];
-                    if (!string.IsNullOrEmpty(rockType))
-                    {
-                        var rockAmount = amount;
-                        rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
-                        continue;
-                    }
+                    if(TryAddContent(RockContent, ingredient.Variant["rock"], amount)) continue;
                 }
                 else if (firstCodePart.SequenceEqual("stone"))
                 {
-                    var rockType = ingredient.Variant["rock"];
-                    if (!string.IsNullOrEmpty(rockType))
-                    {
-                        var rockAmount = 4 * amount;
-                        rockContent[rockType] = woodContent.TryGetValue(rockType, out var current) ? current + rockAmount : rockAmount;
-                        continue;
-                    }
+                    if(TryAddContent(RockContent, ingredient.Variant["rock"], amount * 4)) continue;
+                }
+                
+
+                if (AutoPartRegistryConfig.Instance.RequireAllRecipesToContainMetal && foundRecipeWithNoMetal) continue;
+
+                //Scan metal
+                if (ingredient is ItemIngot ingot && TryAddContent(MetalContent, ingot.GetMetalType(), amount * 4))
+                {
+                    metal = true;
+                    continue;
+                }
+
+                var smeltStack = ingredient.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
+                if (smeltStack != null && smeltStack.Collectible is ItemIngot ingot2 && TryAddContent(MetalContent, ingot2.GetMetalType(), (smeltStack.StackSize / (float)ingredient.CombustibleProps.SmeltedRatio) * 4 * amount))
+                {
+                    metal = true;
+                    continue;
                 }
 
                 var analyzer = GetOrCreate(Api, ingredient);
@@ -176,52 +179,41 @@ namespace WearAndTear.Code.AutoRegistry
 
                 analyzer.Analyze(Api);
 
-                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent)
-                {
-                    var woodAmount = AnalyzedAmount * amount;
-                    woodContent[analyzedContent] = woodContent.TryGetValue(analyzedContent, out var current) ? current + woodAmount : woodAmount;
-                }
-
-                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.MetalContent)
-                {
-                    var metalAmount = AnalyzedAmount * amount;
-                    metalContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + metalAmount : metalAmount;
-                }
-
-                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.RockContent)
-                {
-                    var rockAmount = AnalyzedAmount * amount;
-                    rockContent[analyzedContent] = metalContent.TryGetValue(analyzedContent, out var current) ? current + rockAmount : rockAmount;
-                }
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.WoodContent) TryAddContent(WoodContent, analyzedContent, AnalyzedAmount * amount);
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.RockContent) TryAddContent(RockContent, analyzedContent, AnalyzedAmount * amount);
+                foreach ((var analyzedContent, var AnalyzedAmount) in analyzer.MetalContent) TryAddContent(MetalContent, analyzedContent, AnalyzedAmount * amount);
+                if(!metal && analyzer.MetalContent.Any(static item => item.Value > 0)) metal = true;
             }
 
-            return (woodContent, metalContent, rockContent);
+            if (!metal) foundRecipeWithNoMetal = true;
         }
 
+        private static void DivideContent(Dictionary<string, float> content, int count)
+        {
+            foreach (var key in content.Keys)
+            {
+                content[key] /= count;
+            }
+        }
+
+        private bool foundRecipeWithNoMetal;
         private bool AnalyzeRecipes(ICoreAPI api)
         {
-            var craftedBy = api.World.GridRecipes.Where(recipe => recipe.Output?.Type == Collectible.ItemClass && ComparisonUtil.CompareWithoutOrientation(recipe.Output?.ResolvedItemstack?.Collectible, Collectible)).ToList();
-            if (craftedBy.Count == 0) return false;
-
-            var recipeContent = craftedBy.Select(ExtractContent).ToList();
-
-            WoodContent = recipeContent
-                .SelectMany(item => item.woodContent)
-                .GroupBy(item => item.Key)
-                .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
-
-            if (AutoPartRegistryConfig.Instance.RequireAllRecipesToContainMetal && recipeContent.Exists(item => item.metalContent.Count == 0)) return true;
-
-            MetalContent = recipeContent
-                .SelectMany(item => item.metalContent)
-                .GroupBy(item => item.Key)
-                .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
-
-            RockContent = recipeContent
-                .SelectMany(item => item.rockContent)
-                .GroupBy(item => item.Key)
-                .ToDictionary(item => item.Key, item => item.Average(a => a.Value));
-
+            var comparator = new WithoutOrientationComparator(Collectible);
+            var itemClass = Collectible.ItemClass;
+            int recipeCount = 0;
+            foreach(var recipe in api.World.GridRecipes)
+            {
+                if(recipe.Output?.ResolvedItemstack is null || recipe.Output.Type != itemClass || !comparator.IsMatch(recipe.Output.ResolvedItemstack.Collectible)) continue;
+                recipeCount++;
+                ExtractGridRecipe(recipe);
+            }
+            if(recipeCount == 0) return false;
+            if(recipeCount == 1) return true;
+            
+            DivideContent(WoodContent, recipeCount);
+            DivideContent(RockContent, recipeCount);
+            DivideContent(MetalContent, recipeCount);
             return true;
         }
 
