@@ -48,7 +48,7 @@ namespace WearAndTear.Config.Server
         /// <summary>
         /// The minimal percentage the composition of metal ingredients is required for that metal to be the primary metal
         /// </summary>
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinimalMetalCompositionPercentage { get; set; } = .8f;
@@ -56,7 +56,7 @@ namespace WearAndTear.Config.Server
         /// <summary>
         /// The minimal percentage the composition of wood ingredients is required for that wood to be the primary wood type
         /// </summary>
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinimalWoodCompositionPercentage { get; set; } = .8f;
@@ -64,7 +64,7 @@ namespace WearAndTear.Config.Server
         /// <summary>
         /// The minimal percentage the composition of rock ingredients is required for that rock to be the primary rock type
         /// </summary>
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DefaultValue(.8f)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinimalRockCompositionPercentage { get; set; } = .8f;

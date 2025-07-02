@@ -41,7 +41,7 @@ namespace WearAndTear.Config.Props
         /// How much is repaired by using this item
         /// (a strength of 1 would fully repair the item while 0 wouldn't do anything)
         /// </summary>
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DefaultValue(.5f)]
         [DisplayFormat(DataFormatString = "P")]
         public float Strength { get; set; } = .5f;

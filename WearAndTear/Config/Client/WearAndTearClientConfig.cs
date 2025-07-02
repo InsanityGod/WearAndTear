@@ -18,7 +18,7 @@ namespace WearAndTear.Config.Client
         /// </summary>
         [Category("Appearance")]
         [DefaultValue(0.6f)]
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DisplayFormat(DataFormatString = "P")]
         public float VisualTearingMinDurability { get; set; } = 0.6f;
 

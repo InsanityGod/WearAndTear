@@ -22,7 +22,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [Category("Maintenance")]
         [DefaultValue(0)]
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinDurability { get; set; } = 0;
 
@@ -32,7 +32,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [Category("Maintenance")]
         [DefaultValue(.95f)]
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DisplayFormat(DataFormatString = "P")]
         public float DurabilityLeeway { get; set; } = .95f;
 
@@ -41,7 +41,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [Category("Maintenance")]
         [DefaultValue(.95f)]
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         [DisplayFormat(DataFormatString = "P")]
         public float MinMaintenanceDurability { get; set; } = .95f;
 
@@ -65,7 +65,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [Category("Maintenance")]
         [DefaultValue(0.1)]
-        [Range(0.01f, float.PositiveInfinity)]
+        [Range(0.01d, double.PositiveInfinity)]
         public double PollIntervalInDays { get; set; } = 0.1;
 
         /// <summary>

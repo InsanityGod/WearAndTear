@@ -20,7 +20,7 @@ namespace WearAndTear.Config.Props
         /// Multiplier on how much damage is done
         /// </summary>
         [DefaultValue(0.5f)]
-        [Range(0, 1)]
+        [Range(0d, 1d)]
         public float DecayMultiplier { get; set; } = .5f;
 
         public bool IsEffectiveFor(PartProps props)

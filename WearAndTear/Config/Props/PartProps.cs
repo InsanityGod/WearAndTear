@@ -24,7 +24,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// How much content this part has (affects the ammount of scrap generated)
         /// </summary>
-        [Range(0f, float.PositiveInfinity)]
+        [Range(0d, double.PositiveInfinity)]
         public float ContentLevel { get; set; }
 
         /// <summary>
@@ -41,14 +41,14 @@ namespace WearAndTear.Config.Props
         /// How long the object should last on average
         /// </summary>
         [DefaultValue(1f)]
-        [Range(0, float.PositiveInfinity)]
+        [Range(0d, double.PositiveInfinity)]
         public float AvgLifeSpanInYears { get; set; } = 1;
 
         /// <summary>
         /// How the missing durability translates itself into loss in efficiency
         /// (0 meaning no loss even when fully broken, 1 means it will stop working altogether when fully broken)
         /// </summary>
-        [Range(0, 2)]
+        [Range(0d, 2d)]
         [DefaultValue(0)]
         public float DurabilityEfficiencyRatio { get; set; } = 0;
 
@@ -61,7 +61,7 @@ namespace WearAndTear.Config.Props
         /// <summary>
         /// The maximum ammount of durability that can be repaired before the item has to be fully replaced
         /// </summary>
-        [Range(0, float.PositiveInfinity)]
+        [Range(0d, double.PositiveInfinity)]
         public float? MaintenanceLimit { get; set; }
 
         /// <summary>

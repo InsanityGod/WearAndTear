@@ -17,7 +17,7 @@ namespace WearAndTear.Config.Server
         /// </summary>
         [Category("Axle in Blocks")]
         [DefaultValue(1.5f)]
-        [Range(0.1f, float.PositiveInfinity)]
+        [Range(0.1d, double.PositiveInfinity)]
         public float EncasedPartLifeSpanMultiplier { get; set; } = 1.5f;
 
         /// <summary>
