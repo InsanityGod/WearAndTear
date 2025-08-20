@@ -9,15 +9,12 @@ namespace WearAndTear.Code.Behaviours.Parts.Protective
 {
     public class OptionalProtectivePart : ProtectivePart, IOptionalPart
     {
-        public OptionalProtectivePart(BlockEntity blockentity) : base(blockentity) { }
+        public OptionalProtectivePart(BlockEntity blockentity) : base(blockentity)
+        {
+            _durability = 0;
+        }
 
         public virtual bool IsPresent => Durability != 0;
-
-        public override void Initialize(ICoreAPI api, JsonObject properties)
-        {
-            base.Initialize(api, properties);
-            Durability = Props.IsCritical ? 1 : 0; //Only present by default if IsCritical
-        }
 
         public override void GetWearAndTearInfo(IPlayer forPlayer, StringBuilder dsc)
         {

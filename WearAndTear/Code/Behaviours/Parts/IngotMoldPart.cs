@@ -98,11 +98,10 @@ namespace WearAndTear.Code.Behaviours.Parts
         {
             base.OnBlockPlaced(byItemStack);
 
-            var tree = byItemStack?.Attributes?.GetTreeAttribute(Constants.DurabilityTreeName);
-
-            if (tree != null && Side == EIngotMoldSide.Left)
+            if (Side == EIngotMoldSide.Left)
             {
-                Durability = tree.GetFloat("Mold", Durability);
+                var tree = byItemStack?.Attributes?.GetTreeAttribute(Constants.DurabilityTreeName);
+                Durability = tree?.GetFloat("Mold", 1) ?? 1;
             }
         }
 

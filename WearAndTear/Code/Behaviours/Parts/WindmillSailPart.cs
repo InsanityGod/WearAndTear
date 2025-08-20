@@ -18,7 +18,10 @@ namespace WearAndTear.Code.Behaviours.Parts
 {
     public class WindmillSailPart : OptionalPart
     {
-        public WindmillSailPart(BlockEntity blockentity) : base(blockentity) { }
+        public WindmillSailPart(BlockEntity blockentity) : base(blockentity)
+        {
+            _durability = 1;
+        }
 
         public bool AreSailsRolledUp { get; set; } = false;
 

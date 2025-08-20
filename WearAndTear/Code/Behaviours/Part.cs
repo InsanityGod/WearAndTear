@@ -201,7 +201,7 @@ namespace WearAndTear.Code.Behaviours
             Durability = GameMath.Clamp(Durability, WearAndTearServerConfig.Instance.MinDurability, 1);
         }
 
-        private float _durability = 1;
+        protected float _durability = 1;
 
         public virtual float Durability
         {

@@ -7,7 +7,10 @@ namespace WearAndTear.Code.Behaviours.Parts.Abstract
 {
     public abstract class OptionalPart : Part, IOptionalPart
     {
-        protected OptionalPart(BlockEntity blockentity) : base(blockentity) { }
+        protected OptionalPart(BlockEntity blockentity) : base(blockentity)
+        {
+            _durability = 0;
+        }
 
         public virtual bool IsPresent => Durability != 0;
 
