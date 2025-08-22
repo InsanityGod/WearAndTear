@@ -75,19 +75,17 @@ namespace WearAndTear.Code.BlockEntities
         public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
         {
             var primaryContent = PrimaryContent;
-            if (primaryContent == null || (primaryContent.Block == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
+            if (primaryContent == null || (primaryContent.Collectible == null && !primaryContent.ResolveBlockOrItem(Api.World))) return false;
 
-            var block = PrimaryContent.Block?.GetPlacedBlock(Api);
-            var cache = ObjectCacheUtil.GetOrCreate(Api, CacheKey, () => new Dictionary<string, MeshData>());
+            var block = PrimaryContent.Collectible.GetPlacedBlock(Api);
 
-            var cacheKey = block.Code.ToString();
-
-            if (primaryContent?.Block?.Attributes == null) return false;
+            if (block?.Attributes == null) return false;
             if (mesh == null)
             {
-                var loc = primaryContent.Block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Shape)].AsString();
+                var loc = block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Shape)].AsString();
                 bool customShape = loc != null;
-                Shape shape = null;
+                
+                Shape shape;
                 if (customShape)
                 {
                     var assetLocation = new AssetLocation(loc);
@@ -98,18 +96,18 @@ namespace WearAndTear.Code.BlockEntities
 
                 if (shape == null && customShape)
                 {
-                    Api.Logger.Error("[WearAndTear] Could not find custom rubble shape at '{0}' for block '{1}', using default shape", loc, primaryContent.Block.Code);
+                    Api.Logger.Error("[WearAndTear] Could not find custom rubble shape at '{0}' for block '{1}', using default shape", loc, block.Code);
                     shape = Shape.TryGet(Api, defaultShape);
                     customShape = false;
                 }
 
                 if (customShape)
                 {
-                    tessThreadTesselator.TesselateShape("rubble", shape, out mesh, tessThreadTesselator.GetTextureSource(primaryContent.Block));
+                    tessThreadTesselator.TesselateShape("rubble", shape, out mesh, tessThreadTesselator.GetTextureSource(block));
                 }
                 else
                 {
-                    var texSource = new RubbleTextureSource(Traverse.Create(tessThreadTesselator).Field<ClientMain>("game").Value, tessThreadTesselator, primaryContent.Block);
+                    var texSource = new RubbleTextureSource(Traverse.Create(tessThreadTesselator).Field<ClientMain>("game").Value, tessThreadTesselator, block);
                     tessThreadTesselator.TesselateShape("rubble", shape, out mesh, texSource, selectiveElements: texSource.GetSelectiveElements());
                 }
             }

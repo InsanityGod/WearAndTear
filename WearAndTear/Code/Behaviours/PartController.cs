@@ -208,13 +208,29 @@ namespace WearAndTear.Code.Behaviours
             {
                 var drops = Block.GetDrops(Api.World, Pos, null);
 
-                //TODO Container drops (helve hammer) should be part of rubble pile
+                if(Blockentity is IBlockEntityContainer container)
+                {
+                    var items = new List<ItemStack>();
+                    foreach(var slot in container.Inventory)
+                    {
+                        if(slot.Empty) continue;
+                        items.Add(slot.Itemstack);
+                        slot.Itemstack = null;
+                    }
+
+                    drops = drops.Append(items);
+                }
 
                 if (drops.Length == 0)
                 {
                     //No point in creating rubble if it doesn't contain anything
                     Api.World.BlockAccessor.BreakBlock(Pos, null);
                     return;
+                }
+
+                foreach(var part in Parts)
+                {
+                    part.OnGeneraterRubble(ref drops);
                 }
 
                 var normalDropsTree = stack.Attributes.GetOrAddTreeAttribute("rubble-normal-drops");

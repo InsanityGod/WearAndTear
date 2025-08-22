@@ -70,6 +70,13 @@ namespace WearAndTear.Code.Rendering
                         // Ignore
                     }
                 }
+
+                //Fallback so we can atleast see the block if there was no real renderable content
+                if(Sources.Count == 0)
+                {
+                    var woodBlock = game.Api.World.GetBlock("game:planks-oak-ud");
+                    if (woodBlock != null) Sources["wood"] = tesselator.GetTextureSource(woodBlock, returnNullWhenMissing: true);
+                }
             }
             catch (Exception)
             {

@@ -2,6 +2,8 @@
 using MechanicalWoodSplitter.Code.FakeStuff;
 using MechanicalWoodSplitter.Code.Items;
 using Vintagestory.API.Common;
+using Vintagestory.API.MathTools;
+using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts.Abstract;
@@ -36,6 +38,17 @@ namespace WearAndTear.Code.Behaviours.Parts.Item
             else if (!SpecialPartsConfig.Instance.HelveHammer || (!SpecialPartsConfig.Instance.DamageHelveHammerEvenIfNothingOnAnvil && anvil.WorkItemStack == null)) return;
 
             base.DamageItem(amount);
+        }
+
+        public override ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed)
+        {
+            if (isBlockDestroyed && ItemStack is not null)
+            {
+                itemStacks = itemStacks.Append(ItemStack);
+                ItemStack = null;
+            }
+
+            return itemStacks;
         }
 
         public bool IsHelveAxe => ItemStack?.Collectible is HelveAxe;

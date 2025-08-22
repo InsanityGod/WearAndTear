@@ -228,6 +228,10 @@ namespace WearAndTear.Code.Behaviours
             }
         }
 
+        public virtual void OnGeneraterRubble(ref ItemStack[] drops)
+        {
+
+        }
 
     }
 }
