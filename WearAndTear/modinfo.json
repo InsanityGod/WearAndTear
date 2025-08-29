@@ -6,9 +6,9 @@
     "TheInsanityGod"
   ],
   "description": "Wear And Tear for various mechanical devices",
-  "version": "1.5.11",
+  "version": "1.5.12",
   "dependencies": {
     "game": "",
-    "insanitylib": "1.0.2"
+    "insanitylib": "1.0.4"
   }
 }

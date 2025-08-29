@@ -48,7 +48,7 @@ namespace WearAndTear.Code.Behaviours
 
         public virtual bool CanRepairWith(RepairItemProps props)
         {
-            if (props.RequiredMaterialVariant != null && props.RequiredMaterialVariant != Props.MaterialVariant) return false;
+            if (props.RequiredMaterialVariant != null && props.RequiredMaterialVariant != Props.MaterialVariant && Props.MaterialVariant?.Path != "unknown") return false;
             return props.RepairType == Props.RepairType;
             //TODO see about getting this info in handbook
         }

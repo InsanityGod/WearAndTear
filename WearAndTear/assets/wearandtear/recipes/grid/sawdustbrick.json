@@ -50,7 +50,7 @@
       },
       "L": {
         "type": "block",
-        "code": "game:bowl-fired"
+        "code": "game:bowl-*-fired"
       }
     },
     "width": 3,

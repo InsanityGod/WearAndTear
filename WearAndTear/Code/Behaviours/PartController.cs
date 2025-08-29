@@ -136,7 +136,8 @@ namespace WearAndTear.Code.Behaviours
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
-            LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
+
+            if(DecayModifiersConfig.Instance.DecayWhileUnloaded) LastDecayUpdate = tree.TryGetDouble("LastDecayUpdate") ?? LastDecayUpdate;
 
             if (Api?.Side == EnumAppSide.Client) QueueDecalUpdate();
         }
@@ -144,7 +145,7 @@ namespace WearAndTear.Code.Behaviours
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            if (LastDecayUpdate.HasValue) tree.SetDouble("LastDecayUpdate", LastDecayUpdate.Value);
+            if (LastDecayUpdate.HasValue && DecayModifiersConfig.Instance.DecayWhileUnloaded) tree.SetDouble("LastDecayUpdate", LastDecayUpdate.Value);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)

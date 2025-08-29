@@ -37,5 +37,11 @@ namespace WearAndTear.Config.Server
         [DefaultValue(1)]
         [Range(0d, double.PositiveInfinity)]
         public float Mold { get; set; } = 1f;
+        
+        /// <summary>
+        /// Wether decay should happen while the chunk is unloaded.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool DecayWhileUnloaded { get; set; } = true;
     }
 }

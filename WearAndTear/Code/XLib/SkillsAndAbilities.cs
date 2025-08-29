@@ -143,7 +143,6 @@ namespace WearAndTear.Code.XLib
         public static float ApplyHandyManBonus(ICoreAPI api, IPlayer player, float repairStrength)
         {
             var xleveling = api.ModLoader.GetModSystem<XLeveling>();
-            Console.WriteLine($"original repair strength: {repairStrength}");
             var ability = xleveling.IXLevelingAPI.GetPlayerSkillSet(player)?.FindSkill("mechanics")?.FindAbility("handyman");
             if (ability == null) return repairStrength;
             return repairStrength * (1 + (ability.Value(0) * 0.01f));
