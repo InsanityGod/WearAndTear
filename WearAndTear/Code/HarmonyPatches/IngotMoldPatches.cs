@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
+using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Reflection.Emit;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
@@ -20,88 +20,40 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> ConsumeIngotMoldDurability(IEnumerable<CodeInstruction> instructions)
         {
-            var codes = instructions.ToList();
-            var leftField = AccessTools.Field(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.ShatteredLeft));
-            var rightField = AccessTools.Field(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.ShatteredRight));
+            var matcher = new CodeMatcher(instructions);
+            matcher.MatchEndForward(new CodeMatch(OpCodes.Call, AccessTools.PropertySetter(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.SelectedFillLevel))));
+            matcher.InsertAfter(
+                CodeInstruction.LoadArgument(0),
+                CodeInstruction.LoadArgument(1),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(DoDamageToIngotMold)))
+            );
 
-            for (var i = 0; i < codes.Count; i++)
-            {
-                var currentCode = codes[i];
-                if (currentCode.opcode == OpCodes.Ldfld && currentCode.operand is FieldInfo field && codes[i + 1].opcode == OpCodes.Brtrue)
-                {
-                    if (field == leftField)
-                    {
-                        codes.InsertRange(i + 2, new CodeInstruction[] {
-                            new(OpCodes.Ldarg_0),
-                            new(OpCodes.Ldc_I4_1),
-                            new(OpCodes.Ldarg_1),
-                            new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(DoDamageToIngotMold)))
-                        });
-                        i += 4;
-                    }
-                    else if (field == rightField)
-                    {
-                        codes.InsertRange(i + 2, new CodeInstruction[] {
-                            new(OpCodes.Ldarg_0),
-                            new(OpCodes.Ldc_I4_2),
-                            new(OpCodes.Ldarg_1),
-                            new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(DoDamageToIngotMold)))
-                        });
-                        i += 4;
-                    }
-                }
-            }
-            return codes;
+            return matcher.InstructionEnumeration();
         }
 
-        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, EIngotMoldSide side, IPlayer byPlayer)
+        public static void DoDamageToIngotMold(BlockEntityIngotMold instance, IPlayer byPlayer)
         {
             if(instance.Api.Side != EnumAppSide.Server) return;
-            instance.Behaviors.OfType<IngotMoldPart>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
-        }
-
-        [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeIngot")]
-        [HarmonyPostfix]
-        public static void ContentLevel(BlockEntityIngotMold __instance)
-        {
-            //HACK: Due to weird vanilla behavior you can actually pickup the mold even if it's shattered, the check that prevents this is actually based on FillLevel
-            if(__instance.ShatteredLeft && __instance.FillLevelLeft == 0)
-            {
-                __instance.FillLevelLeft = -1;
-            }
             
-            if(__instance.ShatteredRight && __instance.FillLevelRight == 0)
-            {
-                __instance.FillLevelRight = -1;
-            }
+            EIngotMoldSide side = instance.IsRightSideSelected ? EIngotMoldSide.Right : EIngotMoldSide.Left;
+            instance.Behaviors.OfType<IngotMoldPart>().FirstOrDefault(x => x.Side == side)?.Damage(byPlayer);
         }
 
         [HarmonyPatch(typeof(BlockEntityIngotMold), "TryTakeMold")]
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> FixIngotMoldRightClickToPickup(IEnumerable<CodeInstruction> instructions)
         {
-            var codes = instructions.ToList();
-            var method = AccessTools.Method(typeof(IngotMoldPatches), nameof(FixItemstack));
-            var constructor = AccessTools.Constructor(typeof(ItemStack), new Type[] { typeof(Block), typeof(int) });
+            var matcher = new CodeMatcher(instructions);
+            matcher.MatchEndForward(new CodeMatch(OpCodes.Newobj, AccessTools.Constructor(typeof(ItemStack), [typeof(Block), typeof(int)]))); //TODO test
+            matcher.InsertAfter(
+                CodeInstruction.LoadArgument(0),
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(FixItemstack)))
+            );
 
-            for (int i = 0; i < codes.Count; i++)
-            {
-                var code = codes[i];
-                if (code.opcode == OpCodes.Newobj && code.operand is ConstructorInfo constructorInfo && constructorInfo == constructor)
-                {
-                    codes.InsertRange(i + 1, new CodeInstruction[]
-                    {
-                        CodeInstruction.LoadArgument(0),
-                        CodeInstruction.LoadArgument(1),
-                        new(OpCodes.Call, method),
-                    });
-                    break;
-                }
-            }
-            return codes;
+            return matcher.InstructionEnumeration();
         }
 
-        public static ItemStack FixItemstack(ItemStack stack, BlockEntityIngotMold instance, IPlayer byPlayer)
+        public static ItemStack FixItemstack(ItemStack stack, BlockEntityIngotMold instance)
         {
             var ingotMoldWearAndTear = instance.Behaviors.OfType<IngotMoldPart>().OrderByDescending(x => x.Side).FirstOrDefault(x => x.IsPresent);
             if (ingotMoldWearAndTear != null && ingotMoldWearAndTear.Durability < 1)
@@ -113,21 +65,20 @@ namespace WearAndTear.Code.HarmonyPatches
         }
 
         [HarmonyPatch(typeof(BlockIngotMold), nameof(BlockIngotMold.GetDrops))]
-        public static void Postfix(Block __instance, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, ref ItemStack[] __result)
+        public static void Postfix(Block __instance, IWorldAccessor world, BlockPos pos, ref ItemStack[] __result)
         {
-            BlockEntityIngotMold entity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityIngotMold;
-            if (entity == null) return;
+            if (world.BlockAccessor.GetBlockEntity(pos) is not BlockEntityIngotMold entity) return;
 
             var ingotMoldWearAndTear = entity.Behaviors.OfType<IngotMoldPart>().Where(x => x.IsPresent).ToList();
-            if (!ingotMoldWearAndTear.Any()) return;
+            if (ingotMoldWearAndTear.Count == 0) return;
 
-            string blockCode = __instance.Code.Path.Split('-')[0];
-            var normalItem = Array.Find(__result, item => item.Block != null && blockCode == item.Block.Code.Path.Split('-')[0]);
+            var blockCode = __instance.FirstCodePartAsSpan().ToString();
+            var normalItem = Array.Find(__result, item => item.Collectible is not null && blockCode == item.Collectible.FirstCodePartAsSpan());
 
-            if (normalItem == null) return;
+            if (normalItem is null) return;
 
             var secondItem = normalItem.StackSize > 1 ? normalItem.Clone() : null;
-            if (secondItem != null)
+            if (secondItem is not null)
             {
                 normalItem.StackSize = 1;
                 secondItem.StackSize = 1;
@@ -140,7 +91,7 @@ namespace WearAndTear.Code.HarmonyPatches
                 durabilityTree.SetFloat("Mold", wearAndTear.Durability);
             }
 
-            if (secondItem != null)
+            if (secondItem is not null)
             {
                 wearAndTear = ingotMoldWearAndTear[1];
                 if (wearAndTear.Durability < 1)
@@ -156,31 +107,24 @@ namespace WearAndTear.Code.HarmonyPatches
         [HarmonyTranspiler]
         public static IEnumerable<CodeInstruction> SetDurabilityOnMoldAdd(IEnumerable<CodeInstruction> instructions)
         {
-            var codes = instructions.ToList();
-            var fieldToFind = AccessTools.Field(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.QuantityMolds));
+            var matcher = new CodeMatcher(instructions);
+            matcher.MatchEndForward(
+                new CodeMatch(OpCodes.Stfld, AccessTools.Field(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.QuantityMolds)))
+            );
 
-            for (int i = 0; i < codes.Count; i++)
-            {
-                var code = codes[i];
-                if (code.opcode == OpCodes.Stfld && code.operand is FieldInfo field && field == fieldToFind)
-                {
-                    codes.InsertRange(i + 1, new CodeInstruction[]
-                    {
-                        new(OpCodes.Ldarg_0),
-                        new(OpCodes.Ldarg_1, 1),
-                        new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(SetDurability)))
-                    });
-                    break;
-                }
-            }
+            matcher.InsertAfter(
+                CodeInstruction.LoadArgument(0),
+                CodeInstruction.LoadArgument(1),
+                new(OpCodes.Call, AccessTools.Method(typeof(IngotMoldPatches), nameof(SetDurability)))
+            );
 
-            return codes;
+            return matcher.InstructionEnumeration();
         }
 
         public static void SetDurability(BlockEntityIngotMold instance, IPlayer byPlayer)
         {
             var item = byPlayer.InventoryManager.ActiveHotbarSlot.Itemstack;
-            if (item == null) return;
+            if (item is null) return;
             var durabilityTree = item.Attributes.GetTreeAttribute(Constants.DurabilityTreeName);
 
             var durability = durabilityTree?.GetFloat("Mold", 1) ?? 1;
