@@ -33,9 +33,11 @@ namespace WearAndTear.Code.Behaviours.Parts
             if (index == 0)
             {
                 Side = EIngotMoldSide.Left;
+                if(Durability == 0 && IngotMoldEntity.MoldLeft is not null) Durability = 1;
             }
             else if (index == 1)
             {
+                if(Durability == 0 && IngotMoldEntity.MoldRight is not null) Durability = 1;
                 Side = EIngotMoldSide.Right;
             }
         }
