@@ -1,0 +1,131 @@
+{
+  "durability": "Прочность",
+  "maintenance": "Провести обслуживание",
+  "repaired": "Отремонтировано",
+  "optional": "Опционально",
+  "failed-maintenance-not-required": "Этот тип обслуживания в настоящее время не требуется",
+  "failed-maintenance-active": "Невозможно выполнить это обслуживание, пока объект активен",
+  "failed-maintenance-limit-reached": "Превышен лимит для данного типа обслуживания",
+  "failed-maintenance-missing-traits": "Требуются следующие характеристики: {0}",
+  // Приблизительные оценки
+  "wearandtear:durability-good": "В отличном состоянии",
+  "wearandtear:durability-decent": "В удовлетворительном состоянии",
+  "wearandtear:durability-bad": "В плохом состоянии",
+  "wearandtear:durability-critical": "На грани поломки",
+  // Разрушение
+  "wearandtear:decay-wind": "Разрушение от ветра",
+  "wearandtear:decay-humidity": "Разрушение от влажности",
+  "wearandtear:decay-time": "Разрушение от времени",
+  "wearandtear:decay-usage": "Разрушение от использования",
+  // Предметы
+  "item-sawdust": "Опилки",
+  "itemdesc-sawdust": "Побочный продукт при распилке древесины",
+  "item-woodfiller": "Шпатлёвка для дерева",
+  "itemdesc-woodfiller": "Используется для ремонта повреждений древесины",
+  "item-sawdustbrick-dry": "Опилочный кирпич (сухой)",
+  "itemdesc-sawdustbrick-dry": "Кирпич из опилок, может использоваться как топливо",
+  "item-sawdustbrick-wet": "Опилочный кирпич (влажный)",
+  "item-sawdustbrick-burned": "Угольный кирпич",
+  "item-metalscrap-*": "Металлический лом",
+  "itemdesc-metalscrap-*": "Остатки от чего-то, что раньше было рабочим",
+  "item-woodscrap-*": "Деревянный лом",
+  "itemdesc-woodscrap-*": "Остатки от чего-то, что раньше было рабочим",
+  // Детали
+  "linearpower:partname-sawblade": "Пильное полотно",
+  "wearandtear:partname-frame": "Каркас ({0})",
+  "wearandtear:partname-mechanism-encased": "Закрытый механизм ({0})",
+  "wearandtear:partname-wax": "Воск",
+  "wearandtear:partname-reinforcement": "Усиление ({0})",
+  "wearandtear:partname-mold": "Форма",
+  "wearandtear:partname-ingotmold-left": "Форма для слитка (левая)",
+  "wearandtear:partname-ingotmold-right": "Форма для слитка (правая)",
+  "wearandtear:partname-helveitem": "Рукоятка",
+  "wearandtear:partname-pulverizeritem": "Ступальные колпачки",
+  "wearandtear:partname-sail": "Парус",
+  // Материалы
+  "game:material-unknown": "Неизвестно",
+  "wearandtear:material-wood": "Дерево",
+  "wearandtear:material-stone": "Камень",
+  "wearandtear:material-ceramic": "Керамика",
+  // Блоки
+  "wearandtear:block-rubble-unstable": "Обломки (нестабильные)",
+  "wearandtear:block-rubble-stable": "Обломки (стабильные)",
+  "wearandtear:block-charcoalbrickpit": "Угольная яма",
+  // Характеристики
+  "game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Инженер </font>",
+  "game:traitdesc-wearandtear-engineer": "Позволяет проводить обслуживание механических устройств",
+  "game:trait-wearandtear-precisemeasurements": "<font color=\"#84ff84\">• Точные измерения </font>",
+  "game:traitdesc-wearandtear-precisemeasurements": "Позволяет видеть точный процент оставшейся прочности",
+  // Навыки
+  "wearandtear:skill-mechanics": "Механика",
+  "wearandtear:ability-handyman": "Мастер на все руки",
+  "wearandtear:abilitydesc-handyman": "Ремонтные материалы эффективны на {0}% больше",
+  "wearandtear:ability-butterfingers": "Неуклюжий",
+  "wearandtear:abilitydesc-butterfingers": "Воск эффективен на {0}% больше, но разрушается на {1}% быстрее",
+  "wearandtear:ability-limitbreaker": "Превышение лимита",
+  "wearandtear:abilitydesc-limitbreaker": "Позволяет превышать лимит обслуживания на {0}%",
+  "wearandtear:ability-precise-measurements": "Точные измерения",
+  "wearandtear:abilitydesc-precise-measurements": "Позволяет видеть прочность в процентах",
+  "wearandtear:ability-strong-feet": "Крепкие ноги",
+  "wearandtear:abilitydesc-strong-feet": "Уменьшает урон от ходьбы по обломкам на {0}%",
+  "wearandtear:ability-scrapper": "Сборщик",
+  "wearandtear:abilitydesc-scrapper": "Увеличивает количество найденного лома на {0}%",
+  "wearandtear:ability-reinforcer": "Укрепляющий",
+  "wearandtear:abilitydesc-reinforcer": "При ремонте укреплений вы также улучшаете их, увеличивая эффективность на {0}% (применяется только один раз)",
+  "wearandtear:ability-engineer": "Инженер",
+  "wearandtear:abilitydesc-engineer": "Вы получаете на {0}% больше опыта за навык механики. Количество профессий, которые можно изучить, ограничено.
+
+  Поверьте мне, я инженер!",
+
+  "wearandtear:ability-careful-caster": "Осторожный литейщик",
+  "wearandtear:abilitydesc-careful-caster": "Уменьшает затраты прочности при извлечении отлитых предметов из форм на {0}%",
+  "wearandtear:ability-expert-caster": "Опытный литейщик",
+  "wearandtear:abilitydesc-expert-caster": "Опытный литейщик не оставляет ничего на волю случая (потеря прочности формы всегда минимальна)",
+  // Справочник
+  "wearandtear:handbook-heading": "Износ и повреждения",
+  "wearandtear:handbook-lifespan": "Средний срок службы (без защиты) — {0} лет",
+  "wearandtear:handbook-critical": "Эта деталь критически важна для поддержания структурной целостности блока",
+  "wearandtear:handbook-decay": "Эта деталь подвержена: {0}",
+  "wearandtear:handbook-usage-limit": "При каждом использовании эта деталь теряет {0:P0} прочности",
+  "wearandtear:handbook-usage-limit-random": "При каждом использовании эта деталь теряет от {0:P0} до {1:P0} прочности",
+  "wearandtear:handbook-scrap": "Остаточный лом",
+  "wearandtear:hanbook-protection": "Эта деталь снижает скорость разрушения на {0:P0} (мультипликативно) для: {1}",
+  // Записи справочника
+  "wearandtear:handbook-bycharcoalburning": "Получено путём <a href=\"handbook://craftinginfo-charcoalburning\">выжигания угля</a> из <a href=\"handbook://item-wearandtear:sawdustbrick-dry\">сухих опилочных кирпичей</a><br />(Внимание: нельзя использовать смешанное выжигание угля)",
+  "wearandtearguide-title": "Износ и повреждения: Техническое обслуживание",
+  "wearandtearguide-text": "<font weight='bold' align='center'>Износ и повреждения</font>
+
+  Хотя механические устройства упрощают жизнь, автоматизируя различные задачи, они не являются источником бесконечной энергии и требуют технического обслуживания для продолжения работы в соответствии с назначением.
+
+  Эта страница описывает различные виды износа, которым подвержены эти устройства, способы их защиты и ремонта.
+
+  <font weight='bold' align='center'>Основные правила</font>
+  - Объекты служат дольше в закрытом помещении
+  - Отсутствие ремонта приводит к потере эффективности и, в конечном итоге, к разрушению объекта
+  - Нельзя проводить обслуживание механического блока, если он активен (получение механической энергии обычно означает его активность)
+  - У обслуживания есть свои пределы, в какой-то момент потребуется замена
+  - Чем лучше металл, тем дольше срок службы
+
+  <font weight='bold' align='center'>Износ от ветра</font>
+  Паруса и подобные им элементы постепенно изнашиваются под воздействием ветра. Паруса можно свернуть, присев и взаимодействуя с пустой рукой, это защитит их от повреждений, когда они не используются.
+
+  Паруса и другие тканевые предметы можно ремонтировать с помощью <a href=\"handbook://item-sewingkit\">наборов для шитья</a>
+
+  <font weight='bold' align='center'>Износ от влажности</font>
+  Деревянные блоки, такие как шестерни, подвержены повреждениям от влажности. Основные способы уменьшения этого повреждения:
+  - Пропитка дерева <a href=\"handbook://item-beeswax\">пчелиным воском</a> (помните, что восковое покрытие также разрушается и требует обновления)
+  - Хранение объекта в помещении (рекомендуется использовать <a href=\"handbook://block-millwright:woodenaxlepassthroughfull\">проходные оси</a> от MillWright, чтобы по возможности размещать инфраструктуру внутри)
+
+  Большинство деревянных объектов можно ремонтировать с помощью <a href=\"handbook://item-resin\">смолы</a> или <a href=\"handbook://item-wearandtear:woodfiller\">шпатлёвки для дерева</a>.
+
+  <font weight='bold' align='center'>Износ при использовании</font>
+  Такие предметы, как молоты с рукоятью, получают повреждения при использовании. Можно предотвратить чрезмерный износ молота, следя за тем, чтобы он не ударялся о наковальню, когда вы им не пользуетесь.
+
+  Такие предметы обычно нельзя отремонтировать, их нужно заменять при поломке.
+
+  <font weight='bold' align='center'>Металлические детали</font>
+  Металлические детали можно ремонтировать с помощью подходящих <a href=\"handbook://item-metalnailsandstrips-copper\">гвоздей и полос</a> и молотка в свободной руке
+
+  <font weight='bold' align='center'>Устранение неполадок</font>
+  Если вы не можете что-то отремонтировать и не получаете сообщение об ошибке, попробуйте сделать это, присев. В случае с мультиблоками попробуйте разные блоки. Например, для Фруктового пресса нужно присесть и навести прицел на нижний блок. В случае с металлическими деталями убедитесь, что ремонтный материал соответствует типу металла (например, гвозди и полосы из чёрной бронзы для усиления из чёрной бронзы)"
+}
