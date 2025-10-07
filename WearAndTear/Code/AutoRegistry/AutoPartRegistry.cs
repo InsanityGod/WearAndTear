@@ -206,8 +206,8 @@ namespace WearAndTear.Code.AutoRegistry
             var acceptFruitPress = AutoPartRegistryConfig.Instance.IncludeFruitPress && block is BlockFruitPress;
             var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : Api.ClassRegistry.GetBlockEntity(block.EntityClass);
 
-            var acceptMold = SpecialPartsConfig.Instance.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic;
-
+            var acceptMold = SpecialPartsConfig.Instance.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic && (block.Attributes is null || !block.Attributes["breaksWhenFilled"].AsBool());
+            
             if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)
             {
                 if (hasWearAndTear)
