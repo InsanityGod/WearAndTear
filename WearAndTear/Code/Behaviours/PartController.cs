@@ -189,7 +189,7 @@ namespace WearAndTear.Code.Behaviours
 
         public void GenerateRubbleBlock()
         {
-            var stabilityVariant = Block.Attributes[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Unstable)].AsBool(true) ? "unstable" : "stable";
+            var stabilityVariant = Block.Attributes?[WearAndTearRubbleProps.Key][nameof(WearAndTearRubbleProps.Unstable)].AsBool(true) == true ? "unstable" : "stable";
 
             var rubbleBlock = Api.World.GetBlock($"wearandtear:rubble-{stabilityVariant}");
             if (rubbleBlock == null)
