@@ -54,6 +54,13 @@ namespace WearAndTear.Config.Server
         public float MinimalMetalCompositionPercentage { get; set; } = .8f;
 
         /// <summary>
+        /// The minimal conent level required for a metal to count towards reinforcements
+        /// </summary>
+        [Range(0.01d, 10d)]
+        [DefaultValue(.5f)]
+        public float MinimalMetalContentLevel { get; set; } = .5f;
+
+        /// <summary>
         /// The minimal percentage the composition of wood ingredients is required for that wood to be the primary wood type
         /// </summary>
         [Range(0d, 1d)]

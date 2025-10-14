@@ -235,7 +235,7 @@ namespace WearAndTear.Code.AutoRegistry
 
         public (string Metal, float ContentLevel)? FindReinforcementMetal()
         {
-            if (MetalContent.Count == 0) return null; //Doesn't contain metal
+            if (!MetalContent.Values.Any(static metalContent => metalContent > AutoPartRegistryConfig.Instance.MinimalMetalContentLevel)) return null; //Doesn't contain any significant metal
 
             var totalMetalCount = MetalContent.Sum(metal => metal.Value);
             var metalWithHighestCompositionRate = MetalContent.OrderByDescending(metal => metal.Value).First();
