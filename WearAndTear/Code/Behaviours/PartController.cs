@@ -62,46 +62,48 @@ namespace WearAndTear.Code.Behaviours
 
             var blockCode = block.FirstCodePartAsSpan().ToString(); //Sadly we can't use a ReadonlySpan here (due to lambda scope)
             var normalItem = Array.Find(itemStacks, item => item.Block != null && item.Block.FirstCodePartAsSpan().SequenceEqual(blockCode));
-            bool isBlockDestroyed = false;
-            if (normalItem != null)
-            {
-                ITreeAttribute tree = new TreeAttribute();
-                Blockentity.ToTreeAttributes(tree);
-                tree = tree.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
 
-                foreach (var part in Parts)
+            bool isBlockDestroyed = false;
+            ITreeAttribute tree = new TreeAttribute();
+            Blockentity.ToTreeAttributes(tree);
+            tree = tree.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
+
+            foreach (var part in Parts)
+            {
+                if (part.Props.IsCritical && part.Durability <= 0)
                 {
-                    if (part.Props.IsCritical && part.Durability <= 0)
+                    if(normalItem is not null)
                     {
                         itemStacks = itemStacks.Remove(normalItem);
                         normalItem = null;
-                        isBlockDestroyed = true;
-                        break;
                     }
 
-                    if (part is IOptionalPart optionalPart)
-                    {
-                        if (!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Code);
-                        continue;
-                    }
-
-                    if (part.Durability > WearAndTearServerConfig.Instance.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Code);
+                    isBlockDestroyed = true;
+                    break;
                 }
 
-                if (normalItem != null)
+                if (part is IOptionalPart optionalPart)
                 {
-                    //Remove all unnecary variables
-                    foreach (var item in tree.Where(item => item.Key.EndsWith(Constants.RepairedPrefix) && (float)item.Value.GetValue() == 0).ToList())
-                    {
-                        tree.RemoveAttribute(item.Key);
-                    }
+                    if (!optionalPart.IsPresent) tree.RemoveAttribute(part.Props.Code);
+                    continue;
+                }
 
-                    if (tree.Count > 0)
-                    {
-                        normalItem.Attributes
-                            .GetOrAddTreeAttribute(Constants.DurabilityTreeName)
-                            .MergeTree(tree);
-                    }
+                if (part.Durability > WearAndTearServerConfig.Instance.DurabilityLeeway || float.IsNaN(part.Durability)) tree.RemoveAttribute(part.Props.Code);
+            }
+            
+            if (normalItem != null)
+            {
+                //Remove all unnecary variables
+                foreach (var item in tree.Where(item => item.Key.EndsWith(Constants.RepairedPrefix) && (float)item.Value.GetValue() == 0).ToList())
+                {
+                    tree.RemoveAttribute(item.Key);
+                }
+
+                if (tree.Count > 0)
+                {
+                    normalItem.Attributes
+                        .GetOrAddTreeAttribute(Constants.DurabilityTreeName)
+                        .MergeTree(tree);
                 }
             }
 

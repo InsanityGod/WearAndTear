@@ -53,7 +53,7 @@ namespace WearAndTear.Code.BlockEntities
                 foreach (var drop in normalDrops.Values.OfType<ItemstackAttribute>())
                 {
                     var item = drop.value.Clone();
-                    if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)))
+                    if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)) && item.Collectible.Code.Path.Contains("scrap-"))
                     {
                         item.StackSize = SkillsAndAbilities.ApplyScrapperBonus(world.Api, byPlayer, item.StackSize);
                     }
@@ -62,7 +62,7 @@ namespace WearAndTear.Code.BlockEntities
                 }
             }
 
-            return items.ToArray();
+            return [.. items];
         }
 
         public const string CacheKey = "WearAndTearRubbleMeshes";

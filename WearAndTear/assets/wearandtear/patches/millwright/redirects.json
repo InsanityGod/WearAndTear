@@ -16,5 +16,23 @@
       "PlacedByItem": "millwright:woodenaxlepassthroughfull"
     },
     "dependsOn": [ { "modid": "millwright" } ]
+  },
+  {
+    "file": "millwright:blocktypes/mechanics/improvedaxlepassthroughfull.json",
+    "op": "addmerge",
+    "path": "/attributes",
+    "value": {
+      "PlacedBlock": "millwright:improvedaxlepassthrough-ud"
+    },
+    "dependsOn": [ { "modid": "millwright" } ]
+  },
+  {
+    "file": "millwright:blocktypes/mechanics/improvedaxlepassthrough.json",
+    "op": "addmerge",
+    "path": "/attributes",
+    "value": {
+      "PlacedByItem": "millwright:improvedaxlepassthroughfull"
+    },
+    "dependsOn": [ { "modid": "millwright" } ]
   }
 ]
