@@ -1,4 +1,4 @@
-﻿using InsanityLib.Attributes.Auto.Config;
+﻿using InsanityLib.Auto.Config;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

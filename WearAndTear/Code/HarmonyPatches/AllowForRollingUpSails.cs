@@ -1,11 +1,9 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
-using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours.Parts;
 using WearAndTear.Code.HarmonyPatches;
 

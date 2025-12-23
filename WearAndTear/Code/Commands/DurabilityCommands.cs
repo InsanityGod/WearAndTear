@@ -1,13 +1,9 @@
-﻿using InsanityLib.Attributes.Auto.Command;
-using InsanityLib.Enums.Auto.Commands;
-using InsanityLib.Util;
+﻿using InsanityLib.Auto.Command;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Vintagestory.API.Common;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Extensions;
-using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.Commands
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using Vintagestory.API.Common;
+﻿using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using WearAndTear.Code.XLib.Containers;

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {

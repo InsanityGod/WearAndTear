@@ -1,4 +1,4 @@
-﻿using InsanityLib.Attributes.Auto.Config;
+﻿using InsanityLib.Auto.Config;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

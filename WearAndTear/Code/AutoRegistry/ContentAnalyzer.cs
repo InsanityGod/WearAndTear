@@ -1,16 +1,13 @@
-﻿using Cairo;
-using InsanityLib.Util;
+﻿using InsanityLib.Util;
 using InsanityLib.Util.FastComparisons;
 using InsanityLib.Util.SpanUtil;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Enums;
-using WearAndTear.Code.Extensions;
 using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.AutoRegistry

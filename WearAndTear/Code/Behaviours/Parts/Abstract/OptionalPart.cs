@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using Vintagestory.API.Common;
-using Vintagestory.API.Datastructures;
 using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.Behaviours.Parts.Abstract

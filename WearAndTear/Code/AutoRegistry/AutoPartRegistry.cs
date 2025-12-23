@@ -1,4 +1,4 @@
-﻿using InsanityLib.Attributes.Auto;
+﻿using InsanityLib.Auto.Cleanup;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;

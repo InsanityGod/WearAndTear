@@ -1,9 +1,6 @@
 ﻿using System.Text;
 using Vintagestory.API.Common;
-using Vintagestory.API.Datastructures;
-using WearAndTear.Code.Behaviours.Parts.Abstract;
 using WearAndTear.Code.Interfaces;
-using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.Behaviours.Parts.Protective
 {

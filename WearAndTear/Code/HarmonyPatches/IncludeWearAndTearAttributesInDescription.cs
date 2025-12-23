@@ -10,7 +10,6 @@ using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Code;
-using WearAndTear.Code.Extensions;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.HarmonyPatches

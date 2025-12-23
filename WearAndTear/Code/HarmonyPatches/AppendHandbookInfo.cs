@@ -10,7 +10,6 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 

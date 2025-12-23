@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using InsanityLib.Attributes.Auto;
+using InsanityLib.Auto.Setup;
 using InsanityLib.Util;
 using InsanityLib.Util.SpanUtil;
 using System;

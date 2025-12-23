@@ -1,7 +1,6 @@
 ﻿using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
 namespace WearAndTear.Code.XLib.Containers

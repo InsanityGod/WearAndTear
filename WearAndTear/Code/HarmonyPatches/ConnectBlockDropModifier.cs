@@ -5,7 +5,6 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.HarmonyPatches
 {
