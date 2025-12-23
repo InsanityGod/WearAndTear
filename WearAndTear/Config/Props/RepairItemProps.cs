@@ -4,6 +4,7 @@ using Vintagestory.API.Common;
 
 namespace WearAndTear.Config.Props
 {
+    //TODO look into using glue for stuff
     public class RepairItemProps
     {
         /// <summary>

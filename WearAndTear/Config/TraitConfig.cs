@@ -3,6 +3,7 @@ using WearAndTear.Code.Enums;
 
 namespace WearAndTear.Config
 {
+    //TODO expand and move to InsanityLib
     public class TraitConfig : Trait
     {
         public string[] AppendToClasses { get; set; }
