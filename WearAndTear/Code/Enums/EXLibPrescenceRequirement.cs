@@ -1,10 +1,9 @@
-﻿namespace WearAndTear.Code.Enums
+﻿namespace WearAndTear.Code.Enums;
+
+public enum EXLibPrescenceRequirement
 {
-    public enum EXLibPrescenceRequirement
-    {
-        Disabled = 0,
-        OnlyWithXLib = 1,
-        OnlyWithoutXLib = 2,
-        Irrelevant = 3
-    }
+    Disabled = 0,
+    OnlyWithXLib = 1,
+    OnlyWithoutXLib = 2,
+    Irrelevant = 3
 }

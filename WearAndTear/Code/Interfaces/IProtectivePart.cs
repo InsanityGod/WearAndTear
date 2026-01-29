@@ -1,9 +1,8 @@
 ﻿using WearAndTear.Config.Props;
 
-namespace WearAndTear.Code.Interfaces
+namespace WearAndTear.Code.Interfaces;
+
+public interface IProtectivePart
 {
-    public interface IProtectivePart
-    {
-        float GetDecayMultiplierFor(PartProps props);
-    }
+    float GetDecayMultiplierFor(PartProps props);
 }

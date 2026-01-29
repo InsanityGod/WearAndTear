@@ -1,7 +1,6 @@
-﻿namespace WearAndTear.Config.Props
+﻿namespace WearAndTear.Config.Props;
+
+public class GenericItemDisplayProps
 {
-    public class GenericItemDisplayProps
-    {
-        public int ItemSlotIndex { get; set; }
-    }
+    public int ItemSlotIndex { get; set; }
 }

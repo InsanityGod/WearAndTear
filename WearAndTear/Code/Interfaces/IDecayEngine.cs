@@ -2,10 +2,9 @@
 using WearAndTear.Code.Behaviours;
 using WearAndTear.Config.Props;
 
-namespace WearAndTear.Code.Interfaces
+namespace WearAndTear.Code.Interfaces;
+
+public interface IDecayEngine
 {
-    public interface IDecayEngine
-    {
-        public float GetDecayLoss(ICoreAPI api, Part part, DecayProps decayProps, double daysPassed);
-    }
+    public float GetDecayLoss(ICoreAPI api, Part part, DecayProps decayProps, double daysPassed);
 }

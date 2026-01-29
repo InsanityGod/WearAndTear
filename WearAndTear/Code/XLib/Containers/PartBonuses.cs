@@ -3,48 +3,47 @@ using Vintagestory.API.Datastructures;
 using WearAndTear.Code.Behaviours;
 using WearAndTear.Config.Props;
 
-namespace WearAndTear.Code.XLib.Containers
+namespace WearAndTear.Code.XLib.Containers;
+
+public class PartBonuses
 {
-    public class PartBonuses
+    public float ProtectionModifier = 1f;
+
+    public float DecayModifier = 1f;
+
+    public void ToTreeAttributes(ITreeAttribute tree, PartProps props)
     {
-        public float ProtectionModifier = 1f;
+        //Skip if default configuration
+        if (ProtectionModifier == 1f && DecayModifier == 1f) return;
 
-        public float DecayModifier = 1f;
+        var bonusTree = tree.GetOrAddTreeAttribute("WearAndTear-Bonuses").GetOrAddTreeAttribute(props.Code);
 
-        public void ToTreeAttributes(ITreeAttribute tree, PartProps props)
+        bonusTree.SetFloat(nameof(DecayModifier), DecayModifier);
+        bonusTree.SetFloat(nameof(ProtectionModifier), ProtectionModifier);
+    }
+
+    public void FromTreeAttributes(ITreeAttribute tree, PartProps props)
+    {
+        var bonusTree = tree.GetTreeAttribute("WearAndTear-Bonuses")?.GetTreeAttribute(props.Code);
+        if (bonusTree == null) return;
+
+        DecayModifier = bonusTree.GetFloat(nameof(DecayModifier), DecayModifier);
+        ProtectionModifier = bonusTree.GetFloat(nameof(ProtectionModifier), ProtectionModifier);
+    }
+
+    public void UpdateForRepair(Part part, ICoreAPI api, IPlayer player)
+    {
+        //Reset values to default
+        DecayModifier = 1f;
+        ProtectionModifier = 1f;
+        if (part.Props.Code == "wearandtear:wax")
         {
-            //Skip if default configuration
-            if (ProtectionModifier == 1f && DecayModifier == 1f) return;
-
-            var bonusTree = tree.GetOrAddTreeAttribute("WearAndTear-Bonuses").GetOrAddTreeAttribute(props.Code);
-
-            bonusTree.SetFloat(nameof(DecayModifier), DecayModifier);
-            bonusTree.SetFloat(nameof(ProtectionModifier), ProtectionModifier);
+            SkillsAndAbilities.ApplyButterFingerBonus(this, api, player);
         }
 
-        public void FromTreeAttributes(ITreeAttribute tree, PartProps props)
+        if (part.Props.Code == "wearandtear:reinforcement")
         {
-            var bonusTree = tree.GetTreeAttribute("WearAndTear-Bonuses")?.GetTreeAttribute(props.Code);
-            if (bonusTree == null) return;
-
-            DecayModifier = bonusTree.GetFloat(nameof(DecayModifier), DecayModifier);
-            ProtectionModifier = bonusTree.GetFloat(nameof(ProtectionModifier), ProtectionModifier);
-        }
-
-        public void UpdateForRepair(Part part, ICoreAPI api, IPlayer player)
-        {
-            //Reset values to default
-            DecayModifier = 1f;
-            ProtectionModifier = 1f;
-            if (part.Props.Code == "wearandtear:wax")
-            {
-                SkillsAndAbilities.ApplyButterFingerBonus(this, api, player);
-            }
-
-            if (part.Props.Code == "wearandtear:reinforcement")
-            {
-                SkillsAndAbilities.ApplyReinforcerBonus(this, api, player);
-            }
+            SkillsAndAbilities.ApplyReinforcerBonus(this, api, player);
         }
     }
 }

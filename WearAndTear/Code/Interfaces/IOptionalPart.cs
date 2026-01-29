@@ -1,7 +1,6 @@
-﻿namespace WearAndTear.Code.Interfaces
+﻿namespace WearAndTear.Code.Interfaces;
+
+public interface IOptionalPart
 {
-    public interface IOptionalPart
-    {
-        bool IsPresent { get; }
-    }
+    bool IsPresent { get; }
 }

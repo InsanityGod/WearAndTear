@@ -1,8 +1,7 @@
-﻿namespace WearAndTear.Code.Enums
+﻿namespace WearAndTear.Code.Enums;
+
+public enum EIngotMoldSide
 {
-    public enum EIngotMoldSide
-    {
-        Left = 1,
-        Right = 2
-    }
+    Left = 1,
+    Right = 2
 }
