@@ -50,6 +50,8 @@ namespace WearAndTear.Code.BlockEntities
             {
                 //normal drops
                 var normalDrops = content.value.Attributes.GetTreeAttribute("rubble-normal-drops");
+                if(normalDrops is null) continue;
+
                 foreach (var drop in normalDrops.Values.OfType<ItemstackAttribute>())
                 {
                     var item = drop.value.Clone();
