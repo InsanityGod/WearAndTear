@@ -1,5 +1,4 @@
 ﻿using InsanityLib.Extensions;
-using InsanityLib.Util;
 using InsanityLib.Util.FastComparisons;
 using System;
 using System.Collections.Generic;

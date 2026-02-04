@@ -1,6 +1,6 @@
 ﻿using Cairo;
 using HarmonyLib;
-using InsanityLib.Util;
+using InsanityLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

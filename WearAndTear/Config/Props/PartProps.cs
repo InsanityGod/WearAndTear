@@ -1,4 +1,4 @@
-﻿using InsanityLib.Util;
+﻿using InsanityLib.Extensions;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

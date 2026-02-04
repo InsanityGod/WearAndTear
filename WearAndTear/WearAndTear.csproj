@@ -8,20 +8,22 @@
 		<PackageId>VintageStory.$(MSBuildProjectName)</PackageId>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<IncludeSymbols>True</IncludeSymbols>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<PackageIcon>modicon.png</PackageIcon>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<Nullable>enable</Nullable>
 
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
 
-	<!-- InsanityLib Template Start -->
-	
+	<!-- InsanityLib Minimal Template Start -->
+
 	<PropertyGroup>
 		<!-- Path to your ModInfo file -->
 		<ModInfoFile>modinfo.json</ModInfoFile>
+
+		<!-- Enables the generation of the xml documentation file (used by some InsanityLib features) -->
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<Target Name="ReadModInfo" BeforeTargets="BeforeBuild">
@@ -29,26 +31,6 @@
 		<!-- Read mod id -->
 		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.modid">
 			<Output TaskParameter="Result" PropertyName="ModIDFromJson" />
-		</JsonPeek>
-
-		<!-- Read mod name -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.name">
-			<Output TaskParameter="Result" PropertyName="ModNameFromJson" />
-		</JsonPeek>
-
-		<!-- Read description -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.description">
-			<Output TaskParameter="Result" PropertyName="DescriptionFromJson" />
-		</JsonPeek>
-
-		<!-- Read authors -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.authors[*]">
-			<Output TaskParameter="Result" PropertyName="AuthorsFromJson" />
-		</JsonPeek>
-
-		<!-- Read version -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.version">
-			<Output TaskParameter="Result" PropertyName="VersionFromJson" />
 		</JsonPeek>
 
 		<!-- Read InsanityLib Dependency -->
@@ -59,10 +41,6 @@
 		<!-- Set all relevant properties -->
 		<PropertyGroup>
 			<ModID>$(ModIDFromJson)</ModID>
-			<Title>$(ModNameFromJson)</Title>
-			<Description>$(DescriptionFromJson)</Description>
-			<Authors>$(AuthorsFromJson)</Authors>
-			<Version>$(VersionFromJson)</Version>
 			<HasInsanityLibDependency>$(HasHardInsanityLibDependency)</HasInsanityLibDependency>
 		</PropertyGroup>
 	</Target>
@@ -73,15 +51,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="VintageStory.InsanityLib" Version="1.0.0" PrivateAssets="All" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+		<PackageReference Include="TheInsanityGod.VintageStory.InsanityLib" Version="2.0.0" PrivateAssets="All" />
 		<PackageReference Include="JsonPeek" Version="1.2.0" />
 	</ItemGroup>
-
-	<!-- InsanityLib Template End -->
+	<!-- InsanityLib Minimal Template End -->
 
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+		
 		<Reference Include="ImmersiveOreCrush">
 			<HintPath>..\..\Dep\ImmersiveOreCrush_2.0.1\ImmersiveOreCrush.dll</HintPath>
 			<Private>false</Private>

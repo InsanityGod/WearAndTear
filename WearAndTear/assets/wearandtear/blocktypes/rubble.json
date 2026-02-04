@@ -5,7 +5,8 @@
   "shape": { "base": "wearandtear:rubble" },
   "textures": {
     "metal": { "base": "game:block/metal/ingot/tinbronze" },
-    "wood": { "base": "game:block/wood/planks/oak1" }
+    "wood": { "base": "game:block/wood/planks/oak1" },
+    "rock": { "base": "game:block/stone/rock/andesite1" }
   },
   "lightAbsorption": 0,
   "variantgroups": [
