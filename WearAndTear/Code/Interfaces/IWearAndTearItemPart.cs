@@ -1,15 +1,14 @@
 ﻿using Vintagestory.API.Common;
 
-namespace WearAndTear.Code.Interfaces
+namespace WearAndTear.Code.Interfaces;
+
+public interface IWearAndTearItemPart
 {
-    public interface IWearAndTearItemPart
-    {
-        ItemStack ItemStack { get; }
+    ItemStack ItemStack { get; }
 
-        ItemSlot ItemSlot { get; }
+    ItemSlot ItemSlot { get; }
 
-        bool ItemCanBeDamaged { get; }
+    bool ItemCanBeDamaged { get; }
 
-        void DamageItem(int amount = 1);
-    }
+    void DamageItem(int amount = 1);
 }

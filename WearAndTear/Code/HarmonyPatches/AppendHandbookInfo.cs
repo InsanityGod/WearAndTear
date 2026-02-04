@@ -1,6 +1,6 @@
 ﻿using Cairo;
 using HarmonyLib;
-using InsanityLib.Util;
+using InsanityLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,199 +10,197 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using WearAndTear.Code.Behaviours;
-using WearAndTear.Code.Extensions;
 using WearAndTear.Code.Interfaces;
 using WearAndTear.Config.Props;
 
-namespace WearAndTear.Code.HarmonyPatches
+namespace WearAndTear.Code.HarmonyPatches;
+
+[HarmonyPatch]
+public static class AppendHandbookInfo
 {
-    [HarmonyPatch]
-    public static class AppendHandbookInfo
+    [HarmonyPatch(typeof(CollectibleBehaviorHandbookTextAndExtraInfo), nameof(CollectibleBehaviorHandbookTextAndExtraInfo.GetHandbookInfo))]
+    [HarmonyPostfix]
+    public static void Append(CollectibleBehaviorHandbookTextAndExtraInfo __instance, ItemSlot inSlot, ICoreClientAPI capi, ItemStack[] allStacks, ActionConsumable<string> openDetailPageFor, ref RichTextComponentBase[] __result)
     {
-        [HarmonyPatch(typeof(CollectibleBehaviorHandbookTextAndExtraInfo), nameof(CollectibleBehaviorHandbookTextAndExtraInfo.GetHandbookInfo))]
-        [HarmonyPostfix]
-        public static void Append(CollectibleBehaviorHandbookTextAndExtraInfo __instance, ItemSlot inSlot, ICoreClientAPI capi, ItemStack[] allStacks, ActionConsumable<string> openDetailPageFor, ref RichTextComponentBase[] __result)
-        {
-            var block = inSlot.Itemstack?.Block?.GetPlacedBlock(capi);
+        var block = inSlot.Itemstack?.Block?.GetPlacedBlock(capi);
 
-            if (block == null || block.BlockEntityBehaviors == null) return;
-            var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "wearandtear:PartController");
-            if (wearandtear == null) return;
+        if (block == null || block.BlockEntityBehaviors == null) return;
+        var wearandtear = Array.Find(block.BlockEntityBehaviors, beh => beh.Name == "wearandtear:PartController");
+        if (wearandtear == null) return;
 
-            var components = new List<RichTextComponentBase>();
-            AddHeading(components, capi, "wearandtear:handbook-heading", true);
-            List<AssetLocation> ScrapCodes = new();
-            bool hasParts = false;
+        var components = new List<RichTextComponentBase>();
+        AddHeading(components, capi, "wearandtear:handbook-heading", true);
+        List<AssetLocation> ScrapCodes = new();
+        bool hasParts = false;
 
-            var parts = block.BlockEntityBehaviors
-                .Select(beh =>
-                {
-                    var behType = capi.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name);
-                    if (typeof(Part).IsAssignableFrom(behType))
-                    {
-                        var props = beh.properties.AsObject<PartProps>();
-                        return (behType, beh, props);
-                    }
-                    return (behType, beh, null);
-                }).Where(beh => beh.props != null)
-                .ToList();
-
-            foreach ((var behType, var beh, var props) in parts)
+        var parts = block.BlockEntityBehaviors
+            .Select(beh =>
             {
-                if (hasParts)
+                var behType = capi.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name);
+                if (typeof(Part).IsAssignableFrom(behType))
                 {
-                    components.Add(new ClearFloatTextComponent(capi, 8f));
+                    var props = beh.properties.AsObject<PartProps>();
+                    return (behType, beh, props);
                 }
-                else hasParts = true;
-                var header = props.GetDisplayName();
-                if (typeof(IOptionalPart).IsAssignableFrom(behType)) header += $" ({Lang.Get("wearandtear:optional")})";
-                AddSubHeading(components, capi, openDetailPageFor, header);
+                return (behType, beh, null);
+            }).Where(beh => beh.props != null)
+            .ToList();
 
-                if (props.Decay != null && props.Decay.Length > 0)
+        foreach ((var behType, var beh, var props) in parts)
+        {
+            if (hasParts)
+            {
+                components.Add(new ClearFloatTextComponent(capi, 8f));
+            }
+            else hasParts = true;
+            var header = props.GetDisplayName();
+            if (typeof(IOptionalPart).IsAssignableFrom(behType)) header += $" ({Lang.Get("wearandtear:optional")})";
+            AddSubHeading(components, capi, openDetailPageFor, header);
+
+            if (props.Decay != null && props.Decay.Length > 0)
+            {
+                components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-lifespan", props.AvgLifeSpanInYears) + "\n", new CairoFont
                 {
-                    components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-lifespan", props.AvgLifeSpanInYears) + "\n", new CairoFont
+                    Color = (double[])GuiStyle.WarningTextColor.Clone(),
+                    Fontname = GuiStyle.StandardFontName,
+                    UnscaledFontsize = GuiStyle.SmallFontSize
+                }));
+
+                components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", string.Join(", ", props.Decay.Select(decay => Lang.Get($"wearandtear:decay-{decay.Type}")))) + "\n", new CairoFont
+                {
+                    Color = (double[])GuiStyle.WarningTextColor.Clone(),
+                    Fontname = GuiStyle.StandardFontName,
+                    UnscaledFontsize = GuiStyle.SmallFontSize
+                }));
+            }
+            else
+            {
+                var minDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MinDurabilityUsage)].AsFloat();
+                var maxDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MaxDurabilityUsage)].AsFloat();
+                if (minDurabilityUsage != 0 && maxDurabilityUsage != 0)
+                {
+                    var str = minDurabilityUsage == maxDurabilityUsage ?
+                        Lang.Get("wearandtear:handbook-usage-limit", minDurabilityUsage) :
+                        Lang.Get("wearandtear:handbook-usage-limit-random", minDurabilityUsage, maxDurabilityUsage);
+                    components.Add(new RichTextComponent(capi, str + "\n", new CairoFont
                     {
                         Color = (double[])GuiStyle.WarningTextColor.Clone(),
                         Fontname = GuiStyle.StandardFontName,
                         UnscaledFontsize = GuiStyle.SmallFontSize
                     }));
-
-                    components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", string.Join(", ", props.Decay.Select(decay => Lang.Get($"wearandtear:decay-{decay.Type}")))) + "\n", new CairoFont
-                    {
-                        Color = (double[])GuiStyle.WarningTextColor.Clone(),
-                        Fontname = GuiStyle.StandardFontName,
-                        UnscaledFontsize = GuiStyle.SmallFontSize
-                    }));
                 }
-                else
+                else components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", Lang.Get($"wearandtear:decay-usage")) + "\n", new CairoFont
                 {
-                    var minDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MinDurabilityUsage)].AsFloat();
-                    var maxDurabilityUsage = beh.properties[nameof(DurabilityUsageProps.MaxDurabilityUsage)].AsFloat();
-                    if (minDurabilityUsage != 0 && maxDurabilityUsage != 0)
+                    Color = (double[])GuiStyle.WarningTextColor.Clone(),
+                    Fontname = GuiStyle.StandardFontName,
+                    UnscaledFontsize = GuiStyle.SmallFontSize
+                }));
+            }
+
+            if (typeof(IProtectivePart).IsAssignableFrom(behType))
+            {
+                var protectiveProps = beh.properties.AsObject<ProtectivePartProps>();
+                if (protectiveProps != null)
+                {
+                    var protectiveStrings = protectiveProps.EffectiveFor
+                        .GroupBy(effect => Math.Round(1 - effect.DecayMultiplier, 2))
+                        .SelectMany(effectGroup => effectGroup.Select(
+                            effect =>
+                            {
+                                var applicableParts = parts.Where(part => effect.IsEffectiveFor(part.props))
+                                    .Select(part => part.props.GetDisplayName())
+                                    .ToList();
+                                if (applicableParts.Count == 0) return null;
+                                return Lang.Get("wearandtear:hanbook-protection", effectGroup.Key, string.Join(", ", applicableParts));
+                            })
+                        ).Where(str => str != null);
+
+                    foreach (var str in protectiveStrings)
                     {
-                        var str = minDurabilityUsage == maxDurabilityUsage ?
-                            Lang.Get("wearandtear:handbook-usage-limit", minDurabilityUsage) :
-                            Lang.Get("wearandtear:handbook-usage-limit-random", minDurabilityUsage, maxDurabilityUsage);
                         components.Add(new RichTextComponent(capi, str + "\n", new CairoFont
                         {
-                            Color = (double[])GuiStyle.WarningTextColor.Clone(),
+                            Color = (double[])GuiStyle.SuccessTextColor.Clone(),
                             Fontname = GuiStyle.StandardFontName,
                             UnscaledFontsize = GuiStyle.SmallFontSize
                         }));
                     }
-                    else components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-decay", Lang.Get($"wearandtear:decay-usage")) + "\n", new CairoFont
-                    {
-                        Color = (double[])GuiStyle.WarningTextColor.Clone(),
-                        Fontname = GuiStyle.StandardFontName,
-                        UnscaledFontsize = GuiStyle.SmallFontSize
-                    }));
                 }
-
-                if (typeof(IProtectivePart).IsAssignableFrom(behType))
-                {
-                    var protectiveProps = beh.properties.AsObject<ProtectivePartProps>();
-                    if (protectiveProps != null)
-                    {
-                        var protectiveStrings = protectiveProps.EffectiveFor
-                            .GroupBy(effect => Math.Round(1 - effect.DecayMultiplier, 2))
-                            .SelectMany(effectGroup => effectGroup.Select(
-                                effect =>
-                                {
-                                    var applicableParts = parts.Where(part => effect.IsEffectiveFor(part.props))
-                                        .Select(part => part.props.GetDisplayName())
-                                        .ToList();
-                                    if (applicableParts.Count == 0) return null;
-                                    return Lang.Get("wearandtear:hanbook-protection", effectGroup.Key, string.Join(", ", applicableParts));
-                                })
-                            ).Where(str => str != null);
-
-                        foreach (var str in protectiveStrings)
-                        {
-                            components.Add(new RichTextComponent(capi, str + "\n", new CairoFont
-                            {
-                                Color = (double[])GuiStyle.SuccessTextColor.Clone(),
-                                Fontname = GuiStyle.StandardFontName,
-                                UnscaledFontsize = GuiStyle.SmallFontSize
-                            }));
-                        }
-                    }
-                }
-
-                //Protective properties
-                if (props.IsCritical)
-                {
-                    components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-critical") + "\n", new CairoFont
-                    {
-                        Color = (double[])GuiStyle.ErrorTextColor.Clone(),
-                        Fontname = GuiStyle.StandardFontName,
-                        UnscaledFontsize = GuiStyle.SmallFontSize
-                    }));
-                }
-
-                if (props.ScrapCode != null && !ScrapCodes.Contains(props.ScrapCode)) ScrapCodes.Add(props.ScrapCode);
             }
 
-            //TODO come up with a cleaner way to hide these scrap items (maybe even do this during autoregistry instead)
-            if (block is not BlockIngotMold && block is not BlockToolMold && ScrapCodes.Any())
+            //Protective properties
+            if (props.IsCritical)
             {
-                var items = new List<ItemStack>();
-                foreach (var scrapCode in ScrapCodes)
+                components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-critical") + "\n", new CairoFont
                 {
-                    var scrapItem = capi.World.GetItem(scrapCode);
-                    if (scrapItem == null) continue;
-
-                    items.Add(new(scrapItem));
-                }
-                if (items.Any())
-                {
-                    components.Add(new ClearFloatTextComponent(capi, 12f));
-                    components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-scrap") + "\n", new CairoFont
-                    {
-                        Color = (double[])GuiStyle.DialogDefaultTextColor.Clone(),
-                        Fontname = GuiStyle.StandardFontName,
-                        FontWeight = FontWeight.Bold,
-                        UnscaledFontsize = GuiStyle.SmallFontSize
-                    }));
-
-                    while (items.Count > 0)
-                    {
-                        var item = items.PopOne();
-                        components.Add(new SlideshowItemstackTextComponent(capi, item, items, 40, EnumFloat.Inline, cs => openDetailPageFor(GuiHandbookItemStackPage.PageCodeForStack(cs))));
-                    }
-                }
+                    Color = (double[])GuiStyle.ErrorTextColor.Clone(),
+                    Fontname = GuiStyle.StandardFontName,
+                    UnscaledFontsize = GuiStyle.SmallFontSize
+                }));
             }
-            //TODO maybe display some of the xskills bonuses
-            __result = __result.AddRangeToArray(components.ToArray());
+
+            if (props.ScrapCode != null && !ScrapCodes.Contains(props.ScrapCode)) ScrapCodes.Add(props.ScrapCode);
         }
 
-        public static void AddHeading(List<RichTextComponentBase> components, ICoreClientAPI capi, string heading, bool haveText)
+        //TODO come up with a cleaner way to hide these scrap items (maybe even do this during autoregistry instead)
+        if (block is not BlockIngotMold && block is not BlockToolMold && ScrapCodes.Any())
         {
-            if (haveText)
+            var items = new List<ItemStack>();
+            foreach (var scrapCode in ScrapCodes)
             {
-                components.Add(new ClearFloatTextComponent(capi, 14f));
-            }
+                var scrapItem = capi.World.GetItem(scrapCode);
+                if (scrapItem == null) continue;
 
-            components.Add(new RichTextComponent(capi, Lang.Get(heading) + "\n", CairoFont.WhiteSmallText().WithWeight(FontWeight.Bold)));
+                items.Add(new(scrapItem));
+            }
+            if (items.Any())
+            {
+                components.Add(new ClearFloatTextComponent(capi, 12f));
+                components.Add(new RichTextComponent(capi, Lang.Get("wearandtear:handbook-scrap") + "\n", new CairoFont
+                {
+                    Color = (double[])GuiStyle.DialogDefaultTextColor.Clone(),
+                    Fontname = GuiStyle.StandardFontName,
+                    FontWeight = FontWeight.Bold,
+                    UnscaledFontsize = GuiStyle.SmallFontSize
+                }));
+
+                while (items.Count > 0)
+                {
+                    var item = items.PopOne();
+                    components.Add(new SlideshowItemstackTextComponent(capi, item, items, 40, EnumFloat.Inline, cs => openDetailPageFor(GuiHandbookItemStackPage.PageCodeForStack(cs))));
+                }
+            }
+        }
+        //TODO maybe display some of the xskills bonuses
+        __result = __result.AddRangeToArray(components.ToArray());
+    }
+
+    public static void AddHeading(List<RichTextComponentBase> components, ICoreClientAPI capi, string heading, bool haveText)
+    {
+        if (haveText)
+        {
+            components.Add(new ClearFloatTextComponent(capi, 14f));
         }
 
-        public static void AddSubHeading(List<RichTextComponentBase> components, ICoreClientAPI capi, ActionConsumable<string> openDetailPageFor, string subheading, string detailpage = null)
+        components.Add(new RichTextComponent(capi, Lang.Get(heading) + "\n", CairoFont.WhiteSmallText().WithWeight(FontWeight.Bold)));
+    }
+
+    public static void AddSubHeading(List<RichTextComponentBase> components, ICoreClientAPI capi, ActionConsumable<string> openDetailPageFor, string subheading, string detailpage = null)
+    {
+        if (detailpage == null)
         {
-            if (detailpage == null)
-            {
-                components.Add(new RichTextComponent(capi, $"• {subheading}\n", CairoFont.WhiteSmallText())
-                {
-                    PaddingLeft = 2.0
-                });
-                return;
-            }
-            components.Add(new RichTextComponent(capi, "• ", CairoFont.WhiteSmallText())
+            components.Add(new RichTextComponent(capi, $"• {subheading}\n", CairoFont.WhiteSmallText())
             {
                 PaddingLeft = 2.0
             });
-            components.Add(new LinkTextComponent(capi, $"{subheading}\n", CairoFont.WhiteSmallText(), delegate (LinkTextComponent cs)
-            {
-                openDetailPageFor(detailpage);
-            }));
+            return;
         }
+        components.Add(new RichTextComponent(capi, "• ", CairoFont.WhiteSmallText())
+        {
+            PaddingLeft = 2.0
+        });
+        components.Add(new LinkTextComponent(capi, $"{subheading}\n", CairoFont.WhiteSmallText(), delegate (LinkTextComponent cs)
+        {
+            openDetailPageFor(detailpage);
+        }));
     }
 }

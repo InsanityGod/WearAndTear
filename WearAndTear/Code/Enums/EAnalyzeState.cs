@@ -1,9 +1,8 @@
-﻿namespace WearAndTear.Code.Enums
+﻿namespace WearAndTear.Code.Enums;
+
+public enum EAnalyzeState
 {
-    public enum EAnalyzeState
-    {
-        NotStarted,
-        Analyzing,
-        Analyzed
-    }
+    NotStarted,
+    Analyzing,
+    Analyzed
 }

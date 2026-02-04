@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using InDappledGroves.Util.RecipeTools;
-using InsanityLib.Util.SpanUtil;
+using InsanityLib.Extensions;
 using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;

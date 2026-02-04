@@ -12,7 +12,7 @@
 	},
 	"textures": {
 		"metal": "game:block/metal/ingot/tinbronze",
-		"rock": "game:block/stone/rock/stone",
+		"rock": "game:block/stone/rock/andesite1",
 		"wood": "game:block/wood/planks/oak1"
 	},
 	"elements": [
