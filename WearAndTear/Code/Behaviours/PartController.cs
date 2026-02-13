@@ -146,7 +146,7 @@ public class PartController : BlockEntityBehavior
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
-        if (LastDecayUpdate.HasValue && DecayModifiersConfig.Instance.DecayWhileUnloaded) tree.SetDouble("LastDecayUpdate", LastDecayUpdate.Value);
+        if (LastDecayUpdate.HasValue) tree.SetDouble("LastDecayUpdate", LastDecayUpdate.Value);
     }
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
