@@ -7,10 +7,9 @@ using WearAndTear.Code.Interfaces;
 
 namespace WearAndTear.Code.Behaviours.Parts.Abstract;
 
-public abstract class ItemPart : OptionalPart, IWearAndTearItemPart
+public abstract class ItemPart(BlockEntity blockentity) : OptionalPart(blockentity), IWearAndTearItemPart
 {
-    protected ItemPart(BlockEntity blockentity) : base(blockentity) { }
-    
+
     //TODO this should never be critical
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
     {
@@ -27,7 +26,7 @@ public abstract class ItemPart : OptionalPart, IWearAndTearItemPart
         //Empty on purpose
     }
 
-    public virtual ItemStack ItemStack
+    public virtual ItemStack? ItemStack
     {
         get => ItemSlot?.Itemstack;
         set

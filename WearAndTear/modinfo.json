@@ -9,6 +9,6 @@
   "version": "1.5.18",
   "dependencies": {
     "game": "",
-    "insanitylib": "2.0.0"
+    "insanitylib": "2.0.1-pre.1"
   }
 }

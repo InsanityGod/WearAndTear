@@ -112,7 +112,7 @@ public class WindmillRenderer : MechBlockRenderer
         float rotY = rotation * dev.AxisSign[1];
         float rotZ = rotation * dev.AxisSign[2];
         BEBehaviorMPToggle tog = dev as BEBehaviorMPToggle;
-        if (tog != null && rotX == 0f ^ tog.isRotationReversed())
+        if (tog != null && rotX == 0f ^ tog.IsRotationReversed())
         {
             rotY = 3.1415927f;
             rotZ = -rotZ;

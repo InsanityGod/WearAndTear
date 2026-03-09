@@ -819,8 +819,8 @@
 					"children": [
 						{
 							"name": "cloth64",
-							"from": [ 0.0, 1.8, 1.8 ],
-							"to": [ 16.0, 3.8, 3.8 ],
+							"from": [ 0.0, -1.8, 1.8 ],
+							"to": [ 16.0, 0.2, 3.8 ],
 							"renderPass": 1,
 							"rotationOrigin": [ 0.0, 1.9, 1.8 ],
 							"rotationX": -2.0,

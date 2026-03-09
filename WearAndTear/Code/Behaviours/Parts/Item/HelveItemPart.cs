@@ -20,7 +20,7 @@ public class HelveItemPart : ItemPart
         HelveHammerBase = (BEHelveHammer)blockentity;
     }
 
-    public override ItemStack ItemStack
+    public override ItemStack? ItemStack
     {
         get => HelveHammerBase.HammerStack;
         set => HelveHammerBase.HammerStack = value;
@@ -53,7 +53,7 @@ public class HelveItemPart : ItemPart
 
     public bool IsHelveAxe => ItemStack?.Collectible is HelveAxe;
 
-    public bool ShoulDamageHelveAxe(object anvil) => SpecialPartsConfig.Instance.HelveAxe && anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.ChoppingBlock?.recipecomplete ?? false);
+    public static bool ShoulDamageHelveAxe(object anvil) => SpecialPartsConfig.Instance.HelveAxe && anvil is FakeBlockEntityAnvil fakeAnvil && (fakeAnvil.workstation?.recipecomplete ?? false);
 
     public void ManualDamageIem(int amount = 1) => base.DamageItem(amount);
 }

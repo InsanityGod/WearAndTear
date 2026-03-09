@@ -86,12 +86,13 @@ public class ContentAnalyzer
     private void ExtractGridRecipe(GridRecipe recipe)
     {
         var ingredients = new Dictionary<CollectibleObject, float>();
+        if(recipe.ResolvedIngredients is null || recipe.Output is null) return;
         var outputAmount = recipe.Output.Quantity;
-        foreach(var ingredient in recipe.resolvedIngredients)
+        foreach(var ingredient in recipe.ResolvedIngredients)
         {
-            if(ingredient is null || ingredient.IsTool || (ingredient.ResolvedItemstack is null && (!ingredient.IsWildCard || ingredient.AllowedVariants?.Length != 1))) continue;
+            if(ingredient is null || ingredient.IsTool || (ingredient.ResolvedItemStack is null && (!ingredient.IsWildCard || ingredient.AllowedVariants?.Length != 1))) continue;
             
-            var collectible = ingredient.ResolvedItemstack is null ? Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])) : ingredient.ResolvedItemstack.Collectible;
+            var collectible = ingredient.ResolvedItemStack is null ? Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])) : ingredient.ResolvedItemStack.Collectible;
             if(collectible is null) continue;
             
             var amount = (float)ingredient.Quantity / (float)outputAmount;
@@ -200,7 +201,7 @@ public class ContentAnalyzer
         int recipeCount = 0;
         foreach(var recipe in api.World.GridRecipes)
         {
-            if(recipe.Output?.ResolvedItemstack is null || recipe.Output.Type != itemClass || !comparator.IsMatch(recipe.Output.ResolvedItemstack.Collectible)) continue;
+            if(recipe.Output?.ResolvedItemStack is null || recipe.Output.Type != itemClass || !comparator.IsMatch(recipe.Output.ResolvedItemStack.Collectible)) continue;
             recipeCount++;
             ExtractGridRecipe(recipe);
         }

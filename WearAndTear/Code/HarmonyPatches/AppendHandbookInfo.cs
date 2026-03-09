@@ -165,7 +165,7 @@ public static class AppendHandbookInfo
 
                 while (items.Count > 0)
                 {
-                    var item = items.PopOne();
+                    var item = items.PopLast();
                     components.Add(new SlideshowItemstackTextComponent(capi, item, items, 40, EnumFloat.Inline, cs => openDetailPageFor(GuiHandbookItemStackPage.PageCodeForStack(cs))));
                 }
             }

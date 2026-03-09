@@ -4,7 +4,7 @@ namespace WearAndTear.Code.Interfaces;
 
 public interface IWearAndTearItemPart
 {
-    ItemStack ItemStack { get; }
+    ItemStack? ItemStack { get; }
 
     ItemSlot ItemSlot { get; }
 
