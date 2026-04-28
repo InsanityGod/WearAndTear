@@ -4,7 +4,6 @@ using InsanityLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Channels;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
@@ -19,7 +18,8 @@ using WearAndTear.Config.Server;
 using WearAndTear.DynamicPatches;
 
 namespace WearAndTear.Code;
-
+//TODO maybe add work items for toolsmith?
+//TODO maybe give bonus to fireclay
 //TODO maybe change covers so room integrity doesn't break when the axle decays?
 //TODO you can't see info while pulverizer is grinding
 public partial class WearAndTearModSystem : ModSystem
