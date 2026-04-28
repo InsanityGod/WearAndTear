@@ -22,7 +22,7 @@ public class RubbleTextureSource : ITexPositionSource
         }
     }
 
-    public string[] GetSelectiveElements() => Sources.Keys.Select(key => key + "*").ToArray();
+    public string[] GetSelectiveElements() => [.. Sources.Keys.Select(key => key + "*")];
 
     public Size2i AtlasSize => atlasSize;
 

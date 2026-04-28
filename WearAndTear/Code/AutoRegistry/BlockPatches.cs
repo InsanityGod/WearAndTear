@@ -35,7 +35,7 @@ public static class BlockPatches
     {
         if (SpecialPartsConfig.Instance.WindmillSails == null) return;
 
-        if (block is BlockWindmillRotor || block.GetType().Name == "BlockWindmillRotorEnhanced" || block.GetType().Name == "BlockWindmillRotorUD")
+        if ((block is BlockWindmillRotor && block is not BlockWaterWheel) || block.GetType().Name == "BlockWindmillRotorEnhanced" || block.GetType().Name == "BlockWindmillRotorUD")
         {
             block.EnsureBaseWearAndTear(true);
             block.MergeOrAddBehavior("wearandtear:WindmillSailPart", (JContainer)JToken.FromObject(SpecialPartsConfig.Instance.WindmillSails));

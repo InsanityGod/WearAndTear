@@ -4,6 +4,7 @@ using InsanityLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Channels;
 using Vintagestory.API.Common;
 using Vintagestory.GameContent;
 using Vintagestory.GameContent.Mechanics;
@@ -19,6 +20,8 @@ using WearAndTear.DynamicPatches;
 
 namespace WearAndTear.Code;
 
+//TODO maybe change covers so room integrity doesn't break when the axle decays?
+//TODO you can't see info while pulverizer is grinding
 public partial class WearAndTearModSystem : ModSystem
 {
     public static bool XlibEnabled { get; private set; }
@@ -71,10 +74,7 @@ public partial class WearAndTearModSystem : ModSystem
                 {
                     AutoRegistryPatches.EnsureBaseMethodCall(api, harmony, getBlockInfoMethod);
                 }
-                if (block.GetType() != typeof(Block))
-                {
-                    AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
-                }
+                AutoRegistryPatches.EnsureBlockDropsConnected(api, harmony, block);
             }
 
             var ingotMoldMethod = AccessTools.Method(typeof(BlockEntityIngotMold), nameof(BlockEntityIngotMold.GetBlockInfo));

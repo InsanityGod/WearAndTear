@@ -51,6 +51,11 @@
       "y": 12,
       "z": 0
     },
+    "origin": {
+      "x": 0.5,
+      "y": 0.2,
+      "z": 0.5
+    },
     "scale": 1.8
   },
   "groundTransform": {

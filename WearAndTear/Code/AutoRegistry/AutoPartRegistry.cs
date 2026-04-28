@@ -268,23 +268,23 @@ public static class AutoPartRegistry
     public static void CleanupWearAndTearAutoRegistry(this Block block)
     {
         //Removing all parts that do not have name (for overrides specified in patch that did not match an actual part)
-        block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh =>
+        block.BlockEntityBehaviors = [.. block.BlockEntityBehaviors.Where(beh =>
         {
             if (typeof(Part).IsAssignableFrom(Api.ClassRegistry.GetBlockEntityBehaviorClass(beh.Name)))
             {
                 return beh.properties != null && !string.IsNullOrEmpty(beh.properties["Code"].AsString());
             }
             return true;
-        }).ToArray();
+        })];
 
         //If only the PartController remains, then remove that as well
         if (block.BlockEntityBehaviors.Count(beh => beh.Name.StartsWith("wearandtear")) == 1)
         {
-            block.BlockEntityBehaviors = block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear")).ToArray();
+            block.BlockEntityBehaviors = [.. block.BlockEntityBehaviors.Where(beh => !beh.Name.StartsWith("wearandtear"))];
             return;
         }
 
-        block.BlockEntityBehaviors = block.BlockEntityBehaviors.OrderBy(SortOrder).ToArray();
+        block.BlockEntityBehaviors = [.. block.BlockEntityBehaviors.OrderBy(SortOrder)];
     }
     
     public static int SortOrder(BlockEntityBehaviorType blockEntityBehaviorType)

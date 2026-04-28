@@ -83,19 +83,15 @@ public class ContentAnalyzer
         }
     }
 
-    private void ExtractGridRecipe(GridRecipe recipe)
+    private void ExtractGridRecipe(RecipeBase recipe)
     {
         var ingredients = new Dictionary<CollectibleObject, float>();
-        if(recipe.ResolvedIngredients is null || recipe.Output is null) return;
-        var outputAmount = recipe.Output.Quantity;
-        foreach(var ingredient in recipe.ResolvedIngredients)
+        var outputAmount = recipe.RecipeOutput.ResolvedItemStack.StackSize;
+        foreach(var ingredient in recipe.RecipeIngredients)
         {
-            if(ingredient is null || ingredient.IsTool || (ingredient.ResolvedItemStack is null && (!ingredient.IsWildCard || ingredient.AllowedVariants?.Length != 1))) continue;
+            if(!ingredient.ConsumeProperties.Consume || ingredient?.ResolvedItemStack?.Collectible is not { } collectible) continue;
             
-            var collectible = ingredient.ResolvedItemStack is null ? Api.World.GetCollectibleObject(ingredient.Code.FillWildCard(ingredient.AllowedVariants[0])) : ingredient.ResolvedItemStack.Collectible;
-            if(collectible is null) continue;
-            
-            var amount = (float)ingredient.Quantity / (float)outputAmount;
+            var amount = (float)ingredient.Quantity / (float)outputAmount; //TODO confirmin that Quantity is actually correct for smithing recipes
             if(ingredients.TryGetValue(collectible, out float currentValue))
             {
                 ingredients[collectible] = currentValue + amount;
@@ -106,7 +102,7 @@ public class ContentAnalyzer
         ExtractIngredients(ingredients);
     }
     
-    private bool TryAddContent(Dictionary<string, float> content, string key, float amount)
+    private static bool TryAddContent(Dictionary<string, float> content, string key, float amount)
     {
         if(string.IsNullOrEmpty(key)) return false;
 
@@ -199,9 +195,11 @@ public class ContentAnalyzer
         var comparator = new WithoutOrientationComparator(Collectible);
         var itemClass = Collectible.ItemClass;
         int recipeCount = 0;
-        foreach(var recipe in api.World.GridRecipes)
+        var registry = api.ModLoader.GetModSystem<RecipeRegistrySystem>();
+        foreach(var recipe in api.World.GridRecipes.Union<RecipeBase>(registry.SmithingRecipes))
         {
-            if(recipe.Output?.ResolvedItemStack is null || recipe.Output.Type != itemClass || !comparator.IsMatch(recipe.Output.ResolvedItemStack.Collectible)) continue;
+            if(!recipe.Enabled || recipe.RecipeIngredients is null || recipe.RecipeOutput?.ResolvedItemStack is not { }  output || output.Class != itemClass || !comparator.IsMatch(output.Collectible)) continue;
+
             recipeCount++;
             ExtractGridRecipe(recipe);
         }

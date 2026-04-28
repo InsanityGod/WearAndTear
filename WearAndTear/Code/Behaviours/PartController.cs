@@ -117,7 +117,7 @@ public class PartController : BlockEntityBehavior
     public override void Initialize(ICoreAPI api, JsonObject properties)
     {
         base.Initialize(api, properties);
-        Parts = Blockentity.Behaviors.OfType<Part>().ToList();
+        Parts = [.. Blockentity.Behaviors.OfType<Part>()];
 
         RoomRegistry = Api.ModLoader.GetModSystem<RoomRegistry>(true);
         Blockentity.RegisterGameTickListener(UpdateIsSheltered, WearAndTearServerConfig.Instance.RoomCheckFrequencyInMs);

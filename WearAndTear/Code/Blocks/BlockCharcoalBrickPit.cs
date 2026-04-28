@@ -28,7 +28,7 @@ public class BlockCharcoalBrickPit : Block, IIgnitable
                     ActionLangCode = "blockhelp-firepit-ignite",
                     MouseButton = EnumMouseButton.Right,
                     HotKeyCode = "shift",
-                    Itemstacks = canIgniteStacks.ToArray(),
+                    Itemstacks = [.. canIgniteStacks],
                     GetMatchingStacks = (wi, bs, es) => {
                         BlockEntityCharcoalBrickPit becp = api.World.BlockAccessor.GetBlockEntity(bs.Position) as BlockEntityCharcoalBrickPit;
                         return becp?.Lit == false ? wi.Itemstacks : null;

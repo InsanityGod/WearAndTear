@@ -1,42 +1,68 @@
 ﻿using System;
-using System.Linq;
+using System.Diagnostics.Contracts;
+using System.Xml.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using Vintagestory.GameContent.Mechanics;
+using Vintagestory.ServerMods;
 using WearAndTear.Config.Client;
 
 namespace WearAndTear.Code.Rendering;
 
 public class WindmillRenderer : MechBlockRenderer
 {
-    public void UpdateForDurability(Shape shape, int randomNoise, int durability)
+    public static void UpdateForDurability(Shape shape, int randomNoise, int durability)
     {
         if (durability == 0)
         {
-            RecursiveRemoveCloth(shape.Elements);
+            RecursiveRemoveCloth(shape.Elements, 0);
         }
         else if (WearAndTearClientConfig.Instance.WindmillRotorDecayAutoGenShapes)
         {
             //Creating seeded random so it will be consistent
             var random = new Random(randomNoise); //55
-            RecursiveRemoveCloth(shape.Elements, random, durability / 100d);
+
+            RecursiveRemoveCloth(shape.Elements, durability / 100d, random);
         }
     }
 
-    public ShapeElement[] RecursiveRemoveCloth(ShapeElement[] children) =>
-        children.Where(element => !element.Name.StartsWith("cloth")).Select(element =>
+    public static bool ElementIsCloth(ShapeElement element)
+    {
+        if(element.Name is not null && element.Name.StartsWith("cloth", StringComparison.OrdinalIgnoreCase))
         {
-            if (element.Children != null) element.Children = RecursiveRemoveCloth(element.Children);
-            return element;
-        }).ToArray();
+            return true;
+        }
+        
+        foreach(var face in element.FacesResolved!)
+        {
+            if(face is not null && face.Enabled && face.Texture.StartsWith("cloth", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    public ShapeElement[] RecursiveRemoveCloth(ShapeElement[] children, Random random, double durability) =>
-        children.Where(element => !element.Name.StartsWith("cloth") || durability > random.NextDouble()).Select(element =>
+    public static ShapeElement[] RecursiveRemoveCloth(ShapeElement[] children, double durability, Random? random = null)
+    {
+        if(durability <= 0) random = null;
+
+        foreach(var child in children)
         {
-            if (element.Children != null) element.Children = RecursiveRemoveCloth(element.Children, random, durability);
-            return element;
-        }).ToArray();
+            if (child.FacesResolved is not null && ElementIsCloth(child) && (random is null || durability < random.NextDouble()))
+            {
+                for(var i = 0; i < child.FacesResolved.Length; i++)
+                {
+                    child.FacesResolved[i] = null!;
+                }
+            }
+
+            if (child.Children is not null) child.Children = RecursiveRemoveCloth(child.Children, durability, random);
+        }
+
+        return children;
+    }
 
     public WindmillRenderer(ICoreClientAPI capi, MechanicalPowerMod mechanicalPowerMod, Block textureSoureBlock, CompositeShape shapeLoc) : base(capi, mechanicalPowerMod)
     {
@@ -63,10 +89,9 @@ public class WindmillRenderer : MechBlockRenderer
             }
         }
 
-        Vec3f rot = new Vec3f(shapeLoc.rotateX, shapeLoc.rotateY, shapeLoc.rotateZ);
+        Vec3f rot = new(shapeLoc.rotateX, shapeLoc.rotateY, shapeLoc.rotateZ);
 
-        MeshData blockMesh;
-        capi.Tesselator.TesselateShape(textureSoureBlock, shape, out blockMesh, rot, null, null);
+        capi.Tesselator.TesselateShape(textureSoureBlock, shape, out MeshData blockMesh, rot, null, null);
         if (shapeLoc.Overlays != null)
         {
             for (int i = 0; i < shapeLoc.Overlays.Length; i++)
@@ -74,30 +99,29 @@ public class WindmillRenderer : MechBlockRenderer
                 CompositeShape ovShapeCmp = shapeLoc.Overlays[i];
                 rot = new Vec3f(ovShapeCmp.rotateX, ovShapeCmp.rotateY, ovShapeCmp.rotateZ);
                 Shape ovshape = Shape.TryGet(capi, ovShapeCmp.Base.Clone().WithPathPrefixOnce("shapes/").WithPathAppendixOnce(".json"));
-                MeshData overlayMesh;
-                capi.Tesselator.TesselateShape(textureSoureBlock, ovshape, out overlayMesh, rot, null, null);
+                capi.Tesselator.TesselateShape(textureSoureBlock, ovshape, out MeshData overlayMesh, rot, null, null);
                 blockMesh.AddMeshData(overlayMesh);
             }
         }
         blockMesh.CustomFloats = matrixAndLightFloats = new CustomMeshDataPartFloat(202000)
         {
             Instanced = true,
-            InterleaveOffsets = new int[]
-            {
+            InterleaveOffsets =
+            [
                 0,
                 16,
                 32,
                 48,
                 64
-            },
-            InterleaveSizes = new int[]
-            {
+            ],
+            InterleaveSizes =
+            [
                 4,
                 4,
                 4,
                 4,
                 4
-            },
+            ],
             InterleaveStride = 80,
             StaticDraw = false
         };
@@ -105,14 +129,12 @@ public class WindmillRenderer : MechBlockRenderer
         blockMeshRef = capi.Render.UploadMesh(blockMesh);
     }
 
-    // Token: 0x06002330 RID: 9008 RVA: 0x00136BDC File Offset: 0x00134DDC
-    protected override void UpdateLightAndTransformMatrix(int index, Vec3f distToCamera, float rotation, IMechanicalPowerRenderable dev)
+    protected override void UpdateLightAndTransformMatrix(int index, Vec3f distToCamera, float rotRad, IMechanicalPowerRenderable dev)
     {
-        float rotX = rotation * dev.AxisSign[0];
-        float rotY = rotation * dev.AxisSign[1];
-        float rotZ = rotation * dev.AxisSign[2];
-        BEBehaviorMPToggle tog = dev as BEBehaviorMPToggle;
-        if (tog != null && rotX == 0f ^ tog.IsRotationReversed())
+        float rotX = rotRad * dev.AxisSign[0];
+        float rotY = rotRad * dev.AxisSign[1];
+        float rotZ = rotRad * dev.AxisSign[2];
+        if (dev is BEBehaviorMPToggle tog && rotX == 0f ^ tog.IsRotationReversed())
         {
             rotY = 3.1415927f;
             rotZ = -rotZ;
@@ -120,7 +142,6 @@ public class WindmillRenderer : MechBlockRenderer
         UpdateLightAndTransformMatrix(matrixAndLightFloats.Values, index, distToCamera, dev.LightRgba, rotX, rotY, rotZ);
     }
 
-    // Token: 0x06002331 RID: 9009 RVA: 0x00136C54 File Offset: 0x00134E54
     public override void OnRenderFrame(float deltaTime, IShaderProgram prog)
     {
         UpdateCustomFloatBuffer();
@@ -133,7 +154,6 @@ public class WindmillRenderer : MechBlockRenderer
         }
     }
 
-    // Token: 0x06002332 RID: 9010 RVA: 0x00136CCD File Offset: 0x00134ECD
     public override void Dispose()
     {
         base.Dispose();
@@ -145,9 +165,7 @@ public class WindmillRenderer : MechBlockRenderer
         meshRef.Dispose();
     }
 
-    // Token: 0x04001200 RID: 4608
-    private CustomMeshDataPartFloat matrixAndLightFloats;
+    private readonly CustomMeshDataPartFloat matrixAndLightFloats;
 
-    // Token: 0x04001201 RID: 4609
-    private MeshRef blockMeshRef;
+    private readonly MeshRef blockMeshRef;
 }

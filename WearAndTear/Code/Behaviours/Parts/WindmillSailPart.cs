@@ -168,7 +168,7 @@ public class WindmillSailPart : OptionalPart
         var normalItem = Array.Find(itemStacks, item => item.Block != null && item.Block.FirstCodePartAsSpan().SequenceEqual(blockCode));
         normalItem?.Attributes.GetTreeAttribute(Constants.DurabilityTreeName).RemoveAttribute(Props.Code);
 
-        return base.ModifyDroppedItemStacks(itemStacks.Concat(sailItems).ToArray(), world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
+        return base.ModifyDroppedItemStacks([.. itemStacks, .. sailItems], world, pos, byPlayer, dropQuantityMultiplier, isBlockDestroyed);
     }
 
     public void DropSails()
@@ -240,7 +240,7 @@ public class WindmillSailPart : OptionalPart
     public virtual void UpdateShape(BEBehaviorMPBase beh)
     {
         if (Api == null) return;
-        AssetLocation newLocation = null;
+        AssetLocation? newLocation = null;
 
         if (AreSailsRolledUp)
         {
@@ -251,13 +251,7 @@ public class WindmillSailPart : OptionalPart
         {
             int? durabilityVariant = null;
 
-            if (Block.Code.Domain == "game")
-            {
-                if (Durability < 0.05) durabilityVariant = 0;
-                else if (Durability < 0.50) durabilityVariant = 50;
-                else if (Durability < 0.75) durabilityVariant = 75;
-            }
-            else if (Durability < .75)
+            if (Durability < .75)
             {
                 durabilityVariant = (int)(Durability * 100);
             }

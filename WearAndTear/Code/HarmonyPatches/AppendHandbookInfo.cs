@@ -171,7 +171,7 @@ public static class AppendHandbookInfo
             }
         }
         //TODO maybe display some of the xskills bonuses
-        __result = __result.AddRangeToArray(components.ToArray());
+        __result = __result.AddRangeToArray([.. components]);
     }
 
     public static void AddHeading(List<RichTextComponentBase> components, ICoreClientAPI capi, string heading, bool haveText)
