@@ -16,6 +16,7 @@ using WearAndTear.Code.Rendering;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Server;
 using WearAndTear.DynamicPatches;
+using static InDappledGroves.Util.RecipeTools.IDGRecipeNames;
 
 namespace WearAndTear.Code;
 //TODO maybe add work items for toolsmith?
@@ -83,6 +84,18 @@ public partial class WearAndTearModSystem : ModSystem
 
         FinalizeScrap(api);
         if (api.Side != EnumAppSide.Server) return;
+
+        if (api.ModLoader.IsModEnabled("indappledgroves"))
+        {
+            try
+            {
+                AppendSawDustToInDappledGroveRecipes(api);
+            }
+            catch(Exception ex)
+            {
+                Mod.Logger.Error("Compatibility logic for [indappledgroves] failed, exception: {0}", ex);
+            }
+        }
         
         api.Logger.VerboseDebug("[WearAndTear] Starting part registration");
         foreach (var block in api.World.Blocks)
@@ -110,6 +123,42 @@ public partial class WearAndTearModSystem : ModSystem
         api.Logger.VerboseDebug("[WearAndTear] Finished part registration");
 
         AutoPartRegistry.ClearAnalyzerCache();
+    }
+
+    private static void AppendSawDustToInDappledGroveRecipes(ICoreAPI api)
+    {
+        foreach(var recipe in IDGRecipeRegistry.Loaded.GroundRecipes)
+        {
+            if(recipe.ToolMode != "sawing") continue;
+            AppendSawdustIfPlanks(api, ref recipe.Output);
+        }
+
+        foreach(var recipe in IDGRecipeRegistry.Loaded.BasicWorkstationRecipes)
+        {
+            if(recipe.ToolMode != "sawing") continue;
+            AppendSawdustIfPlanks(api, ref recipe.Output);
+        }
+
+        foreach(var recipe in IDGRecipeRegistry.Loaded.ComplexWorkstationRecipes)
+        {
+            if(recipe.ToolMode != "sawing") continue;
+            AppendSawdustIfPlanks(api, ref recipe.Output);
+        }
+    }
+
+    private static void AppendSawdustIfPlanks(ICoreAPI api, ref JsonItemStack[] output)
+    {
+        if(output is null || ! output.Any(item => item?.Code?.Path.StartsWith("plank-", StringComparison.OrdinalIgnoreCase) ?? false)) return;
+        
+        var sawdustOutput = new JsonItemStack
+        {
+            Code = new AssetLocation("wearandtear","sawdust"),
+            Type = EnumItemClass.Item,
+        };
+
+        if(!sawdustOutput.Resolve(api.World, "WearAndTear <-> IDG compatibility")) return;
+
+        output = [..output, sawdustOutput];
     }
 
     public static void FinalizeScrap(ICoreAPI api)
