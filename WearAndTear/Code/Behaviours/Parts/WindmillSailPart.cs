@@ -3,6 +3,7 @@ using InsanityLib.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -66,21 +67,30 @@ public class WindmillSailPart : OptionalPart
         }
     }
 
-    public string SailAssetLocation
+    [UnsafeAccessor(UnsafeAccessorKind.Method, Name = "get_SailStack")]
+    private static extern ItemStack GetSailStack(BEBehaviorWindmillRotor rotor);
+
+    public ItemStack? SailStack
     {
         get
         {
             var beh = GetRotor();
-            if (beh is BEBehaviorWindmillRotor)
+            if(beh is BEBehaviorWindmillRotor rotor)
             {
-                return "sail";
+                return GetSailStack(rotor);
             }
 
-            var traverse = Traverse.Create(beh);
-            var sailType = traverse.Property("SailType").GetValue<string>();
-            if (string.IsNullOrEmpty(sailType)) sailType = "sailcentered";
+            if (Block.Code.Domain == "millwright")
+            {
+                var traverse = Traverse.Create(beh);
+                var sailType = traverse.Property("SailType").GetValue<string>();
+                if (string.IsNullOrEmpty(sailType)) sailType = "sailcentered";
+                var item = Api.World.GetItem(new AssetLocation("millwright", sailType));
+                if(item is null) return null;
+                return new ItemStack(item, traverse.Field<int>("bladeCount").Value);
+            }
 
-            return $"millwright:{sailType}";
+            return null;
         }
     }
 
@@ -131,26 +141,29 @@ public class WindmillSailPart : OptionalPart
     public override ItemStack[] ModifyDroppedItemStacks(ItemStack[] itemStacks, IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier, bool isBlockDestroyed)
     {
         if (!IsPresent) return itemStacks;
+        
+        var sailStack = SailStack;
+        if(sailStack?.Collectible is null) return itemStacks;
+        
         var sailItems = new List<ItemStack>();
 
         if (Durability > WearAndTearServerConfig.Instance.DurabilityLeeway) Durability = 1;
-        var item = SailAssetLocation;
-        var sailCount = BladeCount;
         var sailLength = SailLength;
 
-        var sailItemCount = sailLength * sailCount * Durability * dropQuantityMultiplier;
+        var sailItemCount = sailLength * sailStack.StackSize * Durability * dropQuantityMultiplier;
 
         while (sailItemCount >= 1)
         {
-            var stackSize = (int)Math.Min(sailItemCount, sailCount);
+            var stackSize = (int)Math.Min(sailItemCount, sailStack.StackSize);
             sailItemCount -= stackSize;
-
-            sailItems.Add(new ItemStack(world.GetItem(new AssetLocation(item)), stackSize));
+            var newStack = sailStack.Clone();
+            newStack.StackSize = stackSize;
+            sailItems.Add(newStack);
         }
 
         if (sailItemCount > 0)
         {
-            sailItemCount *= sailCount;
+            sailItemCount *= sailStack.StackSize;
         }
 
         while (sailItemCount >= 1)
