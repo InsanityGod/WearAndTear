@@ -44,19 +44,20 @@ public class RubbleBlockEntity : BlockEntity
     {
         var items = new List<ItemStack>();
 
-            foreach (var content in Contents.Values.OfType<ItemstackAttribute>())
-            {
-                //normal drops
-                var normalDrops = content.value.Attributes.GetTreeAttribute("rubble-normal-drops");
-                if(normalDrops is null) continue;
+        foreach (var content in Contents.Values.OfType<ItemstackAttribute>())
+        {
+            //normal drops
+            var normalDrops = content.value.Attributes.GetTreeAttribute("rubble-normal-drops");
+            if(normalDrops is null) continue;
 
-                foreach (var drop in normalDrops.Values.OfType<ItemstackAttribute>())
+            foreach (var drop in normalDrops.Values.OfType<ItemstackAttribute>())
+            {
+                if(drop.value is null) continue;
+                var item = drop.value.Clone();
+                if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)) && item.Collectible!.Code.Path.Contains("scrap-"))
                 {
-                    var item = drop.value.Clone();
-                    if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)) && item.Collectible!.Code.Path.Contains("scrap-"))
-                    {
-                        item.StackSize = SkillsAndAbilities.ApplyScrapperBonus(world.Api, byPlayer, item.StackSize);
-                    }
+                    item.StackSize = SkillsAndAbilities.ApplyScrapperBonus(world.Api, byPlayer, item.StackSize);
+                }
 
                 items.Add(item);
             }
