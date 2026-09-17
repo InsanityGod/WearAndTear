@@ -14,12 +14,12 @@ public class PartProps
     /// The code of the part (for making certain kinds of parts)
     /// </summary>
     [Required]
-    public AssetLocation Code { get; set; }
+    public required AssetLocation Code { get; set; }
 
     /// <summary>
     /// The variant of the material
     /// </summary>
-    public AssetLocation MaterialVariant { get; set; }
+    public AssetLocation? MaterialVariant { get; set; }
 
     /// <summary>
     /// How much content this part has (affects the ammount of scrap generated)
@@ -30,12 +30,12 @@ public class PartProps
     /// <summary>
     /// What kind of scrap will be produced when this part is destroyed
     /// </summary>
-    public AssetLocation ScrapCode { get; set; }
+    public AssetLocation? ScrapCode { get; set; }
 
     /// <summary>
     /// The type of repair tool that will be required to repair this part
     /// </summary>
-    public string RepairType { get; set; }
+    public string? RepairType { get; set; }
 
     /// <summary>
     /// How long the object should last on average

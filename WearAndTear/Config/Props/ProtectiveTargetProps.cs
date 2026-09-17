@@ -9,12 +9,12 @@ public class ProtectiveTargetProps
     /// <summary>
     /// Parts with this code will gain this protection
     /// </summary>
-    public string Code { get; set; }
+    public string? Code { get; set; }
 
     /// <summary>
     /// Parts of this repair type will gain this protection
     /// </summary>
-    public string RepairType { get; set; }
+    public string? RepairType { get; set; }
 
     /// <summary>
     /// Multiplier on how much damage is done

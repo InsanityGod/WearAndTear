@@ -113,8 +113,8 @@
 			<Private>False</Private>
 		</Reference>
 		<Reference Include="xlib">
-			<HintPath>..\..\Dep\xlib_v0.8.16\xlib.dll</HintPath>
-			<Private>False</Private>
+			<HintPath>..\..\Dep\XLib Fork v1.0.35\xlib.dll</HintPath>
+			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
 
@@ -122,6 +122,7 @@
 		<Content Include="assets\**">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
+		<Content Remove="C:\Users\krizz\.nuget\packages\theinsanitygod.vintagestory.insanitylib\2.1.0\contentFiles\any\net10.0\assets\insanitylib\lang\en.json" />
 		<Content Include="modinfo.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
@@ -132,4 +133,6 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+
+	<ProjectExtensions><VisualStudio><UserProperties assets_4wearandtear_4lang_4en_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

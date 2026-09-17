@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib;
 using InsanityLib.Extensions;
 using System;
 using System.Collections;
@@ -336,25 +337,24 @@ public class PartController : BlockEntityBehavior
 
         if (WearAndTearServerConfig.Instance.TraitRequirements && props.RequiredTraits != null)
         {
-            var characterSystem = Api.ModLoader.GetModSystem<CharacterSystem>();
-
-            var missingTraits = props.RequiredTraits.Where(trait => !characterSystem.HasTrait(player.Player, trait)).ToList();
-            if (missingTraits.Any())
+            var missingTraits = props.RequiredTraits.Where(trait => !player.Player.HasTrait(trait)).ToList();
+            if (missingTraits.Count != 0)
             {
                 if (Api is ICoreClientAPI clientApi)
                 {
                     clientApi.TriggerIngameError(
                         this,
                         "wearandtear:failed-maintenance-missing-traits",
-                        Lang.Get("wearandtear:failed-maintenance-missing-traits", string.Join(", ", missingTraits.Select(trait => Lang.Get($"trait-{trait}"))))
+                        Lang.Get("wearandtear:failed-maintenance-missing-traits", string.Join(", ", missingTraits.Select(trait => Lang.Get($"trait-{trait}")))) //TODO language
                     );
                 }
                 return false;
             }
         }
 
-        var maintenanceStrength = props.Strength;
-        if (WearAndTearModSystem.XlibEnabled) maintenanceStrength = SkillsAndAbilities.ApplyHandyManBonus(Api, player.Player, maintenanceStrength);
+        var maintenanceStrength = props.Strength * player.Stats.GetBlended("wearandtear:repair-effectiveness");
+        if(maintenanceStrength <= 0) return false;
+        
         var originalMaintenanceStrength = maintenanceStrength;
 
         var anyPartRequiredMaintenance = false;
@@ -372,7 +372,7 @@ public class PartController : BlockEntityBehavior
             }
 
             var remainingMaintenanceStrength = part.DoMaintenanceFor(maintenanceStrength, player);
-            if (WearAndTearModSystem.XlibEnabled) part.Bonuses?.UpdateForRepair(part, Api, player.Player);
+            ApplyBonuses(player, part);
 
             if (!WearAndTearServerConfig.Instance.AllowForInfiniteMaintenance && remainingMaintenanceStrength == maintenanceStrength)
             {
@@ -392,10 +392,10 @@ public class PartController : BlockEntityBehavior
 
             if (props.RequiredTool != null && props.ToolDurabilityCost > 0)
             {
-                byEntity.LeftHandItemSlot.Itemstack.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
+                byEntity.LeftHandItemSlot!.Itemstack!.Collectible.DamageItem(Api.World, byEntity, byEntity.LeftHandItemSlot, props.ToolDurabilityCost);
             }
-
-            if (byEntity is EntityPlayer player2 && WearAndTearModSystem.XlibEnabled) SkillsAndAbilities.GiveMechanicExp(player2.Api, player2.Player, (originalMaintenanceStrength - maintenanceStrength) * CompatibilityConfig.Instance.DurabilityToXPRatio);
+            
+            player.Player.AddExperience("wearandtear:engineer", (originalMaintenanceStrength - maintenanceStrength) * CompatibilityConfig.Instance.DurabilityToXPRatio);
             return true;
         }
         else if (Api is ICoreClientAPI clientApi2)
@@ -415,5 +415,21 @@ public class PartController : BlockEntityBehavior
         }
 
         return false;
+    }
+
+    private static void ApplyBonuses(EntityPlayer player, Part part)
+    {
+        part.ProtectionModifier = 1f;
+        part.DecayModifier = 1f;
+        
+        if (part.Props.Code == "wearandtear:reinforcement")
+        {
+            part.ProtectionModifier *= player.Stats.GetBlended("wearandtear:reinforcement-strength");
+        }
+        else if(part.Props.Code == "wearandtear:wax")
+        {
+            part.ProtectionModifier *= player.Stats.GetBlended("wearandtear:wax-effectiveness");
+            part.DecayModifier *= player.Stats.GetBlended("wearandtear:wax-decay");
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using InsanityLib;
 using InsanityLib.Extensions;
 using InsanityLib.Util;
 using System;
@@ -27,7 +28,6 @@ public partial class WearAndTearModSystem : ModSystem
 {
     public static bool XlibEnabled { get; private set; }
     public static bool HelveAxeModLoaded { get; private set; }
-
     public Dictionary<string, IDecayEngine> DecayEngines { get; } = new Dictionary<string, IDecayEngine>
     {
         { "wind", new WindDecayEngine()},
@@ -40,7 +40,7 @@ public partial class WearAndTearModSystem : ModSystem
         AutoSetup(api);
         AutoPartRegistry.Api = api;
 
-        XlibEnabled = api.ModLoader.IsModEnabled("xlib");
+        XlibEnabled = AccessTools.TypeByName("XLib.XLeveling.XLeveling") is not null;
         if (XlibEnabled) SkillsAndAbilities.RegisterSkills(api);
     }
 
@@ -48,15 +48,12 @@ public partial class WearAndTearModSystem : ModSystem
     {
         HelveAxeModLoaded = api.ModLoader.IsModEnabled("mechanicalwoodsplitter");
         MechNetworkRenderer.RendererByCode["wearandtear:windmillrotor"] = typeof(WindmillRenderer);
-
-        if (XlibEnabled) SkillsAndAbilities.RegisterAbilities(api);
     }
 
     public override void AssetsLoaded(ICoreAPI api)
     {
         base.AssetsLoaded(api);
-
-        if(XlibEnabled) SkillsAndAbilities.FixAbilityLangStrings(api);
+        AutoAssetsLoaded(api);
     }
 
     public override void AssetsFinalize(ICoreAPI api)
@@ -200,24 +197,7 @@ public partial class WearAndTearModSystem : ModSystem
         }
     }
 
-    public static bool IsRoughEstimateEnabled(ICoreAPI api, IPlayer player)
-    {
-        if (CompatibilityConfig.Instance.RoughDurabilityEstimate.IsFullfilled())
-        {
-            if (XlibEnabled)
-            {
-                //Check xlib
-                return !SkillsAndAbilities.HasPreciseMeasurementsSkill(api, player);
-            }
-            else
-            {
-                //Check traits
-                return !api.ModLoader.GetModSystem<CharacterSystem>().HasTrait(player, "wearandtear-precisemeasurements");
-            }
-        }
-
-        return false;
-    }
+    public static bool IsRoughEstimateEnabled(ICoreAPI api, IPlayer player) => WearAndTearServerConfig.Instance.RoughDurabilityEstimate && !player.HasTrait("wearandtear:precise-measurements");
 
     public override void Dispose()
     {

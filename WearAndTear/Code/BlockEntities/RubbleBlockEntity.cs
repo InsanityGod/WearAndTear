@@ -5,11 +5,13 @@ using System.Linq;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
+using Vintagestory.API.MathTools;
 using Vintagestory.Client.NoObf;
 using WearAndTear.Code.Behaviours.Rubble;
 using WearAndTear.Code.Rendering;
 using WearAndTear.Code.XLib;
 using WearAndTear.Config.Props.rubble;
+using XLib.XLeveling;
 
 namespace WearAndTear.Code.BlockEntities;
 
@@ -54,9 +56,11 @@ public class RubbleBlockEntity : BlockEntity
             {
                 if(drop.value is null) continue;
                 var item = drop.value.Clone();
-                if (WearAndTearModSystem.XlibEnabled && (item.Collectible != null || item.ResolveBlockOrItem(world)) && item.Collectible!.Code.Path.Contains("scrap-"))
+                if ((item.Collectible is not null || item.ResolveBlockOrItem(world)) && item.Collectible!.Code.Path.Contains("scrap-"))
                 {
-                    item.StackSize = SkillsAndAbilities.ApplyScrapperBonus(world.Api, byPlayer, item.StackSize);
+                    
+
+                    item.StackSize = GameMath.RoundRandom(world.Rand, item.StackSize * byPlayer.Entity.Stats.GetBlended("wearandtear:scrap-drop-rate"));
                 }
 
                 items.Add(item);

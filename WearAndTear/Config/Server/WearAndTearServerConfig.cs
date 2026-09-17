@@ -18,6 +18,12 @@ public class WearAndTearServerConfig
     public bool TraitRequirements { get; set; } = false;
 
     /// <summary>
+    /// When enabled seeing exact durability percentages requires a trait/ability (without it you will see a rough estimate)
+    /// </summary>
+    [DefaultValue(true)]
+    public bool RoughDurabilityEstimate { get; set; } = true;
+
+    /// <summary>
     /// The lowest durability objects should ever drop to.
     /// (Setting this higher means the objects will never fully break but only decrease in efficiency, this does not affect items such as helvehammers)
     /// </summary>

@@ -16,7 +16,7 @@ public class CompatibilityConfig
     /// Multiplier on the lifespan of encased parts.
     /// (Keep in mind that you can't do maintenance on encased parts due to their inaccessibility)
     /// </summary>
-    [Category("Axle in Blocks")]
+    [Category("Axle in Blocks")] //TODO rework to deal with new Vanilla system for encasing axles
     [DefaultValue(1.5f)]
     [Range(0.1d, double.PositiveInfinity)]
     public float EncasedPartLifeSpanMultiplier { get; set; } = 1.5f;
@@ -25,18 +25,9 @@ public class CompatibilityConfig
     /// The ratio of durability to XP gained when repairing blocks.
     /// (100% durability would mean translate into 10 xp)
     /// </summary>
-    [Category("XLib / XSkills")]
     [DefaultValue(10f)]
     [DisplayName("Durability to XP ratio")]
     public float DurabilityToXPRatio { get; set; } = 10f;
-
-    /// <summary>
-    /// When enabled you will see rough estimates rather then exact percentages
-    /// (if you have XLib, you need to get a skill to see exact values otherwise you will need the "wearandtear-precisemeasurements" trait)
-    /// </summary>
-    [Category("XLib / XSkills")]
-    [DefaultValue(EXLibPrescenceRequirement.Irrelevant)]
-    public EXLibPrescenceRequirement RoughDurabilityEstimate { get; set; } = EXLibPrescenceRequirement.Irrelevant;
 
     /// <summary>
     /// Enables/Disabled extra code for handling old WearAndTear save data

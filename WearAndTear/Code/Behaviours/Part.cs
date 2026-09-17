@@ -8,32 +8,28 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent.Mechanics;
 using WearAndTear.Code.Interfaces;
-using WearAndTear.Code.XLib;
-using WearAndTear.Code.XLib.Containers;
 using WearAndTear.Config.Client;
 using WearAndTear.Config.Props;
 using WearAndTear.Config.Server;
 
 namespace WearAndTear.Code.Behaviours;
 
-public class Part : BlockEntityBehavior
+public class Part(BlockEntity blockentity) : BlockEntityBehavior(blockentity)
 {
-    public Part(BlockEntity blockentity) : base(blockentity) { }
     public PartController Controller { get; private set; }
     public PartProps Props { get; private set; }
     
     protected IDictionary<string, IDecayEngine> DecayEngines { get; private set; }
 
-    /// <summary>
-    /// The current bonuses applied to the part
-    /// </summary>
-    public PartBonuses Bonuses { get; private set; }
+    public float ProtectionModifier { get; set; } = 1f;
+
+    public float DecayModifier { get; set; } = 1f;
 
     /// <summary>
     /// Wether decay has to be applied on this part (you would turn this off if you want to manually control durability)
     /// </summary>
     public virtual bool RequiresUpdateDecay => true;
-    
+
     /// <summary>
     /// Wether there is a limit to how much maintenance can be done to this part
     /// </summary>
@@ -66,9 +62,7 @@ public class Part : BlockEntityBehavior
         var allowedMaintenanceStrength = maintenanceStrength;
         if (HasMaintenanceLimit)
         {
-            var limit = Props.MaintenanceLimit.Value;
-
-            if (WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+            var limit = Props.MaintenanceLimit!.Value * player.Stats.GetBlended("wearandtear:maintenance-limit"); 
 
             allowedMaintenanceStrength = GameMath.Clamp(maintenanceStrength, 0, limit - RepairedDurability);
         }
@@ -111,20 +105,18 @@ public class Part : BlockEntityBehavior
     public override void Initialize(ICoreAPI api, JsonObject properties)
     {
         base.Initialize(api, properties);
-        Props ??= properties.AsObject<PartProps>() ?? new();
-        Props.Decay ??= new DecayProps[]
-        {
+        Props ??= properties.AsObject<PartProps>() ?? new() { Code = new AssetLocation("wearandtear", "unknown") };
+        Props.Decay ??=
+        [
             new() {
                 Type = "time"
             }
-        };
+        ];
         DecayEngines = Api.ModLoader.GetModSystem<WearAndTearModSystem>().DecayEngines;
         Controller = Blockentity.GetBehavior<PartController>();
-        
-        if (WearAndTearModSystem.XlibEnabled) Bonuses ??= new();
     }
 
-    public override void OnBlockPlaced(ItemStack byItemStack = null)
+    public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
 
@@ -142,8 +134,7 @@ public class Part : BlockEntityBehavior
         base.FromTreeAttributes(tree, worldAccessForResolve);
 
         //This is to deal with this method being called before Initialize
-        Props ??= properties.AsObject<PartProps>() ?? new();
-        if (WearAndTearModSystem.XlibEnabled) Bonuses ??= new();
+        Props ??= properties.AsObject<PartProps>() ?? new() { Code = new AssetLocation("wearandtear", "unknown") };
 
         if (Props == null) return;
 
@@ -152,7 +143,9 @@ public class Part : BlockEntityBehavior
         Durability = durabilityTree.GetFloat(Props.Code, Durability);
         if (HasMaintenanceLimit) RepairedDurability = durabilityTree.GetFloat(Props.Code + Constants.RepairedPrefix, RepairedDurability);
 
-        Bonuses?.FromTreeAttributes(tree, Props);
+        ProtectionModifier = tree.GetFloat(nameof(ProtectionModifier), 1f);
+
+        DecayModifier = tree.GetFloat(nameof(DecayModifier), 1f);
     }
 
     protected virtual void LegacyCompatibilityFixes(ITreeAttribute durabilityTree)
@@ -179,7 +172,8 @@ public class Part : BlockEntityBehavior
         var durabilityTree = tree.GetOrAddTreeAttribute(Constants.DurabilityTreeName);
         durabilityTree.SetFloat(Props.Code, Durability);
         if (HasMaintenanceLimit) durabilityTree.SetFloat(Props.Code + Constants.RepairedPrefix, RepairedDurability);
-        Bonuses?.ToTreeAttributes(tree, Props);
+        if(Math.Abs(ProtectionModifier) > float.Epsilon) tree.SetFloat(nameof(ProtectionModifier), ProtectionModifier);
+        if(Math.Abs(DecayModifier) > float.Epsilon) tree.SetFloat(nameof(DecayModifier), DecayModifier);
     }
 
     public virtual void UpdateDecay(double daysPassed)
@@ -195,7 +189,7 @@ public class Part : BlockEntityBehavior
                 loss *= protectivePart.GetDecayMultiplierFor(Props);
             }
 
-            if (Bonuses != null) loss *= Bonuses.DecayModifier;
+            loss *= DecayModifier;
             Durability -= loss;
         }
         Durability = GameMath.Clamp(Durability, WearAndTearServerConfig.Instance.MinDurability, 1);
