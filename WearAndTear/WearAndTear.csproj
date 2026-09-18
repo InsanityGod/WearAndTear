@@ -16,46 +16,13 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
 
-	<!-- InsanityLib Minimal Template Start -->
-
-	<PropertyGroup>
-		<!-- Path to your ModInfo file -->
-		<ModInfoFile>modinfo.json</ModInfoFile>
-
-		<!-- Enables the generation of the xml documentation file (used by some InsanityLib features) -->
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-	</PropertyGroup>
-
-	<Target Name="ReadModInfo" BeforeTargets="BeforeBuild">
-
-		<!-- Read mod id -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.modid">
-			<Output TaskParameter="Result" PropertyName="ModIDFromJson" />
-		</JsonPeek>
-
-		<!-- Read InsanityLib Dependency -->
-		<JsonPeek ContentPath="$(ModInfoFile)" Query="$.dependencies.insanitylib" Empty="$empty">
-			<Output TaskParameter="Result" PropertyName="HasHardInsanityLibDependency" />
-		</JsonPeek>
-
-		<!-- Set all relevant properties -->
-		<PropertyGroup>
-			<ModID>$(ModIDFromJson)</ModID>
-			<HasInsanityLibDependency>$(HasHardInsanityLibDependency)</HasInsanityLibDependency>
-		</PropertyGroup>
-	</Target>
-
-	<ItemGroup>
-		<CompilerVisibleProperty Include="ModID" />
-		<CompilerVisibleProperty Include="HasInsanityLibDependency" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="TheInsanityGod.VintageStory.InsanityLib" Version="2.*" PrivateAssets="All" />
-		<PackageReference Include="JsonPeek" Version="1.2.0" />
 	</ItemGroup>
-	<!-- InsanityLib Minimal Template End -->
-
+	
+	<PropertyGroup>
+		<JsonMinifierPaths>assets\*\shapes\**\*.json</JsonMinifierPaths> <!-- TODO: Add documentation-->
+	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
@@ -133,6 +100,4 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-
-	<ProjectExtensions><VisualStudio><UserProperties assets_4wearandtear_4lang_4en_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
