@@ -38,7 +38,8 @@
     "MaxLevel": 3,
     "Attributes": {
       "wearandtear:mold-durability-loss": { "Value": -0.1 }
-    }
+    },
+    "Enabled": "config://WearAndTear/Server/SpecialPartsConfig/Molds"
   },
   {
     "code": "expert-caster",
@@ -58,7 +59,8 @@
         "TraitCode": "careful-caster",
         "Level": 3
       }
-    ]
+    ],
+    "Enabled": "config://WearAndTear/Server/SpecialPartsConfig/Molds"
   },
   {
     "code": "handyman",
