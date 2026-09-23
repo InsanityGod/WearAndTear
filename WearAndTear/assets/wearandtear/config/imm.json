@@ -1,0 +1,30 @@
+{
+  "Dependencies": [
+    {
+      "ModId": "smex",
+      "Label": "Incompatibility",
+      "Description": "Durability does not work on molds with Steelmaking Expanded present",
+      "Severity": "Warning",
+
+      "Criteria": [
+        {
+          "Type": "Setting",
+          "Target": {
+            "ConfigFile": "WearAndTear/Server/SpecialPartsConfig.json",
+            "Map": "Molds"
+          },
+          "Operator": "Equal",
+          "Value": true
+        }
+      ],
+      "Resolution": {
+        "Type": "SetSetting",
+        "Target": {
+          "ConfigFile": "WearAndTear/Server/SpecialPartsConfig.json",
+          "Map": "Molds"
+        },
+        "Value": false
+      }
+    }
+  ]
+}

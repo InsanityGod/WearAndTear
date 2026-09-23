@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using InsanityLib.Extensions;
+using System;
+using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -49,7 +51,7 @@ public class MoldPart : Part
 
     public void Damage(IPlayer byPlayer)
     {
-        float damage = WearAndTearModSystem.XlibEnabled && SkillsAndAbilities.IsExpertCaster(Api, byPlayer) ?
+        float damage = byPlayer.HasTrait("wearandtear:expert-caster") ?
             DurabilityProps.MinDurabilityUsage :
             (float)(DurabilityProps.MinDurabilityUsage + (Api.World.Rand.NextDouble() * (DurabilityProps.MaxDurabilityUsage - DurabilityProps.MinDurabilityUsage)));
 
@@ -61,8 +63,8 @@ public class MoldPart : Part
             damage *= protectivePart.GetDecayMultiplierFor(Props);
         }
 
-        if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyMoldDurabilityCostModifier(Api, byPlayer, damage);
-        Durability -= damage;
+        damage *= byPlayer.Entity.Stats.GetBlended("wearandtear:mold-durability-loss");
+        Durability -= Math.Min(damage, 0);
 
         Blockentity.GetBehavior<PartController>().UpdateDecay(0, false);
     }

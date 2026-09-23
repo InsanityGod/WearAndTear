@@ -220,9 +220,7 @@ public class WindmillSailPart : OptionalPart
         var realAllowedMaintenanceStrength = realMaintenanceStrength;
         if (HasMaintenanceLimit)
         {
-            var limit = Props.MaintenanceLimit.Value;
-
-            if (WearAndTearModSystem.XlibEnabled) limit = SkillsAndAbilities.ApplyLimitBreakerBonus(player.Api, player.Player, limit);
+            var limit = Props.MaintenanceLimit!.Value * player.Stats.GetBlended("wearandtear:maintenance-limit");
 
             realAllowedMaintenanceStrength = GameMath.Clamp(realMaintenanceStrength, 0, limit - RepairedDurability);
         }

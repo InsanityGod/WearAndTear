@@ -17,13 +17,9 @@ public class ProtectivePart : Part, IProtectivePart
     public float GetDecayMultiplierFor(PartProps props)
     {
         var protection = Array.Find(ProtectiveProps.EffectiveFor, target => target.IsEffectiveFor(props));
-        if (protection != null)
+        if (protection is not null)
         {
-            var mult = protection.DecayMultiplier;
-
-            if (Bonuses != null) mult = 1 + ((mult - 1) * Bonuses.ProtectionModifier);
-
-            return mult;
+            return protection.DecayMultiplier * (1f / ProtectionModifier);
         }
         return 1f;
     }

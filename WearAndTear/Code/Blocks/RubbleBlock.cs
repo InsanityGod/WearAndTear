@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InsanityLib.Extensions;
+using System;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Datastructures;
@@ -65,7 +66,7 @@ public class RubbleBlock : Block
     {
         //redirect to entity
         var entity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
-        if (entity == null) return Array.Empty<ItemStack>();
+        if (entity == null) return [];
 
         var results = entity.GetDrops(world, byPlayer, dropQuantityMultiplier);
 
@@ -81,10 +82,10 @@ public class RubbleBlock : Block
     public override void OnEntityInside(IWorldAccessor world, Entity entity, BlockPos pos)
     {
         var rubbleEntity = world.BlockAccessor.GetBlockEntity<RubbleBlockEntity>(pos);
-        if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && player.ServerControls.Sprint && entity.ServerPos.Motion.LengthSq() > 0.001 && world.Rand.NextDouble() > 0.05)
+        if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && player.ServerControls.Sprint && entity.Pos.Motion.LengthSq() > 0.001 && world.Rand.NextDouble() > 0.05)
         {
             var damage = sprintIntoDamage;
-            if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyStrongFeetBonus(api, player.Player, damage);
+            damage *= entity.Stats.GetBlended("wearandtear:rubble-damage");
             if (damage > 0)
             {
                 entity.ReceiveDamage(new DamageSource
@@ -94,7 +95,7 @@ public class RubbleBlock : Block
                     Type = EnumDamageType.PiercingAttack,
                     SourcePos = pos.ToVec3d()
                 }, damage);
-                entity.ServerPos.Motion.Set(0.0, 0.0, 0.0);
+                entity.Pos.Motion.Set(0.0, 0.0, 0.0);
             }
         }
         base.OnEntityInside(world, entity, pos);
@@ -106,7 +107,7 @@ public class RubbleBlock : Block
         if (rubbleEntity != null && rubbleEntity.DamageOnTouch() && world.Side == EnumAppSide.Server && entity is EntityPlayer player && isImpact && Math.Abs(collideSpeed.Y * 30.0) >= 0.25)
         {
             var damage = (float)Math.Abs(collideSpeed.Y * (double)fallIntoDamageMul);
-            if (WearAndTearModSystem.XlibEnabled) damage = SkillsAndAbilities.ApplyStrongFeetBonus(api, player.Player, damage);
+            damage *= entity.Stats.GetBlended("wearandtear:rubble-damage");
             if (damage < 0) return;
 
             entity.ReceiveDamage(new DamageSource
@@ -117,6 +118,12 @@ public class RubbleBlock : Block
                 SourcePos = pos.ToVec3d()
             }, damage);
         }
+    }
+
+    public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
+    {
+        base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
+        byPlayer.AddExperience("wearandtear:scrapper", 2);
     }
 
     private float sprintIntoDamage;

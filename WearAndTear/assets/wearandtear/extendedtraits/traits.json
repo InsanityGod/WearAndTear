@@ -1,0 +1,145 @@
+[
+  {
+    "code": "engineer",
+    "type": "positive",
+    "Skill": "mechanics",
+    "IsSpecialization": true,
+    "AppendToClasses": [ "clockmaker", "gearsmith" ],
+    "TraitSystems": {
+      //For XSkills it is always present (as it doubles as the specialization) for the rest it's only enabled when configured as such
+      "Vanilla": "config://WearAndTear/Server/MainConfig/TraitRequirements",
+      "DynamicTraits": "config://WearAndTear/Server/MainConfig/TraitRequirements"
+    },
+    "DynamicTraitCost": 4
+  },
+  {
+    "code": "precise-measurements",
+    "type": "positive",
+    "Skill": "mechanics",
+    "AppendToClasses": [ "clockmaker", "gearsmith" ],
+    "DynamicTraitCost": 2,
+    "Constraints": [
+      {
+        //Specialization requirement
+        "Type": "Required",
+        "TraitSystems": "XLib",
+        "Skill": "mechanics",
+        "TraitCode": "engineer"
+      }
+    ],
+    "Enabled": "config://WearAndTear/Server/MainConfig/RoughDurabilityEstimate"
+  },
+  {
+    "code": "careful-caster",
+    "type": "positive",
+    "Skill": "game:metalworking",
+    "DynamicTraitCost": 4,
+    "LevelForTrait": 3,
+    "MaxLevel": 3,
+    "Attributes": {
+      "wearandtear:mold-durability-loss": { "Value": -0.1 }
+    },
+    "Enabled": "config://WearAndTear/Server/SpecialPartsConfig/Molds"
+  },
+  {
+    "code": "expert-caster",
+    "type": "positive",
+    "Skill": "game:metalworking",
+    "DynamicTraitCost": 6,
+    "Constraints": [
+      {
+        "Type": "Required",
+        "TraitSystems": "XLib",
+        "Skill": "game:metalworking",
+        "Level": 20
+      },
+      {
+        "Type": "Required",
+        "TraitSystems": "XLib",
+        "TraitCode": "careful-caster",
+        "Level": 3
+      }
+    ],
+    "Enabled": "config://WearAndTear/Server/SpecialPartsConfig/Molds"
+  },
+  {
+    "code": "handyman",
+    "type": "positive",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 3,
+    "LevelForTrait": 3,
+    "MaxLevel": 3,
+    "Attributes": {
+      "wearandtear:repair-effectiveness": { "ValuePerLevel": [ 0.15, 0.25, 0.30 ] }
+    }
+  },
+  {
+    "code": "limit-breaker",
+    "type": "positive",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 6,
+    "LevelForTrait": 4,
+    "MaxLevel": 4,
+    "Attributes": {
+      "wearandtear:maintenance-limit": { "ValuePerLevel": [ 0.25, 0.50, 0.75, 1.00 ] }
+    },
+    "Constraints": [
+      {
+        //Specialization requirement
+        "Type": "Required",
+        "TraitSystems": "XLib",
+        "Skill": "mechanics",
+        "TraitCode": "engineer"
+      }
+    ],
+    "Enabled": "config://!WearAndTear/Server/MainConfig/AllowForInfiniteMaintenance"
+  },
+  {
+    "code": "scrapper",
+    "type": "positive",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 3,
+    "LevelForTrait": 3,
+    "MaxLevel": 3,
+    "Attributes": {
+      "wearandtear:scrap-drop-rate": { "ValuePerLevel": [ 0.10, 0.20, 0.25 ] }
+    },
+    "Enabled": "config://WearAndTear/Server/RubbleConfig/GenerateScrap"
+  },
+  {
+    //TODO maybe add some negative variants (for dynamic traits)
+    "code": "strong-feet",
+    "type": "positive",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 3,
+    "LevelForTrait": 3,
+    "MaxLevel": 3,
+    "Attributes": {
+      "wearandtear:rubble-damage": { "ValuePerLevel": [ -0.25, -0.50, -1.00 ] }
+    },
+    "Enabled": "config://WearAndTear/Server/RubbleConfig/RubbleBlock"
+  },
+  {
+    "code": "butterfingers",
+    "type": "Mixed",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 2,
+    "LevelForTrait": 3,
+    "MaxLevel": 3,
+    "Attributes": {
+      "wearandtear:wax-effectiveness": { "ValuePerLevel": [ 0.10, 0.25, 0.50 ] },
+      "wearandtear:wax-decay": { "ValuePerLevel": [ 0.20, 0.35, 0.50 ] }
+    }
+  },
+  {
+    "code": "reinforcer",
+    "type": "positive",
+    "Skill": "mechanics",
+    "DynamicTraitCost": 4,
+    "LevelForTrait": 5,
+    "MaxLevel": 5,
+    "Attributes": {
+      "wearandtear:reinforcement-strength": { "Value": 0.1 }
+    }
+  }
+]

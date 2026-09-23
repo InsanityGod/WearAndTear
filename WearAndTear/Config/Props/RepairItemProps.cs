@@ -28,7 +28,7 @@ public class RepairItemProps
     /// </summary>
     public string[] RequiredTraits { get; set; } = new string[]
     {
-        "wearandtear-engineer"
+        "wearandtear:engineer"
     };
 
     /// <summary>

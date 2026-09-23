@@ -206,6 +206,11 @@ public static class AutoPartRegistry
         var acceptFruitPress = AutoPartRegistryConfig.Instance.IncludeFruitPress && block is BlockFruitPress;
         var entityClass = string.IsNullOrEmpty(block.EntityClass) ? null : Api.ClassRegistry.GetBlockEntity(block.EntityClass);
 
+        //TODO compat smex (expanded steel making)
+        //TODO compat immersive woodworking
+
+        //TODO option to ignore Ceramic constraint (Molds mod for instance marks their molds as Metal, but really they are ceramic)
+        //TODO maybe make Metal Reinforcement extra effective for molds (maybe a config option)
         var acceptMold = SpecialPartsConfig.Instance.Molds && entityClass != null && block is BlockToolMold && block.BlockMaterial == EnumBlockMaterial.Ceramic && (block.Attributes is null || !block.Attributes["breaksWhenFilled"].AsBool());
         
         if (!isMechanicalBlock && !acceptFruitPress && !acceptMold)

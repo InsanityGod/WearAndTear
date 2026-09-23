@@ -32,9 +32,12 @@ public static class AllowForRollingUpSails
                 return false;
             }
         }
-
+        AccessTools.GetTypesFromAssembly(typeof(AllowForRollingUpSails).Assembly);
         return true;
     }
+
+    //TODO Interaction Help
+    //TODO Valid Repair materials in the handbook
 
     [HarmonyTargetMethods]
     public static IEnumerable<MethodBase> TargetMethods()

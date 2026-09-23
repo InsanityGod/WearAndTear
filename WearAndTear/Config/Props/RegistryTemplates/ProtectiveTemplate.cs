@@ -7,7 +7,7 @@ public class ProtectiveTemplate
     /// <summary>
     /// The general part properties
     /// </summary>
-    public PartProps PartProps { get; set; } = new();
+    public required PartProps PartProps { get; set; }
 
     /// <summary>
     /// The properties specific to protective parts

@@ -65,50 +65,39 @@
   "wearandtear:block-rubble-stable": "Rubble (stable)",
 
   "wearandtear:block-charcoalbrickpit": "Charcoal pit",
-
-  //traits
-  "game:trait-wearandtear-engineer": "<font color=\"#84ff84\">• Engineer </font>",
-  "game:traitdesc-wearandtear-engineer": "Allowes for mainting mechanical devices",
-
-  "game:trait-wearandtear-precisemeasurements": "<font color=\"#84ff84\">• Precise Measurements </font>",
-  "game:traitdesc-wearandtear-precisemeasurements": "Allowes you to see exact percentage of durability remaining",
-
+  
   //skills
   "wearandtear:skill-mechanics": "Mechanics",
 
-  "wearandtear:ability-handyman": "Handyman",
-  "wearandtear:abilitydesc-handyman": "Repair materials are worth {0}% more",
+  //traits
+  "traittitle-engineer": "Engineer",
+  "traitdesc-engineer": "Allows for mainting mechanical devices (if enabled in config). Trust me, I'm an engineer!",
 
-  "wearandtear:ability-butterfingers": "Butterfingers",
-  "wearandtear:abilitydesc-butterfingers": "Wax is {0}% more effective, but decays {1}% faster",
+  "traittitle-precise-measurements": "Precise Measurements",
+  "traitdesc-precise-measurements": "Allows you to see exact percentage of durability remaining",
 
-  "wearandtear:ability-limitbreaker": "Limit Breaker",
-  "wearandtear:abilitydesc-limitbreaker": "Allows you to go over the maintenance limit by {0}%",
+  "traittitle-careful-caster": "Careful Caster",
 
-  "wearandtear:ability-precise-measurements": "Precise Measurements",
-  "wearandtear:abilitydesc-precise-measurements": "Allowes you to see durability as a percentage",
+  "traittitle-expert-caster": "Expert Caster",
+  "traitdesc-expert-caster": "An expert caster leaves nothing up to chance. (mold durability loss is always at it's lowest)",
+
+  "traittitle-handyman": "Handyman",
+  "traittitle-limit-breaker": "Limit Breaker",
+  "traittitle-scrapper": "Scrapper",
+  "traittitle-strong-feet": "Strong Feet",
+  "traittitle-butterfingers": "Butterfingers",
+  "traittitle-reinforcer": "Reinforcer",
   
-  "wearandtear:ability-strong-feet": "Strong Feet",
-  "wearandtear:abilitydesc-strong-feet": "Reduce damage taken from stepping on rubble by {0}%",
-  
-  "wearandtear:ability-scrapper": "Scrapper",
-  "wearandtear:abilitydesc-scrapper": "Increase found scrap by {0}%",
+  //Stats
+  "charattribute-mold-durability-loss": "{0:+0.##%;-0.##%;0%} mold durability loss",
+  "charattribute-repair-effectiveness": "{0:+0.##%;-0.##%;0%} repair effectiveness",
+  "charattribute-maintenance-limit": "{0:+0.##%;-0.##%;0%} maintenance limit",
+  "charattribute-scrap-drop-rate": "{0:+0.##%;-0.##%;0%} scrap recovered",
+  "charattribute-rubble-damage": "{0:+0.##%;-0.##%;0%} damage taken from rubble",
+  "charattribute-wax-effectiveness": "{0:+0.##%;-0.##%;0%} wax effectiveness",
+  "charattribute-wax-decay": "{0:+0.##%;-0.##%;0%} wax decay rate",
+  "charattribute-reinforcement-strength": "{0:+0.##%;-0.##%;0%} reinforcement strength",
 
-  "wearandtear:ability-reinforcer": "Reinforcer",
-  "wearandtear:abilitydesc-reinforcer": "When repairing reinforcements you also improve them, increasing their effectiveness by {0}%
-(only applies once)",
-
-  "wearandtear:ability-engineer": "Engineer",
-  "wearandtear:abilitydesc-engineer": "You will receive {0}% more experience for the mechanics skill.
-The amount of professions you can learn is limited.
-
-Trust me I'm an engineer!",
-
-  "wearandtear:ability-careful-caster": "Carefull Caster",
-  "wearandtear:abilitydesc-careful-caster": "Reduce durability cost when removing casted items from molds by {0}%",
-
-  "wearandtear:ability-expert-caster": "Expert Caster",
-  "wearandtear:abilitydesc-expert-caster": "An expert caster leaves nothing up to chance. (mold durability loss is always at it's lowest)",
   //Handbook appending
 
   "wearandtear:handbook-heading": "Wear And Tear",
