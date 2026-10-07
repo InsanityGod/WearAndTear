@@ -87,7 +87,7 @@ public class IngotMoldPart : OptionalPart
         }
 
         damage *= byPlayer.Entity.Stats.GetBlended("wearandtear:mold-durability-loss");
-        Durability -= Math.Min(damage, 0);
+        Durability -= Math.Max(damage, 0);
 
         Blockentity.GetBehavior<PartController>().UpdateDecay(0, false);
     }
